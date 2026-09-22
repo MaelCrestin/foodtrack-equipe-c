@@ -1,0 +1,81 @@
+# FoodTrack - projet final - tier portail qualite (nginx)
+#
+# Les demandes de ressources sont volontairement basses : trois environnements
+# partagent le meme node pool. Si vous les augmentez, recalculez la capacite du
+# cluster - c est exactement le travail de dimensionnement attendu en phase 1.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: portail-qualite
+  namespace: foodtrack
+  labels:
+    app.kubernetes.io/name: portail-qualite
+    app.kubernetes.io/part-of: foodtrack
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: portail-qualite
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: portail-qualite
+        app.kubernetes.io/name: portail-qualite
+        app.kubernetes.io/part-of: foodtrack
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:1.30.5
+          ports:
+            - name: http
+              containerPort: 8080
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "300m"
+              memory: "256Mi"
+          startupProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+            periodSeconds: 5
+            failureThreshold: 12
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+            periodSeconds: 5
+            timeoutSeconds: 2
+            failureThreshold: 2
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+            periodSeconds: 10
+            timeoutSeconds: 2
+            failureThreshold: 3
+          volumeMounts:
+            - name: conf
+              mountPath: /etc/nginx/conf.d/default.conf
+              subPath: default.conf
+              readOnly: true
+            - name: conf
+              mountPath: /usr/share/nginx/html/index.html
+              subPath: index.html
+              readOnly: true
+      volumes:
+        - name: conf
+          configMap:
+            name: foodtrack-config
+            items:
+              - key: default.conf
+                path: default.conf
+              - key: index.html
+                path: index.html

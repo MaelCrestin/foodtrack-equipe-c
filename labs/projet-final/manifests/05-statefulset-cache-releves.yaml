@@ -1,0 +1,89 @@
+# FoodTrack - projet final - tier cache des releves (Redis) avec volume persistant
+#
+# volumeClaimTemplates -> un PersistentVolumeClaim par replica, provisionne par
+# le pilote CSI des disques persistants Compute Engine.
+#
+# ATTENTION : storageClassName pointe ici sur foodtrack-hdd, une classe qui
+# n existe PAS par defaut. Appliquez 07-storageclass-hdd.yaml AVANT ce fichier,
+# sinon le PVC reste en Pending.
+#
+# Un volumeClaimTemplate ne se modifie pas apres coup : pour changer la classe
+# ou la taille, il faut supprimer le StatefulSet et ses PVC, puis recreer.
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: cache-releves
+  namespace: foodtrack
+  labels:
+    app.kubernetes.io/name: cache-releves
+    app.kubernetes.io/part-of: foodtrack
+spec:
+  serviceName: cache-releves
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cache-releves
+  template:
+    metadata:
+      labels:
+        app: cache-releves
+        app.kubernetes.io/name: cache-releves
+        app.kubernetes.io/part-of: foodtrack
+    spec:
+      terminationGracePeriodSeconds: 30
+      # Le disque persistant est formate et monte avec root pour proprietaire.
+      # Le serveur Redis, lui, tourne sous l utilisateur redis (uid et gid 999)
+      # et n a alors pas le droit d ecrire son journal d ajout :
+      #   Can t open or create append-only dir appendonlydir: Permission denied
+      # fsGroup fait appartenir le volume monte a ce groupe, avec le bit setgid.
+      securityContext:
+        fsGroup: 999
+      containers:
+        - name: redis
+          image: redis:8.10.1
+          args:
+            - "--appendonly"
+            - "yes"
+            - "--dir"
+            - "/data"
+          ports:
+            - name: redis
+              containerPort: 6379
+          resources:
+            requests:
+              cpu: "200m"
+              memory: "256Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+          startupProbe:
+            exec:
+              command: ["redis-cli", "ping"]
+            periodSeconds: 3
+            failureThreshold: 20
+          readinessProbe:
+            exec:
+              command: ["redis-cli", "ping"]
+            periodSeconds: 5
+            timeoutSeconds: 2
+            failureThreshold: 2
+          livenessProbe:
+            tcpSocket:
+              port: 6379
+            periodSeconds: 10
+            failureThreshold: 3
+          volumeMounts:
+            - name: donnees
+              mountPath: /data
+  volumeClaimTemplates:
+    - metadata:
+        name: donnees
+        labels:
+          app.kubernetes.io/part-of: foodtrack
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        storageClassName: foodtrack-hdd
+        resources:
+          requests:
+            # 10 Gi est la taille minimale d un disque persistant.
+            storage: 10Gi

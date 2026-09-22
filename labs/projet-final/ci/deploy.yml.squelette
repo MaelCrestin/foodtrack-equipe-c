@@ -1,0 +1,159 @@
+# FoodTrack - projet final - squelette de workflow GitHub Actions
+#
+# A COPIER dans .github/workflows/deploy.yml de votre depot, puis a completer.
+#
+# Ce qui est fourni : le bloc d authentification sans cle (OIDC vers Google
+# Cloud) et la recuperation des acces au cluster. Ces deux etapes sont les plus
+# penibles a mettre au point et ne portent aucune valeur pedagogique une fois
+# comprises - en revanche, vous devez savoir les EXPLIQUER en soutenance.
+#
+# Ce qui est a votre charge : tout le reste, marque "A FAIRE".
+#
+# Variables a definir dans Settings > Secrets and variables > Actions > Variables :
+#   GCP_PROJECT_ID        ex: foodtrack-equipe-a
+#   GCP_REGION            ex: europe-west8
+#   GCP_ZONE              ex: europe-west8-b
+#   GKE_CLUSTER           ex: foodtrack-a-cluster
+#   WIF_PROVIDER          sortie Terraform "wif_provider_name" du module fourni
+#   CI_SERVICE_ACCOUNT    sortie Terraform "ci_service_account_email"
+#
+# Aucun SECRET n est necessaire. Si vous en ajoutez un qui contient une cle
+# JSON, vous avez rate l exercice.
+
+name: foodtrack
+
+on:
+  push:
+    branches: [develop, main]
+    tags: ["v*"]
+  pull_request:
+    branches: [develop, main]
+
+# Obligatoire pour que GitHub emette un jeton OIDC.
+# Sans "id-token: write", l etape d authentification echoue sans explication utile.
+permissions:
+  contents: read
+  id-token: write
+
+env:
+  IMAGE_NAME: portail-qualite
+
+jobs:
+
+  qualite:
+    name: Lint et scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      # A FAIRE : valider le formatage et la coherence du code Terraform
+      #        pistes : hashicorp/setup-terraform@v4, terraform fmt -check, terraform validate
+
+      # A FAIRE : valider les manifestes Kubernetes contre le schema
+      #        piste : kubeconform, attention aux ressources propres a GKE
+
+      # A FAIRE : scanner le code Terraform a la recherche de mauvaises configurations
+      #        piste : aquasecurity/trivy-action@v0.36.0 en mode config
+
+      # A FAIRE : decider du seuil de severite qui fait echouer le job, et le
+      #        justifier dans le README. Desactiver le scan n est pas une option.
+      - name: A completer
+        run: echo "a remplacer par vos etapes"
+
+  build:
+    name: Build et publication de l image
+    needs: qualite
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      # --- FOURNI : authentification sans cle -------------------------------
+      # GitHub emet un jeton OIDC signe qui decrit l execution en cours (depot,
+      # branche, auteur). Google Cloud verifie cette signature aupres de GitHub,
+      # applique la condition d attribut definie dans le fournisseur, puis rend
+      # un jeton d acces au nom du compte de service demande.
+      - id: auth
+        uses: google-github-actions/auth@v3
+        with:
+          project_id: ${{ vars.GCP_PROJECT_ID }}
+          workload_identity_provider: ${{ vars.WIF_PROVIDER }}
+          service_account: ${{ vars.CI_SERVICE_ACCOUNT }}
+
+      - uses: google-github-actions/setup-gcloud@v3
+
+      - name: Autoriser Docker aupres d Artifact Registry
+        run: gcloud auth configure-docker ${{ vars.GCP_REGION }}-docker.pkg.dev --quiet
+      # --- fin du bloc fourni ------------------------------------------------
+
+      # A FAIRE : construire l image et la pousser dans Artifact Registry
+      #        piste : docker/build-push-action@v7
+      #        etiquetez l image avec le SHA du commit : une etiquette "latest"
+      #        rend impossible de dire quelle version tourne en production.
+
+      # A FAIRE : scanner l image publiee avant tout deploiement
+      - name: A completer
+        run: echo "a remplacer par vos etapes"
+
+  deploy-dev:
+    name: Deploiement dev
+    needs: build
+    if: github.ref == 'refs/heads/develop'
+    runs-on: ubuntu-latest
+    # A FAIRE : declarer l environnement GitHub correspondant
+    steps:
+      - uses: actions/checkout@v5
+
+      # --- FOURNI : acces au cluster ----------------------------------------
+      - id: auth
+        uses: google-github-actions/auth@v3
+        with:
+          project_id: ${{ vars.GCP_PROJECT_ID }}
+          workload_identity_provider: ${{ vars.WIF_PROVIDER }}
+          service_account: ${{ vars.CI_SERVICE_ACCOUNT }}
+
+      - uses: google-github-actions/get-gke-credentials@v3
+        with:
+          cluster_name: ${{ vars.GKE_CLUSTER }}
+          location: ${{ vars.GCP_ZONE }}
+      # --- fin du bloc fourni ------------------------------------------------
+
+      # A FAIRE : appliquer les manifestes de l environnement dev
+
+      # A FAIRE : mettre a jour l image du deploiement api-capteurs
+
+      # A FAIRE : attendre la fin du deploiement AVANT de declarer le job en succes
+      #        piste : kubectl rollout status, avec un --timeout explicite.
+      #        Sans cette attente, votre pipeline est vert pendant que les pods
+      #        bouclent en CrashLoopBackOff.
+
+      # A FAIRE : verifier que l application repond apres deploiement
+      - name: A completer
+        run: echo "a remplacer par vos etapes"
+
+  deploy-test:
+    name: Deploiement test
+    needs: deploy-dev
+    runs-on: ubuntu-latest
+    steps:
+      # A FAIRE : meme structure que deploy-dev, sur le namespace de test
+      - name: A completer
+        run: echo "a remplacer par vos etapes"
+
+  deploy-prod:
+    name: Deploiement production
+    needs: deploy-test
+    runs-on: ubuntu-latest
+    # A FAIRE : cet environnement doit exiger une approbation humaine.
+    #        Elle se configure cote depot : Settings > Environments > required
+    #        reviewers. Le job attend alors qu un relecteur valide.
+    #        Un "if" dans le workflow ne remplace pas une porte d approbation :
+    #        il filtre, il ne demande rien a personne.
+    # environment:
+    #   name: production
+    steps:
+      # A FAIRE : deploiement en production, puis verification
+      # A FAIRE : decider et documenter ce qui declenche la production :
+      #        un merge sur main, une etiquette de version, ou les deux
+      - name: A completer
+        run: echo "a remplacer par vos etapes"
