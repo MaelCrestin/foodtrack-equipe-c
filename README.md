@@ -122,6 +122,9 @@ terraform fmt -check -recursive
 terraform validate
 terraform plan -var-file=dev.tfvars -out=phase1.tfplan
 terraform apply phase1.tfplan
+
+gcloud storage buckets create "gs://foodtrack-${EQUIPE}-tfstate-${PROJECT}" --location="$REGION" --uniform-bucket-level-access
+gcloud storage buckets update "gs://foodtrack-${EQUIPE}-tfstate-${PROJECT}" --versioning
 ```
 
 Vérifications :
