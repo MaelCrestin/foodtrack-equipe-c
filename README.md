@@ -75,3 +75,56 @@ _À compléter en phase 4._
 ## Choix techniques et arbitrages
 
 _À documenter au fil du projet — c'est ce que le jury lit avant la soutenance._
+
+
+```mermaid
+flowchart TB
+    users["Responsables qualite<br/>navigateur"]
+    admin["Equipe FoodTrack<br/>SSH admin"]
+    git["Depot GitHub<br/>foodtrack-equipe-c"]
+    ci["GitHub Actions"]
+    internet(("Internet"))
+
+    subgraph vpc ["VPC prive foodtrack-c-vpc - europe-west2"]
+        direction TB
+        lb["Ingress et equilibreur de charge<br/>un par namespace"]
+        nat["foodtrack-c-router et Cloud NAT"]
+        bastion["VM bastion<br/>foodtrack-c-bastion"]
+
+        subgraph gke ["Cluster GKE Standard zonal - foodtrack-c-cluster"]
+            direction TB
+            subgraph prod ["namespace foodtrack-prod"]
+                direction LR
+                portail["portail-qualite<br/>nginx"]
+                api["api-capteurs"]
+                cache["cache-releves<br/>Redis et volume pd-standard"]
+                portail -->|"/api/"| api
+                api --> cache
+            end
+            test_dev["namespaces foodtrack-test et foodtrack-dev<br/>meme structure, configuration differente"]
+        end
+    end
+
+    subgraph gcp_svc ["Services du projet form-gke-eleve03-a8e9"]
+        direction TB
+        ar["Artifact Registry<br/>foodtrack-c-images"]
+        gcs["Cloud Storage<br/>tfstate et sauvegardes"]
+        obs["Cloud Monitoring et Logging"]
+    end
+
+    users -->|HTTPS| lb
+    lb --> portail
+
+    admin -->|SSH restreint, cle uniquement| bastion
+    bastion --> gke
+
+    git -->|push ou tag| ci
+    ci -->|OIDC, sans cle| ar
+    ci -->|kubectl apply| gke
+
+    gke --> nat
+    nat --> internet
+    gke --> ar
+    gke --> obs
+    gke --> gcs
+```

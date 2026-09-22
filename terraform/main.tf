@@ -1,7 +1,9 @@
 # FoodTrack - equipe C - racine Terraform
 #
-# Cette racine declare le backend distant et appelle les modules. Le bucket
-# de backend est cree a la main (exception documentee dans le README).
+# Cette racine ne contient PAS les ressources elles-memes : elle declare le
+# backend distant (ou Terraform range son etat), configure le provider
+# Google, et plus tard appellera les modules. Pour l instant, volontairement
+# minimal : juste de quoi faire un `terraform init` qui reussit.
 
 terraform {
   required_version = ">= 1.5"
@@ -9,7 +11,7 @@ terraform {
   required_providers {
     google = {
       source  = "hashicorp/google"
-      version = "~> 6.0" # A FAIRE : verifier la derniere version stable
+      version = "~> 6.0"
     }
   }
 
@@ -23,32 +25,3 @@ provider "google" {
   project = var.project_id
   region  = var.region
 }
-
-# A FAIRE : module reseau (vpc, sous-reseau, cloud router, cloud nat, pare-feu)
-# module "reseau" {
-#   source = "./modules/reseau"
-#   ...
-# }
-
-# A FAIRE : module compute (cluster gke, node pool, bastion)
-# module "compute" {
-#   source = "./modules/compute"
-#   ...
-# }
-
-# A FAIRE : module stockage (buckets de sauvegarde et d exports de journaux)
-# module "stockage" {
-#   source = "./modules/stockage"
-#   ...
-# }
-
-# Fourni : federation d identite GitHub Actions -> Google Cloud.
-# Copiez le contenu de labs/projet-final/terraform-fourni/wif-github/ dans
-# terraform/modules/wif-github/ puis decommentez :
-# module "wif_github" {
-#   source = "./modules/wif-github"
-#
-#   project_id   = var.project_id
-#   github_owner = "VOTRE-ORGANISATION-GITHUB"
-#   github_repo  = "foodtrack-equipe-c"
-# }

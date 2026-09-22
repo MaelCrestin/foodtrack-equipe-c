@@ -1,7 +1,7 @@
 variable "project_id" {
-  description = "Projet Google Cloud de l equipe"
+  description = "Projet Google Cloud, PARTAGE entre les 5 equipes de la formation"
   type        = string
-  default = "poei-formation-gcp"
+  default     = "poei-formation-gcp"
 }
 
 variable "region" {
@@ -17,11 +17,7 @@ variable "zone" {
 }
 
 variable "equipe" {
-  description = "Lettre de l equipe, utilisee dans le prefixe des noms de ressources"
+  description = "Lettre de l equipe, utilisee dans le prefixe de toutes les ressources"
   type        = string
   default     = "c"
 }
-
-# A FAIRE : ajouter les variables specifiques a vos modules
-# (machine_type, node_count, disk_size_gb, plages secondaires, etc.),
-# avec des valeurs differentes par environnement dans dev.tfvars / test.tfvars / prod.tfvars
