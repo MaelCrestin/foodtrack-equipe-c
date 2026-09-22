@@ -60,8 +60,8 @@ gcloud config set compute/zone "$ZONE"
 Créé à la main, une fois, avant le premier `terraform init` — seule exception à la règle « tout en Terraform ».
 
 ```bash
-gcloud storage buckets create "gs://foodtrack-c-tfstate-${PROJECT}" --location="$REGION" --uniform-bucket-level-access
-gcloud storage buckets update "gs://foodtrack-c-tfstate-${PROJECT}" --versioning
+gcloud storage buckets create "gs://foodtrack-c-tfstate-poei-formation-gcp" --location="europe-west2" --uniform-bucket-level-access
+gcloud storage buckets update "gs://foodtrack-c-tfstate-poei-formation-gcp" --versioning
 ```
 
 ## Dimensionnement du cluster
