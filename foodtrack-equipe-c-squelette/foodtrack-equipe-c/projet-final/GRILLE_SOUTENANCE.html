@@ -1,0 +1,3631 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grille d'évaluation et soutenance</title>
+    
+    
+    
+    <style>
+/* ============================================
+   Apache Superset - Formation 2026
+   CSS Document Markdown - Cards & Delimiteurs
+   ============================================ */
+
+/* ============================================
+   FONTS (polices systeme, aucune dependance reseau : autonomie hors-ligne)
+   ============================================ */
+
+/* ============================================
+   VARIABLES
+   ============================================ */
+:root {
+    /* Couleurs (alignees sur le bleu du mode slides) */
+    --color-primary: #2563eb;
+    --color-primary-dark: #1d4ed8;
+    --color-primary-light: #dbeafe;
+    --color-primary-gradient: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+    --color-accent: #0ea5e9;
+    --color-accent-light: #e0f2fe;
+    
+    /* Semantique */
+    --color-success: #22c55e;
+    --color-success-light: #dcfce7;
+    --color-warning: #eab308;
+    --color-warning-light: #fef9c3;
+    --color-danger: #ef4444;
+    --color-danger-light: #fee2e2;
+    --color-info: #3b82f6;
+    --color-info-light: #dbeafe;
+    
+    /* Neutres */
+    --gray-50: #fafafa;
+    --gray-100: #f4f4f5;
+    --gray-200: #e4e4e7;
+    --gray-300: #d4d4d8;
+    --gray-400: #a1a1aa;
+    --gray-500: #71717a;
+    --gray-600: #52525b;
+    --gray-700: #3f3f46;
+    --gray-800: #27272a;
+    --gray-900: #18181b;
+
+    /* Bandeau de titre (h2) : gris-bleu distinct du fond de page (sinon invisible) */
+    --title-band: #edeef1;
+    
+    /* Typographie */
+    --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --font-mono: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+    
+    /* Dimensions */
+    --content-max-width: min(62rem, 94%);
+    --content-padding: 2.5rem;
+    
+    /* Bordures & Ombres */
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 16px;
+    --radius-xl: 20px;
+    
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+    --shadow-lg: 0 8px 30px rgba(0,0,0,0.12);
+    --shadow-card: 0 2px 8px rgba(0,0,0,0.06), 0 0 1px rgba(0,0,0,0.1);
+
+    /* Copyright / Footer (personnalisable via --copyright-text) */
+    --copyright-text: "© 2026 Semifir — adrien.vossough@semifir.com — semifir.com";
+    --disclaimer-text: "Ce support ne peut être reproduit, diffusé ou utilisé en dehors d'une formation donnée par Semifir, sans autorisation écrite.";
+    --copyright-color: rgba(15, 23, 42, 0.55);
+}
+
+/* Header copyright en haut a droite, present sur chaque page (screen + print PDF) */
+body::before {
+    content: var(--copyright-text);
+    position: fixed;
+    top: 10px;
+    right: 18px;
+    font-family: var(--font-sans);
+    font-size: 0.65rem;
+    font-weight: 400;
+    letter-spacing: 0.02em;
+    color: var(--copyright-color);
+    z-index: 1002;
+    pointer-events: none;
+    white-space: nowrap;
+}
+
+/* Footer copyright + interdiction de duplication, en bas de chaque page
+   (screen + print PDF). En complement du header (body::before). */
+body::after {
+    content: var(--copyright-text) "  ·  " var(--disclaimer-text);
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    text-align: center;
+    font-family: var(--font-sans);
+    font-size: 0.6rem;
+    letter-spacing: 0.02em;
+    color: var(--copyright-color);
+    background: rgba(255, 255, 255, 0.9);
+    border-top: 1px solid var(--gray-200);
+    padding: 4px 18px;
+    z-index: 1002;
+    pointer-events: none;
+}
+
+/* ============================================
+   RESET
+   ============================================ */
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+/* ============================================
+   BASE
+   ============================================ */
+html {
+    font-size: 16px;
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+}
+
+body {
+    font-family: var(--font-sans);
+    font-size: 1rem;
+    line-height: 1.75;
+    color: var(--gray-800);
+    background: linear-gradient(180deg, var(--gray-100) 0%, var(--gray-50) 100%);
+    min-height: 100vh;
+    margin: 0;
+    padding: 2.5rem 1rem;
+}
+
+/* ============================================
+   CONTAINER - markdown-body
+   ============================================ */
+.markdown-body,
+article,
+main {
+    max-width: var(--content-max-width);
+    margin: 0 auto;
+    background: white;
+    padding: var(--content-padding);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-lg);
+    border: 1px solid var(--gray-200);
+}
+
+/* ============================================
+   HEADINGS
+   ============================================ */
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 600;
+    line-height: 1.3;
+    color: var(--gray-900);
+    margin-top: 2.5rem;
+    margin-bottom: 1rem;
+}
+
+h1 {
+    font-size: 2.25rem;
+    font-weight: 700;
+    margin-top: 0;
+    padding-bottom: 1rem;
+    border-bottom: none;
+    position: relative;
+    color: var(--gray-900);
+}
+
+h1::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 80px;
+    height: 4px;
+    background: var(--color-primary-gradient);
+    border-radius: 2px;
+}
+
+h2 {
+    font-size: 1.5rem;
+    margin-top: 3rem;
+    padding: 1rem 1.25rem;
+    background: var(--title-band);
+    border-left: 4px solid var(--color-primary);
+    border-radius: 0 var(--radius-md) var(--radius-md) 0;
+    color: var(--gray-800);
+}
+
+h3 {
+    font-size: 1.25rem;
+    color: var(--gray-800);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+h3::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    background: var(--color-primary);
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+h4 {
+    font-size: 1.1rem;
+    color: var(--gray-700);
+    border-bottom: 1px dashed var(--gray-300);
+    padding-bottom: 0.5rem;
+}
+
+h5, h6 {
+    font-size: 0.9rem;
+    color: var(--gray-600);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 600;
+}
+
+/* ============================================
+   PARAGRAPHS & TEXT
+   ============================================ */
+p {
+    margin-bottom: 1.25rem;
+}
+
+strong, b {
+    font-weight: 600;
+    color: var(--gray-900);
+}
+
+a {
+    color: var(--color-primary);
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.2s;
+    border-bottom: 1px solid transparent;
+}
+
+a:hover {
+    color: var(--color-primary-dark);
+    border-bottom-color: var(--color-primary);
+}
+
+mark {
+    background: linear-gradient(120deg, #fef08a 0%, #fde047 100%);
+    padding: 0.1em 0.4em;
+    border-radius: 4px;
+}
+
+/* ============================================
+   HORIZONTAL RULE - DELIMITEUR
+   ============================================ */
+hr {
+    border: none;
+    height: 1px;
+    background: var(--gray-200);
+    margin: 3rem 0;
+    position: relative;
+}
+
+hr::before {
+    content: '◆';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    color: var(--color-primary);
+    padding: 0 1rem;
+    font-size: 0.8rem;
+}
+
+/* ============================================
+   LISTS
+   ============================================ */
+ul, ol {
+    margin-bottom: 1.25rem;
+    padding-left: 1.5rem;
+}
+
+li {
+    margin-bottom: 0.5rem;
+    position: relative;
+}
+
+li > ul, li > ol {
+    margin-top: 0.5rem;
+    margin-bottom: 0;
+}
+
+ul { list-style-type: none; }
+
+ul > li::before {
+    content: '▸';
+    color: var(--color-primary);
+    font-weight: bold;
+    position: absolute;
+    left: -1.25rem;
+}
+
+ul ul > li::before {
+    content: '○';
+    font-size: 0.7em;
+}
+
+ol { list-style-type: decimal; }
+
+/* ============================================
+   IMAGES - CARDS
+   ============================================ */
+img {
+    display: block;
+    max-width: 100%;
+    max-height: 500px;
+    height: auto;
+    margin: 2rem auto;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--gray-200);
+    transition: transform 0.2s, box-shadow 0.2s;
+    object-fit: contain;
+}
+
+img:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+
+/* Images contraintes */
+img[src*="screenshot"],
+img[src*="superset.apache.org"] {
+    max-height: 400px;
+    width: auto;
+    object-fit: contain;
+}
+
+/* Images locales dans le dossier images */
+img[src*="images/"] {
+    max-height: 450px;
+    width: auto;
+    object-fit: contain;
+}
+
+/* Images dans les titres - inline pour ne pas casser le titre */
+h1 img, h2 img, h3 img, h4 img, h5 img, h6 img {
+    display: inline-block;
+    margin: 0 0.5rem 0 0;
+    vertical-align: middle;
+    max-height: 1.5em;
+    border-radius: var(--radius-sm);
+    box-shadow: none;
+    border: none;
+}
+
+/* Images dans les tableaux - inline pour ne pas casser la cellule */
+td img, th img {
+    display: inline-block;
+    margin: 0;
+    vertical-align: middle;
+    max-height: 2em;
+    border-radius: var(--radius-sm);
+    box-shadow: none;
+    border: none;
+}
+
+figure {
+    margin: 2rem 0;
+    text-align: center;
+    background: var(--gray-50);
+    padding: 1.5rem;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--gray-200);
+}
+
+figure img {
+    margin: 0 auto 1rem;
+    box-shadow: none;
+    border: none;
+}
+
+figcaption {
+    font-size: 0.875rem;
+    color: var(--gray-500);
+    font-style: italic;
+}
+
+/* ============================================
+   CODE - CARDS
+   ============================================ */
+/* Code inline uniquement (pas dans pre) - discret, sans se confondre avec <mark> */
+code:not(pre code) {
+    font-family: var(--font-mono);
+    font-size: 0.85em;
+    background: var(--gray-100);
+    color: var(--color-primary-dark);
+    padding: 0.15em 0.4em;
+    border-radius: var(--radius-sm);
+    font-weight: 500;
+    border: 1px solid var(--gray-200);
+}
+
+/* Code dans les blocs pre - reset pour garder la coloration syntaxique */
+pre code {
+    background: transparent;
+    color: inherit;
+    padding: 0;
+    border: none;
+    font-weight: inherit;
+}
+
+pre {
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    line-height: 1.6;
+    background: var(--gray-900);
+    color: #e4e4e7;
+    padding: 1.5rem;
+    border-radius: var(--radius-lg);
+    overflow-x: auto;
+    margin: 1.5rem 0;
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--gray-800);
+    position: relative;
+}
+
+pre::before {
+    content: '';
+    position: absolute;
+    top: 12px;
+    left: 16px;
+    width: 12px;
+    height: 12px;
+    background: #ff5f56;
+    border-radius: 50%;
+    box-shadow: 20px 0 0 #ffbd2e, 40px 0 0 #27ca40;
+}
+
+pre code {
+    background: transparent;
+    color: inherit;
+    padding: 0;
+    font-size: inherit;
+    font-weight: normal;
+}
+
+/* ============================================
+   Boutons copier / telecharger — groupe segmente
+   ============================================ */
+.code-wrapper {
+    position: relative;
+    margin: 1.5rem 0;
+}
+
+/* gouttiere haute : evite que les boutons recouvrent la 1re ligne de code */
+.code-wrapper > pre {
+    margin: 0;
+    padding-top: 2.75rem;
+}
+
+.code-actions {
+    position: absolute;
+    top: 8px;
+    right: 10px;
+    display: flex;
+    gap: 1px;
+    background: rgba(15, 23, 42, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    opacity: 0.85;
+    transition: opacity 0.2s ease;
+    z-index: 10;
+}
+
+.code-wrapper:hover .code-actions,
+.code-wrapper:focus-within .code-actions {
+    opacity: 1;
+}
+
+.code-actions button {
+    display: inline-flex;
+    align-items: center;
+    height: 28px;
+    padding: 0 9px;
+    border: 0;
+    background: transparent;
+    color: #e8eef6;
+    font-family: var(--font-sans);
+    font-size: 0.72rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+.code-actions button + button {
+    border-left: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.code-actions button:hover {
+    background: var(--color-primary);
+    color: #fff;
+}
+
+.code-actions button.copied {
+    background: #16a34a;
+    color: #fff;
+}
+
+.code-actions svg {
+    width: 15px;
+    height: 15px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    flex: none;
+}
+
+.code-actions .lbl {
+    max-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    transition: max-width 0.22s ease, margin 0.22s ease;
+}
+
+.code-actions button:hover .lbl,
+.code-actions button:focus-visible .lbl,
+.code-actions button.copied .lbl {
+    max-width: 90px;
+    margin-left: 6px;
+}
+
+/* ============================================
+   TABLES - CARDS
+   ============================================ */
+table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin: 1.5rem 0;
+    font-size: 0.9375rem;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-card);
+    border: 1px solid var(--gray-200);
+}
+
+thead {
+    background: var(--color-primary-gradient);
+    color: white;
+}
+
+th {
+    font-weight: 600;
+    text-align: left;
+    padding: 1rem 1.25rem;
+    font-size: 0.8125rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+td {
+    padding: 0.875rem 1.25rem;
+    border-bottom: 1px solid var(--gray-100);
+    vertical-align: top;
+}
+
+tbody tr:last-child td {
+    border-bottom: none;
+}
+
+tbody tr:nth-child(even) {
+    background: var(--gray-50);
+}
+
+tbody tr {
+    transition: background 0.15s;
+}
+
+tbody tr:hover {
+    background: var(--color-primary-light);
+}
+
+/* ============================================
+   BLOCKQUOTES - CARDS
+   ============================================ */
+blockquote {
+    margin: 2rem 0;
+    padding: 1.5rem 1.5rem 1.5rem 2rem;
+    border-left: 4px solid var(--color-primary);
+    background: linear-gradient(135deg, var(--gray-50) 0%, white 100%);
+    border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
+    color: var(--gray-700);
+    box-shadow: var(--shadow-sm);
+    font-style: italic;
+    position: relative;
+}
+
+blockquote::before {
+    content: '"';
+    position: absolute;
+    top: -10px;
+    left: 15px;
+    font-size: 4rem;
+    color: var(--color-primary);
+    opacity: 0.2;
+    font-family: Georgia, serif;
+    line-height: 1;
+}
+
+blockquote p:last-child {
+    margin-bottom: 0;
+}
+
+/* ============================================
+   DETAILS / ACCORDIONS - CARDS
+   ============================================ */
+details {
+    margin: 1.5rem 0;
+    padding: 0;
+    background: white;
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-card);
+    transition: box-shadow 0.2s;
+}
+
+details:hover {
+    box-shadow: var(--shadow-md);
+}
+
+details[open] {
+    box-shadow: var(--shadow-md);
+    padding: 1rem 1.25rem;
+}
+
+details[open] > summary {
+    /* Compenser le padding du details pour que le summary reste bord a bord */
+    margin: -1rem -1.25rem 1rem -1.25rem;
+}
+
+/* Le div.highlight et pre doivent prendre toute la largeur */
+details > .highlight,
+details > pre {
+    margin-left: -1.25rem;
+    margin-right: -1.25rem;
+    border-radius: 0;
+}
+
+details > .highlight pre {
+    border-radius: 0;
+    margin: 0;
+}
+
+details > .highlight:last-child,
+details > pre:last-child {
+    margin-bottom: -1rem;
+}
+
+summary {
+    font-weight: 600;
+    cursor: pointer;
+    padding: 1rem 1.25rem;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: var(--gray-800);
+    background: var(--gray-50);
+    border-bottom: 1px solid transparent;
+    transition: all 0.2s;
+}
+
+details[open] summary {
+    border-bottom-color: var(--gray-200);
+    background: var(--color-primary-light);
+    color: var(--color-primary-dark);
+}
+
+summary::-webkit-details-marker {
+    display: none;
+}
+
+summary::before {
+    content: '▶';
+    font-size: 0.65rem;
+    color: var(--color-primary);
+    transition: transform 0.2s;
+    flex-shrink: 0;
+}
+
+details[open] summary::before {
+    transform: rotate(90deg);
+}
+
+summary:hover {
+    background: var(--gray-100);
+}
+
+
+/* ============================================
+   MERMAID DIAGRAMS - CARDS
+   ============================================ */
+.mermaid,
+pre.mermaid {
+    background: white;
+    padding: 2rem;
+    margin: 2rem 0;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--gray-200);
+    text-align: center;
+    overflow-x: auto;
+    box-shadow: var(--shadow-card);
+}
+
+.mermaid::before {
+    display: none;
+}
+
+.mermaid svg {
+    max-width: 100%;
+    height: auto;
+}
+
+/* ============================================
+   ALERTS / NOTES - CARDS
+   ============================================ */
+.note, .info, .tip {
+    padding: 1.25rem;
+    margin: 1.5rem 0;
+    border-radius: var(--radius-lg);
+    border-left: 4px solid var(--color-info);
+    background: var(--color-info-light);
+    box-shadow: var(--shadow-sm);
+}
+
+.warning, .attention {
+    border-left-color: var(--color-warning);
+    background: var(--color-warning-light);
+}
+
+.danger, .error {
+    border-left-color: var(--color-danger);
+    background: var(--color-danger-light);
+}
+
+.success {
+    border-left-color: var(--color-success);
+    background: var(--color-success-light);
+}
+
+/* ============================================
+   SECTION DIVIDERS
+   ============================================ */
+/* (Lettrine retiree : une lettrine apres CHAQUE h2 fatigue la lecture d'un
+   long document technique.) */
+
+/* ============================================
+   PRINT
+   ============================================ */
+@media print {
+    body {
+        background: white;
+        padding: 0;
+    }
+    
+    .markdown-body, article, main {
+        box-shadow: none;
+        border: none;
+        padding: 0;
+        max-width: 100%;
+    }
+    
+    pre {
+        background: var(--gray-100) !important;
+        color: var(--gray-900) !important;
+        box-shadow: none;
+        border: 1px solid var(--gray-300);
+    }
+    
+    pre::before {
+        display: none;
+    }
+    
+    a { color: var(--gray-900); }
+    
+    img {
+        max-height: 280px;
+        page-break-inside: avoid;
+        box-shadow: none;
+    }
+    
+    h1, h2, h3 {
+        page-break-after: avoid;
+    }
+    
+    table, pre, blockquote, details {
+        page-break-inside: avoid;
+    }
+    
+    h2 {
+        background: none;
+        padding-left: 0;
+    }
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media (max-width: 768px) {
+    body {
+        padding: 1rem 0.5rem;
+    }
+    
+    .markdown-body, article, main {
+        padding: 1.5rem;
+        border-radius: var(--radius-lg);
+    }
+    
+    h1 { font-size: 1.75rem; }
+    h2 { 
+        font-size: 1.25rem;
+        padding: 0.75rem 1rem;
+    }
+    h3 { font-size: 1.1rem; }
+    
+    table {
+        display: block;
+        overflow-x: auto;
+    }
+    
+    pre {
+        padding: 1rem;
+        font-size: 0.8rem;
+    }
+    
+    img {
+        max-height: 250px;
+    }
+    
+    blockquote::before {
+        display: none;
+    }
+}
+
+/* ============================================
+   LOGO SUPERSET
+   ============================================ */
+img[src*="superset-logo"] {
+    max-height: 80px;
+    margin: 0 0 2rem 0;
+    box-shadow: none;
+    border: none;
+}
+
+img[src*="superset-logo"]:hover {
+    transform: none;
+}
+
+/* ============================================
+   MERMAID LIGHTBOX (zoom diagrammes)
+   ============================================ */
+
+/* Wrapper pour positionner le bouton d'expansion */
+.mermaid-wrapper {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+}
+
+/* Bouton d'expansion */
+.mermaid-expand-btn {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 36px;
+    height: 36px;
+    border: none;
+    border-radius: var(--radius-md);
+    background: rgba(255, 255, 255, 0.9);
+    color: var(--gray-600);
+    font-size: 1.2rem;
+    cursor: pointer;
+    opacity: 0;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--shadow-md);
+    z-index: 10;
+}
+
+.mermaid-wrapper:hover .mermaid-expand-btn {
+    opacity: 1;
+}
+
+.mermaid-expand-btn:hover {
+    background: var(--color-primary);
+    color: white;
+    transform: scale(1.1);
+}
+
+/* Lightbox overlay */
+.mermaid-lightbox {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 10000;
+    display: none;
+}
+
+.mermaid-lightbox.active {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mermaid-lightbox-backdrop {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(8px);
+}
+
+.mermaid-lightbox-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    cursor: grab;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mermaid-lightbox-content {
+    transform-origin: center center;
+    transition: transform 0.1s ease-out;
+    padding: 40px;
+}
+
+/* Le clone du wrapper .mermaid herite des styles de la page (flex, max-height,
+   padding, background, border) qui empechent l'affichage en grand. On les
+   neutralise uniquement dans le contexte de la lightbox pour que le rendu
+   visuel des elements internes (.node, .messageText, .actor, etc.) reste
+   strictement identique a celui de la page. */
+.mermaid-lightbox-content .mermaid,
+.mermaid-lightbox-content .mermaid-clone {
+    display: block !important;
+    width: auto !important;
+    max-width: none !important;
+    max-height: none !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+    background: white !important;
+    border: none !important;
+    border-radius: var(--radius-lg) !important;
+    padding: 32px !important;
+    margin: 0 !important;
+    box-shadow: var(--shadow-lg);
+    text-align: center;
+}
+
+.mermaid-lightbox-content svg,
+.mermaid-lightbox-content .mermaid svg {
+    max-width: none !important;
+    max-height: none !important;
+    width: 80vw !important;
+    height: auto !important;
+    min-width: 800px;
+    background: transparent;
+    border-radius: 0;
+    padding: 0;
+    box-shadow: none;
+}
+
+/* On évite tout override interne sur les foreignObject et leurs enfants :
+   Mermaid calcule le centrage des labels avec leur taille/largeur d'origine
+   (transform du <g class="label">, display: table-cell, etc.). Forcer
+   text-align, white-space ou width casse le rendu (flowchart TD, mindmap...). */
+.mermaid-lightbox.active svg foreignObject {
+    overflow: visible !important;
+}
+
+/* Images zoomables : clic pour agrandir (comme les diagrammes Mermaid) */
+.zoomable-img {
+    cursor: zoom-in;
+    transition: box-shadow 0.15s ease;
+}
+
+.zoomable-img:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
+}
+
+/* Rendu de l'image dans la lightbox (zoom/pan via .mermaid-lightbox-content) */
+.mermaid-lightbox-content img,
+.mermaid-lightbox-content .lightbox-img {
+    display: block;
+    max-width: 88vw !important;
+    max-height: 88vh !important;
+    width: auto !important;
+    height: auto !important;
+    background: white;
+    border-radius: var(--radius-lg);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+}
+
+/* Contrôles du lightbox */
+.mermaid-lightbox-controls {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    display: flex;
+    gap: 8px;
+    z-index: 10001;
+}
+
+.mermaid-lb-btn {
+    width: 44px;
+    height: 44px;
+    border: none;
+    border-radius: var(--radius-md);
+    background: rgba(255, 255, 255, 0.95);
+    color: var(--gray-800);
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    box-shadow: var(--shadow-md);
+}
+
+.mermaid-lb-zoom-reset {
+    width: auto;
+    padding: 0 16px;
+    font-size: 0.9rem;
+}
+
+.mermaid-lb-btn:hover {
+    background: var(--color-primary);
+    color: white;
+    transform: scale(1.05);
+}
+
+.mermaid-lb-close:hover {
+    background: #ef4444;
+    color: white;
+}
+
+/* Instructions en bas */
+.mermaid-lightbox::after {
+    content: 'Molette: zoom • Glisser: déplacer • Échap: fermer';
+    position: absolute;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.85rem;
+    font-weight: 500;
+    background: rgba(0, 0, 0, 0.5);
+    padding: 10px 20px;
+    border-radius: var(--radius-lg);
+}
+
+/* ============================================
+   FINITION : accessibilite, liens, bandeaux, impression
+   ============================================ */
+/* Focus clavier visible (WCAG 2.4.7) */
+a:focus-visible,
+button:focus-visible,
+summary:focus-visible {
+    outline: 3px solid var(--color-primary);
+    outline-offset: 2px;
+}
+
+/* Mouvement reduit (WCAG 2.3.3) */
+@media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after {
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+    }
+}
+
+@media (pointer: coarse) {
+    .code-actions { opacity: 1; }
+}
+
+/* Liens de corps : soulignes discretement (pas seulement la couleur, WCAG 1.4.1) */
+.markdown-body a {
+    text-decoration: underline;
+    text-decoration-color: rgba(37, 99, 235, 0.4);
+    text-underline-offset: 0.15em;
+    text-decoration-thickness: 1px;
+}
+.markdown-body a:hover { text-decoration-color: var(--color-primary); }
+
+/* Bandeaux fixes : reserver l'espace bas + tronquer le copyright etroit */
+body { padding-bottom: 3.5rem; }
+body::before { max-width: 70vw; overflow: hidden; text-overflow: ellipsis; }
+@media (max-width: 768px) {
+    body { padding-bottom: 5rem; }
+}
+
+/* Impression : masquer les boutons, exposer les URL des liens externes */
+@media print {
+    .code-actions { display: none !important; }
+    .markdown-body a { text-decoration: underline; }
+    .markdown-body a[href^="http"]::after {
+        content: " (" attr(href) ")";
+        font-size: 0.8em;
+        color: var(--gray-600);
+        word-break: break-all;
+    }
+}
+
+/* ============================================
+   LIGNE SOURCE SOUS UN VISUEL (R-VISUELS)
+   Paragraphe "Source : ..." place juste sous une image, un schema ou un
+   bloc : classe img-source posee par md2html.py (imgsource.py). Discret :
+   moitie de la taille du texte, gris. Regler --img-source-scale au besoin.
+   ============================================ */
+:root {
+    --img-source-scale: 0.5;
+    --img-source-color: var(--gray-500);
+}
+
+p.img-source {
+    font-size: calc(1em * var(--img-source-scale));
+    color: var(--img-source-color);
+    line-height: 1.4;
+    text-align: center;
+    max-width: 90%;
+    margin: -1.4rem auto 1.8rem;
+}
+
+p.img-source a {
+    color: inherit;
+}
+
+    </style>
+    
+    <style>
+/* ============================================
+   Mermaid Diagram Styles
+   ============================================ */
+
+/* ============================================
+   Pont de variables : diagrams.css consomme des tokens (--color-gray-*,
+   --space-*, semantiques) definis ni dans slides.css ni dans exercice.css.
+   On les fournit ici (avec repli hex) pour que bordures, paddings et fonds
+   des composants ne cassent plus silencieusement. Charge APRES le CSS
+   principal ; les semantiques reprennent les valeurs d'exercice (pas de regression).
+   ============================================ */
+:root {
+    --color-gray-50: var(--gray-50, #f8fafc);
+    --color-gray-100: var(--gray-100, #f1f5f9);
+    --color-gray-200: var(--gray-200, #e2e8f0);
+    --color-gray-300: var(--gray-300, #cbd5e1);
+    --color-gray-400: var(--gray-400, #94a3b8);
+    --color-gray-500: var(--gray-500, #64748b);
+    --color-gray-600: var(--gray-600, #475569);
+    --color-gray-700: var(--gray-700, #334155);
+    --color-gray-800: var(--gray-800, #1e293b);
+    --color-gray-900: var(--gray-900, #0f172a);
+    --space-xs: 0.375rem;
+    --space-sm: 0.625rem;
+    --space-md: 1rem;
+    --space-lg: 1.5rem;
+    --space-xl: 2rem;
+    --font-display: var(--font-sans);
+}
+
+/* Semantiques : definies seulement si absentes du CSS principal (mode slides).
+   En mode exercice, exercice.css les a deja posees avant -> non surchargees ici. */
+:root {
+    --color-success: #22c55e;
+    --color-danger: #ef4444;
+    --color-warning: #eab308;
+    --color-info: #3b82f6;
+}
+
+/* Container pour les diagrammes Mermaid */
+.mermaid-container {
+    background: white;
+    border: 1px solid var(--color-gray-200);
+    border-radius: var(--radius-lg);
+    padding: var(--space-md);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: auto;
+    flex: 1;
+    min-height: 120px;
+    max-height: 600px;
+    max-width: 100%;
+    width: 100%;
+}
+
+.mermaid-container--full {
+    flex: 1;
+    min-height: 0;
+}
+
+.mermaid-container--compact {
+    min-height: 100px;
+    max-height: 350px;
+    flex: 0 0 auto;
+}
+
+.mermaid-container--small {
+    max-height: 300px;
+}
+
+.mermaid-container--medium {
+    max-height: 450px;
+}
+
+.mermaid-container--large {
+    max-height: 700px;
+}
+
+/* Empêcher les diagrammes de déborder */
+.mermaid-container--contained {
+    overflow: hidden;
+}
+
+.mermaid-container--contained .mermaid svg {
+    max-height: 100% !important;
+}
+
+/* Override des styles Mermaid par défaut */
+.mermaid, pre.mermaid {
+    font-family: var(--font-display, 'Inter', sans-serif);
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 24px;
+    margin: 16px 0;
+    text-align: center;
+    max-height: 60vh;
+    overflow: hidden;
+}
+
+.mermaid::before,
+.mermaid::after {
+    display: none;
+}
+
+/* SVG généré par Mermaid - dimensionnement contrôlé */
+.mermaid svg {
+    max-width: 100%;
+    max-height: 60vh;
+    height: auto;
+    width: auto;
+}
+
+/* Les diagrammes Gantt ont un max-width inline (~300px) injecte par Mermaid
+   qui les ecrase. On force la pleine largeur et on libere les contraintes
+   du parent flex (.mermaid). */
+.mermaid svg[aria-roledescription="gantt"] {
+    max-width: none !important;
+    width: 100% !important;
+    min-width: 800px !important;
+    max-height: none !important;
+    height: auto !important;
+    flex: 1 1 auto !important;
+}
+
+/* Le parent .mermaid contenant un Gantt : on casse le flex centre + overflow
+   hidden + max-height qui empechent le SVG de prendre sa place. */
+.mermaid:has(svg[aria-roledescription="gantt"]) {
+    display: block !important;
+    max-height: none !important;
+    overflow-x: auto !important;
+    overflow-y: visible !important;
+    min-width: 0 !important;
+}
+
+/* Pour les diagrammes complexes, permettre le scroll si nécessaire */
+.mermaid-container--scroll {
+    overflow: auto;
+}
+
+.mermaid .node rect,
+.mermaid .node polygon,
+.mermaid .node circle {
+    stroke-width: 2px !important;
+}
+
+.mermaid .edgePath .path {
+    stroke-width: 2px !important;
+}
+
+.mermaid .label {
+    font-family: var(--font-display) !important;
+    font-size: 12px !important;
+    overflow: visible !important;
+}
+
+/* Ajustements pour différentes tailles de diagrammes */
+.mermaid .nodeLabel {
+    font-size: 12px !important;
+    line-height: 1.3 !important;
+    overflow: visible !important;
+    white-space: normal !important;
+    text-overflow: clip !important;
+}
+
+.mermaid .edgeLabel {
+    font-size: 11px !important;
+    overflow: visible !important;
+}
+
+/* Permettre aux nœuds de s'adapter au contenu */
+.mermaid .node rect,
+.mermaid .node polygon {
+    overflow: visible !important;
+}
+
+/* ============================================
+   Cluster / Subgraph Styles
+   Fix pour les titres sur 2 lignes
+   ============================================ */
+.mermaid .cluster rect,
+.mermaid svg .cluster rect {
+    rx: 8px !important;
+    ry: 8px !important;
+}
+
+.mermaid .cluster-label {
+    font-size: 14px !important;
+    font-weight: 700 !important;
+    dominant-baseline: text-before-edge !important;
+}
+
+/* Augmenter l'espace pour les titres de cluster sur plusieurs lignes */
+.mermaid .cluster-label foreignObject {
+    overflow: visible !important;
+}
+
+.mermaid .cluster-label foreignObject div,
+.mermaid .cluster-label foreignObject p,
+.mermaid .cluster-label foreignObject span {
+    padding-bottom: 8px !important;
+    margin-bottom: 4px !important;
+    line-height: 1.4 !important;
+}
+
+/* Padding interne des clusters pour éviter le chevauchement */
+.mermaid .cluster .nodeLabel {
+    margin-top: 4px !important;
+}
+
+/* Style visuel des clusters */
+.mermaid .cluster rect {
+    fill: #f8fafc !important;
+    stroke: #cbd5e1 !important;
+    stroke-width: 2px !important;
+}
+
+/* Texte des labels de cluster - forcer lisibilité */
+.mermaid .cluster-label text,
+.mermaid .cluster-label tspan,
+.mermaid svg .cluster-label text {
+    fill: #1e293b !important;
+    color: #1e293b !important;
+    font-weight: 700 !important;
+}
+
+/* ============================================
+   Mermaid Color Contrast Fixes
+   Le contraste est géré par JavaScript après rendu
+   Voir la fonction fixMermaidContrast() dans les fichiers HTML
+   ============================================ */
+
+/* ============================================
+   Sequence Diagram Specific Styles
+   Palette : fonds pastel/sombres avec texte contrasté
+   ============================================ */
+
+/* Acteurs/Participants - boîtes en haut et en bas - FOND FONCÉ BLEU */
+.mermaid .actor,
+.mermaid svg .actor,
+.mermaid svg rect.actor,
+.mermaid .actor-top,
+.mermaid .actor-bottom,
+.mermaid svg .actor-top,
+.mermaid svg .actor-bottom {
+    fill: #1e3a5f !important;
+    stroke: #0c4a6e !important;
+    stroke-width: 2px !important;
+}
+
+/* Texte des acteurs - FORCER couleur BLANCHE sur fond foncé */
+.mermaid .actor-man,
+.mermaid text.actor,
+.mermaid svg text.actor,
+.mermaid svg .actor-man {
+    fill: #ffffff !important;
+    color: #ffffff !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+}
+
+/* Tspan dans les acteurs */
+.mermaid text.actor tspan,
+.mermaid svg text.actor tspan,
+.mermaid .actor-man tspan {
+    fill: #ffffff !important;
+    color: #ffffff !important;
+}
+
+/* Lignes de vie des acteurs */
+.mermaid .actor-line,
+.mermaid svg .actor-line,
+.mermaid svg line.actor-line {
+    stroke: #64748b !important;
+    stroke-width: 1.5px !important;
+    stroke-dasharray: 4, 4 !important;
+}
+
+/* Flèches de messages - lignes */
+.mermaid .messageLine0,
+.mermaid .messageLine1,
+.mermaid svg .messageLine0,
+.mermaid svg .messageLine1,
+.mermaid svg line.messageLine0,
+.mermaid svg line.messageLine1 {
+    stroke: #1e293b !important;
+    stroke-width: 2px !important;
+}
+
+/* Pointes de flèches */
+.mermaid .arrowhead,
+.mermaid svg .arrowhead {
+    fill: #1e293b !important;
+    stroke: #1e293b !important;
+}
+
+.mermaid #arrowhead path,
+.mermaid marker path,
+.mermaid svg marker path,
+.mermaid svg #arrowhead path {
+    fill: #1e293b !important;
+    stroke: #1e293b !important;
+}
+
+/* Texte des messages - FORCER couleur NOIRE (lisible sur fond blanc) */
+.mermaid .messageText,
+.mermaid svg .messageText,
+.mermaid svg text.messageText {
+    fill: #0f172a !important;
+    color: #0f172a !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    stroke: none !important;
+}
+
+/* Forcer tous les tspan dans messageText */
+.mermaid .messageText tspan,
+.mermaid svg .messageText tspan {
+    fill: #0f172a !important;
+    color: #0f172a !important;
+}
+
+/* Boîtes d'activation - FOND PASTEL BLEU */
+.mermaid .activation0,
+.mermaid .activation1,
+.mermaid .activation2,
+.mermaid svg .activation0,
+.mermaid svg .activation1,
+.mermaid svg .activation2 {
+    fill: #dbeafe !important;
+    stroke: #3b82f6 !important;
+    stroke-width: 2px !important;
+}
+
+/* Boucles (loop), alternatives (alt), options (opt), etc. - FOND PASTEL */
+.mermaid .loopLine,
+.mermaid svg .loopLine {
+    stroke: #64748b !important;
+    stroke-width: 2px !important;
+}
+
+/* Fond des blocs loop/alt/opt */
+.mermaid rect.loopBox,
+.mermaid .loopBox,
+.mermaid svg .loopBox {
+    fill: #f8fafc !important;
+    stroke: #64748b !important;
+    stroke-width: 1.5px !important;
+}
+
+.mermaid .loopText,
+.mermaid .loopText tspan,
+.mermaid svg .loopText,
+.mermaid svg .loopText tspan {
+    fill: #1e293b !important;
+    color: #1e293b !important;
+    font-size: 12px !important;
+    font-weight: 700 !important;
+}
+
+/* Label box (loop, alt, opt, etc.) - FOND PASTEL VERT */
+.mermaid .labelBox,
+.mermaid svg .labelBox {
+    fill: #dcfce7 !important;
+    stroke: #22c55e !important;
+    stroke-width: 1.5px !important;
+}
+
+.mermaid .labelText,
+.mermaid .labelText tspan,
+.mermaid svg .labelText,
+.mermaid svg .labelText tspan {
+    fill: #14532d !important;
+    color: #14532d !important;
+    font-size: 12px !important;
+    font-weight: 700 !important;
+}
+
+/* Notes dans les diagrammes de séquence - FOND PASTEL JAUNE */
+.mermaid .note,
+.mermaid svg .note,
+.mermaid rect.note {
+    fill: #fef9c3 !important;
+    stroke: #ca8a04 !important;
+    stroke-width: 2px !important;
+}
+
+.mermaid .noteText,
+.mermaid .noteText tspan,
+.mermaid svg .noteText,
+.mermaid svg .noteText tspan {
+    fill: #713f12 !important;
+    color: #713f12 !important;
+    font-size: 12px !important;
+    font-weight: 500 !important;
+}
+
+/* Numéros de séquence - FOND SOMBRE avec texte BLANC */
+.mermaid .sequenceNumber,
+.mermaid svg .sequenceNumber {
+    fill: #ffffff !important;
+    color: #ffffff !important;
+}
+
+.mermaid .sequenceNumber-rect,
+.mermaid svg rect.sequenceNumber-rect {
+    fill: #374151 !important;
+    stroke: #1f2937 !important;
+}
+
+/* ============================================
+   Entity Relationship Diagram Styles
+   ============================================ */
+.mermaid .er.entityBox,
+.mermaid .entityBox,
+.mermaid svg .er.entityBox,
+.mermaid svg .entityBox,
+.mermaid svg rect.er {
+    fill: #dbeafe !important;
+    stroke: #3b82f6 !important;
+    stroke-width: 2px !important;
+}
+
+.mermaid .er.entityLabel,
+.mermaid .entityLabel,
+.mermaid svg .er.entityLabel,
+.mermaid svg .entityLabel,
+.mermaid svg text.er {
+    fill: #1e3a8a !important;
+    color: #1e3a8a !important;
+    font-weight: 600 !important;
+}
+
+.mermaid .er.attributeBoxEven,
+.mermaid svg .er.attributeBoxEven {
+    fill: #f8fafc !important;
+    stroke: #cbd5e1 !important;
+}
+
+.mermaid .er.attributeBoxOdd,
+.mermaid svg .er.attributeBoxOdd {
+    fill: #f1f5f9 !important;
+    stroke: #cbd5e1 !important;
+}
+
+.mermaid .er text,
+.mermaid svg g.er text,
+.mermaid svg .erDiagram text {
+    fill: #1e293b !important;
+    color: #1e293b !important;
+}
+
+.mermaid .er.relationshipLine,
+.mermaid svg .er.relationshipLine {
+    stroke: #64748b !important;
+    stroke-width: 1.5px !important;
+}
+
+.mermaid .er.relationshipLabel,
+.mermaid svg .er.relationshipLabel {
+    fill: #475569 !important;
+}
+
+/* ============================================
+   Mindmap Diagram Styles
+   ============================================ */
+.mermaid .mindmap-node rect,
+.mermaid .mindmap-node circle,
+.mermaid .mindmap-node ellipse,
+.mermaid .mindmap-node polygon,
+.mermaid svg .mindmap-node rect,
+.mermaid svg .mindmap-node circle,
+.mermaid svg .mindmap-node ellipse {
+    stroke-width: 2px !important;
+}
+
+/* Forcer des couleurs pastel lisibles sur les mindmaps */
+.mermaid .mindmap-node:nth-child(7n+1) rect,
+.mermaid .mindmap-node:nth-child(7n+1) circle,
+.mermaid .mindmap-node:nth-child(7n+1) ellipse {
+    fill: #dbeafe !important;
+    stroke: #3b82f6 !important;
+}
+.mermaid .mindmap-node:nth-child(7n+1) text,
+.mermaid .mindmap-node:nth-child(7n+1) .nodeLabel {
+    fill: #1e3a8a !important;
+    color: #1e3a8a !important;
+}
+
+.mermaid .mindmap-node:nth-child(7n+2) rect,
+.mermaid .mindmap-node:nth-child(7n+2) circle,
+.mermaid .mindmap-node:nth-child(7n+2) ellipse {
+    fill: #dcfce7 !important;
+    stroke: #22c55e !important;
+}
+.mermaid .mindmap-node:nth-child(7n+2) text,
+.mermaid .mindmap-node:nth-child(7n+2) .nodeLabel {
+    fill: #14532d !important;
+    color: #14532d !important;
+}
+
+.mermaid .mindmap-node:nth-child(7n+3) rect,
+.mermaid .mindmap-node:nth-child(7n+3) circle,
+.mermaid .mindmap-node:nth-child(7n+3) ellipse {
+    fill: #fef9c3 !important;
+    stroke: #eab308 !important;
+}
+.mermaid .mindmap-node:nth-child(7n+3) text,
+.mermaid .mindmap-node:nth-child(7n+3) .nodeLabel {
+    fill: #713f12 !important;
+    color: #713f12 !important;
+}
+
+.mermaid .mindmap-node:nth-child(7n+4) rect,
+.mermaid .mindmap-node:nth-child(7n+4) circle,
+.mermaid .mindmap-node:nth-child(7n+4) ellipse {
+    fill: #fce7f3 !important;
+    stroke: #ec4899 !important;
+}
+.mermaid .mindmap-node:nth-child(7n+4) text,
+.mermaid .mindmap-node:nth-child(7n+4) .nodeLabel {
+    fill: #831843 !important;
+    color: #831843 !important;
+}
+
+.mermaid .mindmap-node:nth-child(7n+5) rect,
+.mermaid .mindmap-node:nth-child(7n+5) circle,
+.mermaid .mindmap-node:nth-child(7n+5) ellipse {
+    fill: #f3e8ff !important;
+    stroke: #a855f7 !important;
+}
+.mermaid .mindmap-node:nth-child(7n+5) text,
+.mermaid .mindmap-node:nth-child(7n+5) .nodeLabel {
+    fill: #581c87 !important;
+    color: #581c87 !important;
+}
+
+.mermaid .mindmap-node:nth-child(7n+6) rect,
+.mermaid .mindmap-node:nth-child(7n+6) circle,
+.mermaid .mindmap-node:nth-child(7n+6) ellipse {
+    fill: #cffafe !important;
+    stroke: #06b6d4 !important;
+}
+.mermaid .mindmap-node:nth-child(7n+6) text,
+.mermaid .mindmap-node:nth-child(7n+6) .nodeLabel {
+    fill: #164e63 !important;
+    color: #164e63 !important;
+}
+
+.mermaid .mindmap-node:nth-child(7n) rect,
+.mermaid .mindmap-node:nth-child(7n) circle,
+.mermaid .mindmap-node:nth-child(7n) ellipse {
+    fill: #ffedd5 !important;
+    stroke: #f97316 !important;
+}
+.mermaid .mindmap-node:nth-child(7n) text,
+.mermaid .mindmap-node:nth-child(7n) .nodeLabel {
+    fill: #7c2d12 !important;
+    color: #7c2d12 !important;
+}
+
+/* Texte mindmap global - fallback */
+.mermaid .mindmap text,
+.mermaid svg [class*="mindmap"] text {
+    font-weight: 500 !important;
+}
+
+/* Liens mindmap */
+.mermaid .mindmap-edge,
+.mermaid svg .mindmap-edge {
+    stroke: #64748b !important;
+    stroke-width: 1.5px !important;
+}
+
+/* Forcer Mermaid à respecter le conteneur */
+.mermaid[data-processed="true"] {
+    min-height: 0 !important;
+}
+
+/* ============================================
+   Diagram Placeholder (pour illustrations)
+   ============================================ */
+.diagram {
+    background: var(--color-gray-50);
+    border: 2px dashed var(--color-gray-300);
+    border-radius: var(--radius-lg);
+    padding: var(--space-lg);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    min-height: 150px;
+    flex: 1;
+}
+
+.diagram--placeholder {
+    background: linear-gradient(135deg, var(--color-gray-50) 0%, var(--color-gray-100) 100%);
+}
+
+.diagram .icon {
+    font-size: 48px;
+    margin-bottom: var(--space-sm);
+    opacity: 0.6;
+}
+
+.diagram .text {
+    font-size: 14px;
+    color: var(--color-gray-500);
+    font-weight: 500;
+}
+
+/* ============================================
+   Architecture Diagram Placeholder Styles
+   ============================================ */
+.arch-diagram {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+    width: 100%;
+}
+
+.arch-layer {
+    display: flex;
+    gap: var(--space-sm);
+    justify-content: center;
+}
+
+.arch-box {
+    background: var(--color-gray-100);
+    border: 2px solid var(--color-gray-300);
+    border-radius: var(--radius-md);
+    padding: var(--space-sm) var(--space-md);
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--color-gray-700);
+    text-align: center;
+    min-width: 100px;
+}
+
+.arch-box--primary {
+    background: rgba(14, 165, 233, 0.15);
+    border-color: var(--color-primary);
+    color: var(--color-primary-dark);
+}
+
+.arch-box--accent {
+    background: rgba(249, 115, 22, 0.15);
+    border-color: var(--color-accent);
+    color: #c2410c;
+}
+
+.arch-box--success {
+    background: rgba(16, 185, 129, 0.15);
+    border-color: var(--color-success);
+    color: #047857;
+}
+
+.arch-box--info {
+    background: rgba(99, 102, 241, 0.15);
+    border-color: var(--color-info);
+    color: #4338ca;
+}
+
+.arch-box--dark {
+    background: var(--color-gray-800);
+    border-color: var(--color-gray-700);
+    color: white;
+}
+
+.arch-connector {
+    display: flex;
+    justify-content: center;
+    color: var(--color-gray-400);
+    font-size: 20px;
+}
+
+/* ============================================
+   Flow Diagram Styles
+   ============================================ */
+.flow {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.flow__item {
+    background: var(--color-gray-100);
+    border: 1px solid var(--color-gray-300);
+    border-radius: var(--radius-md);
+    padding: var(--space-xs) var(--space-md);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--color-gray-700);
+}
+
+.flow__item--highlight {
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+    color: white;
+}
+
+.flow__arrow {
+    color: var(--color-gray-400);
+    font-size: 18px;
+}
+
+/* ============================================
+   Timeline / Process Styles
+   ============================================ */
+.timeline {
+    display: flex;
+    gap: var(--space-lg);
+    align-items: stretch;
+}
+
+.timeline__item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+.timeline__item:not(:last-child)::after {
+    content: '→';
+    position: absolute;
+    right: calc(var(--space-lg) / -2 - 8px);
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--color-gray-400);
+    font-size: 20px;
+}
+
+.timeline__number {
+    width: 28px;
+    height: 28px;
+    background: var(--color-primary);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: var(--space-sm);
+}
+
+.timeline__title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--color-gray-900);
+    margin-bottom: var(--space-xs);
+}
+
+.timeline__text {
+    font-size: 12px;
+    color: var(--color-gray-600);
+    line-height: 1.4;
+}
+
+/* ============================================
+   Stat / KPI Cards
+   ============================================ */
+.stat {
+    text-align: center;
+    padding: var(--space-md);
+}
+
+.stat__value {
+    font-size: 36px;
+    font-weight: 800;
+    color: var(--color-primary);
+    line-height: 1;
+}
+
+.stat__label {
+    font-size: 13px;
+    color: var(--color-gray-600);
+    margin-top: var(--space-xs);
+}
+
+.stat--small .stat__value {
+    font-size: 24px;
+}
+
+/* ============================================
+   Icon Styles
+   ============================================ */
+.icon-box {
+    width: 48px;
+    height: 48px;
+    min-width: 48px;
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 24px;
+    flex-shrink: 0;
+}
+
+.icon-box--sm {
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+    font-size: 18px;
+}
+
+.icon-box--lg {
+    width: 64px;
+    height: 64px;
+    min-width: 64px;
+    font-size: 32px;
+}
+
+.icon-box--accent {
+    background: linear-gradient(135deg, var(--color-accent) 0%, #ea580c 100%);
+}
+
+.icon-box--success {
+    background: linear-gradient(135deg, var(--color-success) 0%, #047857 100%);
+}
+
+.icon-box--info {
+    background: linear-gradient(135deg, var(--color-info) 0%, #4338ca 100%);
+}
+
+/* ============================================
+   Logo Superset
+   ============================================ */
+.superset-logo {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+}
+
+.superset-logo__icon {
+    width: 80px;
+    height: 80px;
+}
+
+.superset-logo__icon svg {
+    width: 100%;
+    height: 100%;
+}
+
+.superset-logo__text {
+    font-size: 32px;
+    font-weight: 700;
+}
+
+.superset-logo__text span {
+    color: var(--color-primary);
+}
+
+/* ============================================
+   Comparison Table Enhancements
+   ============================================ */
+.comparison-table {
+    font-size: 12px;
+}
+
+.comparison-table th {
+    font-size: 11px;
+    padding: 8px 10px;
+}
+
+.comparison-table td {
+    padding: 6px 10px;
+    vertical-align: middle;
+}
+
+.comparison-table .product-name {
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.comparison-table .check {
+    color: var(--color-success);
+    font-weight: bold;
+}
+
+.comparison-table .cross {
+    color: var(--color-danger);
+    font-weight: bold;
+}
+
+.comparison-table .partial {
+    color: var(--color-warning);
+    font-weight: bold;
+}
+
+/* ============================================
+   Use Case Cards
+   ============================================ */
+.use-case {
+    background: var(--color-gray-50);
+    border: 1px solid var(--color-gray-200);
+    border-radius: var(--radius-lg);
+    padding: var(--space-md);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+}
+
+.use-case--positive {
+    border-color: var(--color-success);
+    border-left-width: 4px;
+}
+
+.use-case--negative {
+    border-color: var(--color-danger);
+    border-left-width: 4px;
+}
+
+.use-case__number {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--color-gray-300);
+}
+
+.use-case__title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--color-gray-900);
+}
+
+.use-case__text {
+    font-size: 12px;
+    color: var(--color-gray-600);
+    line-height: 1.4;
+}
+
+/* ============================================
+   Data Stack Layer Visualization
+   ============================================ */
+.stack-layer {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    padding: var(--space-sm) var(--space-md);
+    background: var(--color-gray-50);
+    border-radius: var(--radius-md);
+    margin-bottom: var(--space-sm);
+}
+
+.stack-layer__label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--color-gray-500);
+    width: 100px;
+    flex-shrink: 0;
+}
+
+.stack-layer__items {
+    display: flex;
+    gap: var(--space-xs);
+    flex-wrap: wrap;
+}
+
+.stack-layer__item {
+    background: white;
+    border: 1px solid var(--color-gray-300);
+    border-radius: var(--radius-sm);
+    padding: 4px 10px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--color-gray-700);
+}
+
+.stack-layer__item--highlight {
+    background: var(--color-accent);
+    border-color: var(--color-accent);
+    color: white;
+}
+
+/* ============================================
+   Permissions Matrix
+   ============================================ */
+.permission-matrix {
+    font-size: 12px;
+}
+
+.permission-matrix th:first-child {
+    text-align: left;
+}
+
+.permission-matrix td:not(:first-child),
+.permission-matrix th:not(:first-child) {
+    text-align: center;
+    width: 80px;
+}
+
+.permission-matrix .action {
+    font-weight: 500;
+    text-align: left;
+}
+
+/* ============================================
+   Sources & Links
+   ============================================ */
+.sources {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-md);
+}
+
+.source-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+}
+
+.source-group__title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--color-gray-900);
+    padding-bottom: var(--space-xs);
+    border-bottom: 1px solid var(--color-gray-200);
+    margin-bottom: var(--space-xs);
+}
+
+.source-link {
+    font-size: 12px;
+    color: var(--color-primary);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+}
+
+.source-link:hover {
+    text-decoration: underline;
+}
+
+.source-link::before {
+    content: '→';
+    color: var(--color-gray-400);
+}
+
+/* ============================================
+   Print Optimizations for Diagrams
+   ============================================ */
+@media print {
+    .mermaid-container,
+    .arch-diagram,
+    .diagram {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+        color-adjust: exact !important;
+    }
+    
+    .arch-box,
+    .flow__item,
+    .timeline__number,
+    .icon-box,
+    .stat__value {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+}
+
+/* ============================================
+   Mermaid Contrast Color Palettes
+   Fonds pastel avec texte noir
+   Fonds sombres avec texte blanc
+   ============================================ */
+
+/* Palette Pastel - Texte Noir */
+.mermaid .node.pastel-blue rect,
+.mermaid .node.pastel-blue polygon { fill: #dbeafe !important; stroke: #3b82f6 !important; }
+.mermaid .node.pastel-blue .nodeLabel { fill: #1e3a8a !important; color: #1e3a8a !important; }
+
+.mermaid .node.pastel-green rect,
+.mermaid .node.pastel-green polygon { fill: #dcfce7 !important; stroke: #22c55e !important; }
+.mermaid .node.pastel-green .nodeLabel { fill: #14532d !important; color: #14532d !important; }
+
+.mermaid .node.pastel-yellow rect,
+.mermaid .node.pastel-yellow polygon { fill: #fef9c3 !important; stroke: #eab308 !important; }
+.mermaid .node.pastel-yellow .nodeLabel { fill: #713f12 !important; color: #713f12 !important; }
+
+.mermaid .node.pastel-orange rect,
+.mermaid .node.pastel-orange polygon { fill: #ffedd5 !important; stroke: #f97316 !important; }
+.mermaid .node.pastel-orange .nodeLabel { fill: #7c2d12 !important; color: #7c2d12 !important; }
+
+.mermaid .node.pastel-pink rect,
+.mermaid .node.pastel-pink polygon { fill: #fce7f3 !important; stroke: #ec4899 !important; }
+.mermaid .node.pastel-pink .nodeLabel { fill: #831843 !important; color: #831843 !important; }
+
+.mermaid .node.pastel-purple rect,
+.mermaid .node.pastel-purple polygon { fill: #f3e8ff !important; stroke: #a855f7 !important; }
+.mermaid .node.pastel-purple .nodeLabel { fill: #581c87 !important; color: #581c87 !important; }
+
+.mermaid .node.pastel-cyan rect,
+.mermaid .node.pastel-cyan polygon { fill: #cffafe !important; stroke: #06b6d4 !important; }
+.mermaid .node.pastel-cyan .nodeLabel { fill: #164e63 !important; color: #164e63 !important; }
+
+/* Palette Sombre - Texte Blanc */
+.mermaid .node.dark-blue rect,
+.mermaid .node.dark-blue polygon { fill: #1e3a5f !important; stroke: #0c4a6e !important; }
+.mermaid .node.dark-blue .nodeLabel { fill: #ffffff !important; color: #ffffff !important; }
+
+.mermaid .node.dark-green rect,
+.mermaid .node.dark-green polygon { fill: #14532d !important; stroke: #166534 !important; }
+.mermaid .node.dark-green .nodeLabel { fill: #ffffff !important; color: #ffffff !important; }
+
+.mermaid .node.dark-purple rect,
+.mermaid .node.dark-purple polygon { fill: #4c1d95 !important; stroke: #5b21b6 !important; }
+.mermaid .node.dark-purple .nodeLabel { fill: #ffffff !important; color: #ffffff !important; }
+
+.mermaid .node.dark-gray rect,
+.mermaid .node.dark-gray polygon { fill: #374151 !important; stroke: #4b5563 !important; }
+.mermaid .node.dark-gray .nodeLabel { fill: #ffffff !important; color: #ffffff !important; }
+
+.mermaid .node.dark-slate rect,
+.mermaid .node.dark-slate polygon { fill: #1e293b !important; stroke: #334155 !important; }
+.mermaid .node.dark-slate .nodeLabel { fill: #ffffff !important; color: #ffffff !important; }
+
+/* ============================================
+   Force Contrast on All Mermaid Elements
+   ============================================ */
+
+/* Assurer le contraste sur tous les types de nodes */
+.mermaid g[style*="fill: #"] .nodeLabel,
+.mermaid g[style*="fill:#"] .nodeLabel {
+    text-shadow: none !important;
+}
+
+/* Forcer le texte noir sur fonds clairs */
+.mermaid [style*="fill: #f"][style*="fill: #f"] .nodeLabel,
+.mermaid [style*="fill: #e"][style*="fill: #e"] .nodeLabel,
+.mermaid [style*="fill: #d"][style*="fill: #d"] .nodeLabel,
+.mermaid [style*="fill: #c"][style*="fill: #c"] .nodeLabel,
+.mermaid [style*="fill: rgb(2"][style*="fill: rgb(2"] .nodeLabel {
+    fill: #1e293b !important;
+    color: #1e293b !important;
+}
+
+/* Images dans le dossier target/images */
+img[src*="images/"] {
+    max-width: 100%;
+    max-height: 450px;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    display: block;
+    margin: 1.5rem auto;
+}
+
+/* Captures d'écran Superset */
+img[src*="screenshot"],
+img[src*="superset.apache.org"],
+img[src*="capture"] {
+    max-width: 100%;
+    max-height: 400px;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    border: 1px solid #e4e4e7;
+}
+
+/* Limiter les grandes images */
+.content-image,
+.screenshot {
+    max-width: 100%;
+    max-height: 500px;
+    object-fit: contain;
+}
+
+/* ============================================
+   Diagrammes PlantUML (img serveur ou SVG inline)
+   ============================================ */
+.plantuml,
+.plantuml-diagram {
+    text-align: center;
+    margin: 1.5rem 0;
+}
+
+.plantuml .plantuml-img,
+.plantuml-diagram svg,
+.plantuml-diagram img {
+    max-width: 100%;
+    height: auto;
+}
+
+    </style>
+    
+    
+    
+    
+    
+    
+
+    
+    
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@11.16.0/dist/mermaid.min.js"></script>
+    
+    
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof mermaid !== 'undefined') {
+                mermaid.initialize({
+                    startOnLoad: true,
+                    theme: 'default',
+                    securityLevel: 'loose',
+                    flowchart: {
+                        useMaxWidth: false,
+                        htmlLabels: true
+                    },
+                    sequence: {
+                        useMaxWidth: false
+                    }
+                });
+            }
+        });
+    </script>
+    
+    
+    <script>
+/**
+ * Mermaid Contrast Fix
+ * Corrige automatiquement le contraste texte/fond dans les diagrammes Mermaid
+ * 
+ * Règles de contraste :
+ * - Fonds pastel (clairs) → texte noir (#1e293b)
+ * - Fonds sombres → texte blanc (#ffffff)
+ */
+
+// Palette de couleurs pastel avec bon contraste
+const PASTEL_COLORS = {
+    blue: { bg: '#dbeafe', border: '#3b82f6', text: '#1e3a8a' },
+    green: { bg: '#dcfce7', border: '#22c55e', text: '#14532d' },
+    yellow: { bg: '#fef9c3', border: '#eab308', text: '#713f12' },
+    orange: { bg: '#ffedd5', border: '#f97316', text: '#7c2d12' },
+    pink: { bg: '#fce7f3', border: '#ec4899', text: '#831843' },
+    purple: { bg: '#f3e8ff', border: '#a855f7', text: '#581c87' },
+    cyan: { bg: '#cffafe', border: '#06b6d4', text: '#164e63' },
+    gray: { bg: '#f4f4f5', border: '#71717a', text: '#27272a' }
+};
+
+// Palette de couleurs sombres avec bon contraste
+const DARK_COLORS = {
+    blue: { bg: '#1e3a5f', border: '#0c4a6e', text: '#ffffff' },
+    green: { bg: '#14532d', border: '#166534', text: '#ffffff' },
+    purple: { bg: '#4c1d95', border: '#5b21b6', text: '#ffffff' },
+    gray: { bg: '#374151', border: '#4b5563', text: '#ffffff' },
+    slate: { bg: '#1e293b', border: '#334155', text: '#ffffff' }
+};
+
+function fixMermaidContrast() {
+    // Fonction pour calculer la luminosité relative d'une couleur
+    function getLuminance(hex) {
+        // Convertir hex en RGB
+        let r, g, b;
+        if (!hex || hex === 'none' || hex === 'transparent') {
+            return 0.5;
+        }
+        if (hex.startsWith('rgb')) {
+            const match = hex.match(/\d+/g);
+            if (match) {
+                r = parseInt(match[0]);
+                g = parseInt(match[1]);
+                b = parseInt(match[2]);
+            } else {
+                return 0.5;
+            }
+        } else {
+            hex = hex.replace('#', '');
+            if (hex.length === 3) {
+                hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
+            }
+            if (hex.length !== 6) {
+                return 0.5;
+            }
+            r = parseInt(hex.substr(0, 2), 16);
+            g = parseInt(hex.substr(2, 2), 16);
+            b = parseInt(hex.substr(4, 2), 16);
+        }
+
+        if (isNaN(r) || isNaN(g) || isNaN(b)) {
+            return 0.5;
+        }
+
+        // Formule de luminosité relative (WCAG)
+        const rsRGB = r / 255;
+        const gsRGB = g / 255;
+        const bsRGB = b / 255;
+
+        const rLum = rsRGB <= 0.03928 ? rsRGB / 12.92 : Math.pow((rsRGB + 0.055) / 1.055, 2.4);
+        const gLum = gsRGB <= 0.03928 ? gsRGB / 12.92 : Math.pow((gsRGB + 0.055) / 1.055, 2.4);
+        const bLum = bsRGB <= 0.03928 ? bsRGB / 12.92 : Math.pow((bsRGB + 0.055) / 1.055, 2.4);
+
+        return 0.2126 * rLum + 0.7152 * gLum + 0.0722 * bLum;
+    }
+
+    // Fonction pour déterminer si le texte doit être clair ou sombre
+    // Seuil ajusté pour meilleur contraste WCAG AA
+    function getContrastColor(bgColor) {
+        const luminance = getLuminance(bgColor);
+        // Seuil de 0.35 pour assurer un bon contraste (WCAG AA)
+        return luminance > 0.35 ? '#1e293b' : '#ffffff';
+    }
+    
+    // Fonction pour appliquer la couleur de contraste à un élément texte
+    function applyContrastToText(textEl, contrastColor) {
+        textEl.style.setProperty('color', contrastColor, 'important');
+        textEl.style.setProperty('fill', contrastColor, 'important');
+        textEl.setAttribute('fill', contrastColor);
+        // Aussi les tspan à l'intérieur
+        textEl.querySelectorAll('tspan').forEach(function(tspan) {
+            tspan.style.setProperty('fill', contrastColor, 'important');
+            tspan.setAttribute('fill', contrastColor);
+        });
+    }
+
+    // Parcourir tous les SVG Mermaid
+    document.querySelectorAll('.mermaid svg').forEach(function(svg) {
+        
+        // === FIX POUR LES TITRES DE CLUSTERS SUR PLUSIEURS LIGNES ===
+        svg.querySelectorAll('.cluster').forEach(function(cluster) {
+            const label = cluster.querySelector('.cluster-label');
+            const rect = cluster.querySelector('rect');
+            
+            if (label && rect) {
+                // Récupérer la hauteur du label
+                const labelBBox = label.getBBox ? label.getBBox() : null;
+                const foreignObj = label.querySelector('foreignObject');
+                
+                if (foreignObj) {
+                    // Augmenter l'espace vertical pour le titre
+                    const currentHeight = parseFloat(foreignObj.getAttribute('height')) || 20;
+                    const textContent = foreignObj.textContent || '';
+                    
+                    // Si le texte semble long (plus de 20 caractères), augmenter la hauteur
+                    if (textContent.length > 20 || textContent.includes('\n')) {
+                        foreignObj.setAttribute('height', Math.max(currentHeight, 40));
+                        foreignObj.style.overflow = 'visible';
+                    }
+                }
+                
+                // Forcer le texte du label à être visible et bien contrasté
+                label.querySelectorAll('text, span, div, p, tspan').forEach(function(textEl) {
+                    textEl.style.setProperty('fill', '#1e293b', 'important');
+                    textEl.style.setProperty('color', '#1e293b', 'important');
+                    textEl.style.setProperty('font-weight', '700', 'important');
+                });
+            }
+        });
+        
+        // === CORRECTION GÉNÉRALE DES NODES ===
+        // Corriger les nodes (rectangles, cercles, etc.)
+        svg.querySelectorAll('.node rect, .node polygon, .node circle, .node ellipse').forEach(function(shape) {
+            const fill = shape.getAttribute('fill') || shape.style.fill;
+            if (fill && fill !== 'none' && fill !== 'transparent') {
+                const contrastColor = getContrastColor(fill);
+
+                // Trouver le label associé
+                const parent = shape.closest('.node');
+                if (parent) {
+                    parent.querySelectorAll('.nodeLabel, .label, text, foreignObject span, foreignObject p, foreignObject div').forEach(function(label) {
+                        applyContrastToText(label, contrastColor);
+                    });
+                }
+            }
+        });
+
+        // Corriger les clusters/subgraphs
+        svg.querySelectorAll('.cluster rect, .cluster polygon').forEach(function(shape) {
+            const fill = shape.getAttribute('fill') || shape.style.fill;
+            if (fill && fill !== 'none' && fill !== 'transparent') {
+                const contrastColor = getContrastColor(fill);
+
+                const parent = shape.closest('.cluster');
+                if (parent) {
+                    parent.querySelectorAll('.cluster-label, .cluster-label span, .cluster-label text, .nodeLabel, text').forEach(function(label) {
+                        applyContrastToText(label, contrastColor);
+                    });
+                }
+            }
+        });
+
+        // === FIX POUR LES ÉLÉMENTS AVEC STYLE INLINE ===
+        svg.querySelectorAll('[style*="fill"]').forEach(function(el) {
+            const style = el.getAttribute('style');
+            if (style) {
+                const fillMatch = style.match(/fill:\s*([^;]+)/i);
+                if (fillMatch) {
+                    const fill = fillMatch[1].trim();
+                    if (fill && fill !== 'none' && fill !== 'transparent' && !fill.startsWith('url')) {
+                        const contrastColor = getContrastColor(fill);
+
+                        // Chercher les éléments texte à l'intérieur
+                        el.querySelectorAll('text, span, p, div, .nodeLabel, .label').forEach(function(textEl) {
+                            applyContrastToText(textEl, contrastColor);
+                        });
+
+                        // Si l'élément lui-même est un groupe avec du texte
+                        if (el.tagName.toLowerCase() === 'g') {
+                            el.querySelectorAll('foreignObject *').forEach(function(fo) {
+                                fo.style.setProperty('color', contrastColor, 'important');
+                            });
+                        }
+                    }
+                }
+            }
+        });
+        
+        // === FIX POUR LES DIAGRAMMES FLOWCHART ===
+        // Rectangles et formes avec texte
+        svg.querySelectorAll('g.node').forEach(function(node) {
+            const shape = node.querySelector('rect, polygon, circle, ellipse, path');
+            if (shape) {
+                const fill = shape.getAttribute('fill') || shape.style.fill || 
+                             window.getComputedStyle(shape).fill;
+                if (fill && fill !== 'none' && fill !== 'transparent' && !fill.startsWith('url')) {
+                    const contrastColor = getContrastColor(fill);
+                    node.querySelectorAll('.nodeLabel, .label, text, span, div, p').forEach(function(label) {
+                        applyContrastToText(label, contrastColor);
+                    });
+                }
+            }
+        });
+
+        // === FIX POUR LES DIAGRAMMES DE SÉQUENCE ===
+        
+        // Acteurs boîtes : forcer fond FONCÉ avec texte BLANC
+        svg.querySelectorAll('.actor, rect.actor, .actor-top, .actor-bottom').forEach(function(rect) {
+            rect.style.setProperty('fill', DARK_COLORS.blue.bg, 'important');
+            rect.style.setProperty('stroke', DARK_COLORS.blue.border, 'important');
+            rect.setAttribute('fill', DARK_COLORS.blue.bg);
+            rect.setAttribute('stroke', DARK_COLORS.blue.border);
+        });
+        
+        // Acteurs texte : forcer BLANC sur fond foncé
+        svg.querySelectorAll('text.actor, .actor-man').forEach(function(text) {
+            applyContrastToText(text, DARK_COLORS.blue.text);
+        });
+
+        // Messages : forcer texte NOIR (fond blanc/transparent)
+        svg.querySelectorAll('.messageText').forEach(function(text) {
+            applyContrastToText(text, '#1e293b');
+            text.style.setProperty('stroke', 'none', 'important');
+        });
+
+        // Lignes de messages : forcer visibilité
+        svg.querySelectorAll('.messageLine0, .messageLine1').forEach(function(line) {
+            line.style.setProperty('stroke', '#334155', 'important');
+            line.style.setProperty('stroke-width', '2px', 'important');
+            line.setAttribute('stroke', '#334155');
+            line.setAttribute('stroke-width', '2');
+        });
+
+        // Flèches : forcer visibilité
+        svg.querySelectorAll('.arrowhead path, marker path, #arrowhead path').forEach(function(arrow) {
+            arrow.style.setProperty('fill', '#334155', 'important');
+            arrow.style.setProperty('stroke', '#334155', 'important');
+            arrow.setAttribute('fill', '#334155');
+            arrow.setAttribute('stroke', '#334155');
+        });
+        
+        // Aussi les markers directement
+        svg.querySelectorAll('marker').forEach(function(marker) {
+            marker.querySelectorAll('path, polygon').forEach(function(shape) {
+                shape.style.setProperty('fill', '#334155', 'important');
+                shape.setAttribute('fill', '#334155');
+            });
+        });
+
+        // Lignes de vie des acteurs
+        svg.querySelectorAll('.actor-line').forEach(function(line) {
+            line.style.setProperty('stroke', '#64748b', 'important');
+            line.style.setProperty('stroke-width', '1.5px', 'important');
+            line.setAttribute('stroke', '#64748b');
+        });
+
+        // Labels (boucles, alt, opt, etc.)
+        svg.querySelectorAll('.loopText, .labelText').forEach(function(text) {
+            text.style.setProperty('fill', '#334155', 'important');
+            text.setAttribute('fill', '#334155');
+        });
+        svg.querySelectorAll('.loopText tspan, .labelText tspan').forEach(function(tspan) {
+            tspan.style.setProperty('fill', '#334155', 'important');
+            tspan.setAttribute('fill', '#334155');
+        });
+
+        // Notes - fond pastel jaune avec texte foncé
+        svg.querySelectorAll('.note rect, rect.note').forEach(function(rect) {
+            rect.style.setProperty('fill', PASTEL_COLORS.yellow.bg, 'important');
+            rect.style.setProperty('stroke', PASTEL_COLORS.yellow.border, 'important');
+            rect.setAttribute('fill', PASTEL_COLORS.yellow.bg);
+        });
+        svg.querySelectorAll('.noteText, .noteText tspan').forEach(function(text) {
+            applyContrastToText(text, PASTEL_COLORS.yellow.text);
+        });
+        
+        // Numéros de séquence
+        svg.querySelectorAll('.sequenceNumber').forEach(function(text) {
+            applyContrastToText(text, '#1e293b');
+        });
+        
+        // === FIX POUR DIAGRAMMES CLASS ===
+        svg.querySelectorAll('.classGroup rect, .classGroup polygon').forEach(function(shape) {
+            const fill = shape.getAttribute('fill') || shape.style.fill;
+            if (fill && fill !== 'none' && fill !== 'transparent') {
+                const contrastColor = getContrastColor(fill);
+                const parent = shape.closest('.classGroup');
+                if (parent) {
+                    parent.querySelectorAll('text, .classTitle, .classLabel, tspan').forEach(function(label) {
+                        applyContrastToText(label, contrastColor);
+                    });
+                }
+            }
+        });
+        
+        // === FIX POUR DIAGRAMMES STATE ===
+        svg.querySelectorAll('.stateGroup rect, .statediagram-state rect').forEach(function(shape) {
+            const fill = shape.getAttribute('fill') || shape.style.fill;
+            if (fill && fill !== 'none' && fill !== 'transparent') {
+                const contrastColor = getContrastColor(fill);
+                const parent = shape.closest('.stateGroup, .statediagram-state');
+                if (parent) {
+                    parent.querySelectorAll('text, .stateLabel, tspan, span').forEach(function(label) {
+                        applyContrastToText(label, contrastColor);
+                    });
+                }
+            }
+        });
+        
+        // === FIX POUR DIAGRAMMES ER ===
+        // Entity boxes - forcer fond coloré avec texte lisible
+        svg.querySelectorAll('.er.entityBox, .entityBox, rect.er').forEach(function(shape) {
+            // Forcer un fond pastel bleu avec texte foncé
+            shape.style.setProperty('fill', '#dbeafe', 'important');
+            shape.style.setProperty('stroke', '#3b82f6', 'important');
+            shape.style.setProperty('stroke-width', '2px', 'important');
+            shape.setAttribute('fill', '#dbeafe');
+            shape.setAttribute('stroke', '#3b82f6');
+        });
+        
+        // Texte des entités ER - forcer noir
+        svg.querySelectorAll('.er.entityLabel, .entityLabel, text.er').forEach(function(text) {
+            applyContrastToText(text, '#1e3a8a');
+        });
+        
+        // Attributs ER
+        svg.querySelectorAll('.er.attributeBoxEven, .er.attributeBoxOdd').forEach(function(shape) {
+            const isEven = shape.classList.contains('attributeBoxEven');
+            shape.style.setProperty('fill', isEven ? '#f8fafc' : '#f1f5f9', 'important');
+            shape.style.setProperty('stroke', '#cbd5e1', 'important');
+        });
+        
+        // Tout le texte dans les diagrammes ER
+        svg.querySelectorAll('g.er text, .erDiagram text').forEach(function(text) {
+            const fill = text.getAttribute('fill') || text.style.fill;
+            const lum = getLuminance(fill);
+            // Si texte trop clair, forcer noir
+            if (lum > 0.6 || !fill || fill === 'none') {
+                applyContrastToText(text, '#1e293b');
+            }
+        });
+        
+        // === FIX POUR DIAGRAMMES MINDMAP ===
+        // Forcer des couleurs visibles sur les nodes mindmap
+        const mindmapColors = [
+            { bg: '#dbeafe', border: '#3b82f6', text: '#1e3a8a' },  // blue
+            { bg: '#dcfce7', border: '#22c55e', text: '#14532d' },  // green
+            { bg: '#fef9c3', border: '#eab308', text: '#713f12' },  // yellow
+            { bg: '#fce7f3', border: '#ec4899', text: '#831843' },  // pink
+            { bg: '#f3e8ff', border: '#a855f7', text: '#581c87' },  // purple
+            { bg: '#cffafe', border: '#06b6d4', text: '#164e63' },  // cyan
+            { bg: '#ffedd5', border: '#f97316', text: '#7c2d12' }   // orange
+        ];
+        
+        let colorIndex = 0;
+        svg.querySelectorAll('.mindmap-node').forEach(function(node) {
+            const shape = node.querySelector('rect, circle, ellipse, polygon, path');
+            if (shape) {
+                const color = mindmapColors[colorIndex % mindmapColors.length];
+                shape.style.setProperty('fill', color.bg, 'important');
+                shape.style.setProperty('stroke', color.border, 'important');
+                shape.style.setProperty('stroke-width', '2px', 'important');
+                shape.setAttribute('fill', color.bg);
+                shape.setAttribute('stroke', color.border);
+                
+                // Appliquer le texte contrasté
+                node.querySelectorAll('text, span, .nodeLabel, foreignObject *').forEach(function(label) {
+                    applyContrastToText(label, color.text);
+                });
+                colorIndex++;
+            }
+        });
+        
+        // Fallback: tous les textes mindmap sans shape parent
+        svg.querySelectorAll('.mindmap text, [class*="mindmap"] text').forEach(function(text) {
+            const fill = text.getAttribute('fill') || text.style.fill;
+            const lum = getLuminance(fill);
+            if (lum > 0.6 || !fill || fill === 'none') {
+                applyContrastToText(text, '#1e293b');
+            }
+        });
+        
+        // === DERNIER PASSAGE GLOBAL ===
+        // Parcourir tous les éléments rect/polygon/circle avec fill et vérifier leurs textes
+        svg.querySelectorAll('rect, polygon, circle, ellipse').forEach(function(shape) {
+            const fill = shape.getAttribute('fill') || shape.style.fill;
+            if (fill && fill !== 'none' && fill !== 'transparent' && !fill.startsWith('url')) {
+                const luminance = getLuminance(fill);
+                // Si fond sombre (luminance < 0.35) et texte potentiellement sombre
+                if (luminance < 0.35) {
+                    const parent = shape.parentNode;
+                    if (parent) {
+                        parent.querySelectorAll('text, .nodeLabel, .label, span, tspan').forEach(function(textEl) {
+                            const textFill = textEl.getAttribute('fill') || textEl.style.fill;
+                            const textLum = getLuminance(textFill);
+                            // Si le texte est aussi sombre, on le passe en blanc
+                            if (textLum < 0.5) {
+                                applyContrastToText(textEl, '#ffffff');
+                            }
+                        });
+                    }
+                }
+                // Si fond clair et texte blanc
+                else if (luminance > 0.65) {
+                    const parent = shape.parentNode;
+                    if (parent) {
+                        parent.querySelectorAll('text, .nodeLabel, .label, span, tspan').forEach(function(textEl) {
+                            const textFill = textEl.getAttribute('fill') || textEl.style.fill;
+                            const textLum = getLuminance(textFill);
+                            // Si le texte est clair, on le passe en noir
+                            if (textLum > 0.7) {
+                                applyContrastToText(textEl, '#1e293b');
+                            }
+                        });
+                    }
+                }
+            }
+        });
+    });
+}
+
+// Exporter pour utilisation externe
+if (typeof window !== 'undefined') {
+    window.fixMermaidContrast = fixMermaidContrast;
+    window.MERMAID_PASTEL_COLORS = PASTEL_COLORS;
+    window.MERMAID_DARK_COLORS = DARK_COLORS;
+}
+
+    </script>
+    
+
+    
+    
+
+    
+    
+    
+    <style>
+        @media print {
+            body {
+                max-width: none;
+                padding: 20mm;
+            }
+            
+            pre, code {
+                white-space: pre-wrap;
+                word-wrap: break-word;
+            }
+            
+            table, pre, blockquote, .mermaid {
+                page-break-inside: avoid;
+            }
+            
+            h1, h2, h3 {
+                page-break-after: avoid;
+            }
+        }
+    </style>
+
+</head>
+<body>
+    
+    <article class="markdown-body">
+        <!--
+  Page de garde SEMIFIR. Remplie par md2html.py depuis le frontmatter.
+  Placeholders : <svg style="height:44px;width:auto" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="290px" height="84px" viewBox="0 0 290 84" version="1.1">
+<g id="surface1">
+<path style=" stroke:none;fill-rule:nonzero;fill:rgb(96.862745%,73.72549%,59.215686%);fill-opacity:1;" d="M 36.640625 7.238281 L 36.640625 42.078125 L 6.839844 59.359375 L 6.839844 24.160156 Z M 36.640625 7.238281 "/>
+<path style=" stroke:none;fill-rule:nonzero;fill:rgb(89.019608%,37.254902%,17.647059%);fill-opacity:1;" d="M 67.160156 59.601562 L 67.238281 24.71875 L 36.640625 7.238281 L 36.640625 42.078125 Z M 67.160156 59.601562 "/>
+<path style=" stroke:none;fill-rule:nonzero;fill:rgb(93.72549%,49.019608%,29.019608%);fill-opacity:1;" d="M 67.160156 59.601562 L 36.640625 42.078125 L 6.839844 59.359375 L 36.601562 76.679688 Z M 67.160156 59.601562 "/>
+<path style=" stroke:none;fill-rule:nonzero;fill:rgb(14.117647%,24.705882%,22.745098%);fill-opacity:1;" d="M 64.078125 22.921875 L 65.640625 23.839844 L 69.640625 21.519531 L 36.640625 2.320312 L 2.800781 21.921875 L 73.121094 61.558594 C 73.121094 61.558594 73.71875 61.238281 73.761719 61.199219 C 74.039062 60.960938 74.078125 60.558594 73.839844 60.28125 C 73.800781 60.238281 73.761719 60.199219 73.71875 60.160156 C 73.480469 60 6.039062 21.921875 6.039062 21.921875 L 36.640625 3.761719 L 66.480469 21.480469 Z M 64.078125 22.921875 "/>
+<path style=" stroke:none;fill-rule:nonzero;fill:rgb(22.352941%,66.666667%,60.392157%);fill-opacity:1;" d="M 65.640625 23.800781 L 67.238281 24.71875 L 71.839844 22 C 72.078125 21.71875 72.121094 21.320312 71.921875 21 C 71.640625 20.761719 37.121094 0.71875 37.039062 0.640625 C 36.800781 0.519531 36.558594 0.519531 36.320312 0.640625 C 36.078125 0.761719 1 21.199219 0.601562 21.441406 C 0.359375 21.71875 0.359375 22.121094 0.640625 22.359375 C 1.078125 22.601562 71.441406 62.28125 71.441406 62.28125 C 71.441406 62.28125 36.960938 82.039062 36.839844 82.078125 C 36.71875 82.160156 36.558594 82.199219 36.441406 82.160156 C 36.320312 82.121094 8.398438 65.199219 8.28125 65.160156 C 8.160156 65.039062 8.078125 64.921875 8.078125 64.761719 C 8.078125 64.558594 8.078125 60.078125 8.078125 60.078125 L 6.839844 59.359375 C 6.839844 59.359375 6.839844 64.878906 6.839844 65.238281 C 6.878906 65.640625 7.078125 66 7.398438 66.199219 L 36.199219 83.601562 C 36.519531 83.839844 36.921875 83.839844 37.199219 83.601562 C 37.441406 83.480469 73.160156 63 73.359375 62.839844 C 73.640625 62.640625 73.71875 61.839844 73.398438 61.679688 C 73.078125 61.519531 2.800781 21.921875 2.800781 21.921875 L 36.640625 2.320312 L 69.398438 21.441406 Z M 65.640625 23.800781 "/>
+<path style=" stroke:none;fill-rule:nonzero;fill:rgb(14.117647%,24.705882%,22.745098%);fill-opacity:1;" d="M 8.078125 60.078125 L 9.71875 61.039062 L 9.71875 64.199219 C 9.71875 64.199219 36.359375 80.359375 36.480469 80.398438 C 36.601562 80.441406 36.71875 80.519531 36.839844 80.441406 L 69.878906 61.441406 L 71.441406 62.320312 C 71.441406 62.320312 37.039062 82.039062 36.921875 82.121094 C 36.640625 82.28125 36.601562 82.28125 36.28125 82.121094 L 8.320312 65.238281 C 8.160156 65.121094 8.121094 65.078125 8.121094 64.800781 C 8.078125 64.640625 8.078125 60.078125 8.078125 60.078125 Z M 8.078125 60.078125 "/>
+<path style="fill-rule:nonzero;fill:rgb(88.627451%,37.254902%,17.647059%);fill-opacity:1;stroke-width:3;stroke-linecap:butt;stroke-linejoin:miter;stroke:rgb(88.627451%,37.254902%,17.254902%);stroke-opacity:1;stroke-miterlimit:10;" d="M 288.701172 84.404297 L 288.701172 85.996094 L 285.595703 85.996094 L 285.595703 84.404297 C 285.595703 70.400391 271.904297 59.404297 254.101562 59.199219 C 236.503906 59.199219 222.802734 70.498047 222.597656 84.404297 C 222.597656 109.404297 292.099609 109.804688 291.904297 138.300781 C 291.904297 153.603516 274.697266 166.503906 254.296875 166.298828 C 233.701172 166.298828 216.298828 153.496094 216.298828 138.095703 L 216.298828 136.503906 L 219.404297 136.503906 L 219.404297 138.095703 C 219.404297 152.001953 234.697266 163.300781 254.199219 163.095703 C 273.603516 163.095703 288.896484 152.099609 288.701172 138.203125 C 288.701172 112.695312 219.599609 112.695312 219.404297 84.296875 C 219.404297 68.701172 235.302734 56.103516 254.101562 55.898438 C 272.998047 55.996094 288.701172 68.798828 288.701172 84.404297 Z M 288.701172 84.404297 " transform="matrix(0.4,0,0,0.4,0,0)"/>
+<path style="fill-rule:nonzero;fill:rgb(88.627451%,37.254902%,17.647059%);fill-opacity:1;stroke-width:3;stroke-linecap:butt;stroke-linejoin:miter;stroke:rgb(88.627451%,37.254902%,17.254902%);stroke-opacity:1;stroke-miterlimit:10;" d="M 310 125.195312 L 310 122.001953 C 310.703125 99.101562 327.802734 80.898438 347.802734 80.703125 C 368.603516 80.703125 385.595703 100.097656 385.595703 123.496094 L 385.595703 125.097656 L 313.203125 125.097656 C 314.003906 146.699219 331.396484 163.701172 347.998047 163.300781 C 367.402344 162.802734 376.503906 154.804688 379.902344 143.300781 L 380.302734 142.197266 L 383.398438 142.197266 L 382.900391 144.199219 C 379.101562 156.601562 368.398438 166.503906 347.900391 166.503906 C 328.701172 166.503906 310.996094 148.203125 310 125.195312 Z M 313.203125 122.001953 L 382.5 122.001953 C 382.5 101.396484 367.197266 84.003906 347.802734 83.896484 C 329.003906 83.896484 314.003906 100.595703 313.203125 122.001953 Z M 313.203125 122.001953 " transform="matrix(0.4,0,0,0.4,0,0)"/>
+<path style="fill-rule:nonzero;fill:rgb(88.627451%,37.254902%,17.647059%);fill-opacity:1;stroke-width:3;stroke-linecap:butt;stroke-linejoin:miter;stroke:rgb(88.627451%,37.254902%,17.254902%);stroke-opacity:1;stroke-miterlimit:10;" d="M 465.195312 102.802734 C 469.101562 90.097656 479.697266 80.898438 491.904297 80.703125 C 507.5 80.703125 520.400391 95.800781 520.302734 113.496094 L 520.302734 166.396484 L 517.304688 166.396484 L 517.099609 113.496094 C 517.099609 97.001953 506.103516 84.003906 491.904297 83.896484 C 477.998047 83.896484 466.796875 96.796875 466.699219 113.203125 C 466.699219 113.300781 466.699219 113.398438 466.699219 113.496094 L 466.699219 166.396484 L 463.701172 166.396484 L 463.496094 113.496094 C 463.496094 97.001953 452.5 84.003906 438.300781 83.896484 C 424.296875 83.896484 413.095703 97.001953 413.095703 113.496094 L 413.095703 166.298828 L 410 166.298828 L 410 80.800781 L 413.095703 80.800781 L 413.095703 98.798828 C 417.900391 88.300781 427.5 80.898438 438.300781 80.800781 C 450.703125 80.800781 461.298828 90.195312 465.195312 102.802734 Z M 465.195312 102.802734 " transform="matrix(0.4,0,0,0.4,0,0)"/>
+<path style="fill-rule:nonzero;fill:rgb(88.627451%,37.254902%,17.647059%);fill-opacity:1;stroke-width:3;stroke-linecap:butt;stroke-linejoin:miter;stroke:rgb(88.627451%,37.254902%,17.254902%);stroke-opacity:1;stroke-miterlimit:10;" d="M 546.298828 51.796875 L 544.697266 51.796875 L 544.697266 48.603516 L 548.095703 48.603516 L 548.095703 51.796875 Z M 544.697266 80.800781 L 547.900391 80.800781 L 547.900391 166.298828 L 544.697266 166.298828 Z M 544.697266 80.800781 " transform="matrix(0.4,0,0,0.4,0,0)"/>
+<path style="fill-rule:nonzero;fill:rgb(88.627451%,37.254902%,17.647059%);fill-opacity:1;stroke-width:3;stroke-linecap:butt;stroke-linejoin:miter;stroke:rgb(88.627451%,37.254902%,17.254902%);stroke-opacity:1;stroke-miterlimit:10;" d="M 611.601562 54.599609 L 613.203125 54.599609 L 613.203125 57.695312 L 611.601562 57.695312 C 594.404297 57.695312 582.597656 65.400391 582.5 82.304688 L 582.5 91.103516 L 607.695312 91.103516 L 607.695312 94.199219 L 582.5 94.199219 L 582.5 166.201172 L 579.404297 166.201172 L 579.404297 94.199219 L 563.603516 94.199219 L 563.603516 91.103516 L 579.404297 91.103516 L 579.404297 82.304688 C 579.501953 63.896484 593.496094 54.599609 611.601562 54.599609 Z M 611.601562 54.599609 " transform="matrix(0.4,0,0,0.4,0,0)"/>
+<path style="fill-rule:nonzero;fill:rgb(88.627451%,37.254902%,17.647059%);fill-opacity:1;stroke-width:3;stroke-linecap:butt;stroke-linejoin:miter;stroke:rgb(88.627451%,37.254902%,17.254902%);stroke-opacity:1;stroke-miterlimit:10;" d="M 639.199219 51.796875 L 637.597656 51.796875 L 637.597656 48.603516 L 640.996094 48.603516 L 640.996094 51.796875 Z M 637.597656 80.800781 L 640.703125 80.800781 L 640.703125 166.298828 L 637.597656 166.298828 Z M 637.597656 80.800781 " transform="matrix(0.4,0,0,0.4,0,0)"/>
+<path style="fill-rule:nonzero;fill:rgb(88.627451%,37.254902%,17.647059%);fill-opacity:1;stroke-width:3;stroke-linecap:butt;stroke-linejoin:miter;stroke:rgb(88.627451%,37.254902%,17.254902%);stroke-opacity:1;stroke-miterlimit:10;" d="M 674.599609 105.898438 C 681.103516 89.697266 697.304688 80.800781 717.099609 80.800781 L 718.701172 80.800781 L 718.701172 83.896484 L 717.099609 83.896484 C 692.099609 83.896484 674.697266 97.5 674.599609 122.695312 L 674.599609 166.201172 L 671.503906 166.201172 L 671.503906 123.398438 C 671.503906 123.203125 671.503906 122.998047 671.503906 122.802734 L 671.503906 80.800781 L 674.599609 80.800781 Z M 674.599609 105.898438 " transform="matrix(0.4,0,0,0.4,0,0)"/>
+</g>
+</svg>  Projet final — grille d&#x27;évaluation et déroulé de la soutenance <p class="smf-lede">Ingénieur Cloud OPS — Projet final DevOps multicloud</p> <div class="smf-f"><p class="smf-k">Formateur</p><p class="smf-v">Adrien Vossough</p></div><div class="smf-f"><p class="smf-k">Mise à jour</p><p class="smf-v">2026-09-20</p></div><div class="smf-f"><p class="smf-k">Version</p><p class="smf-v">1.0.0</p></div>
+  Styles scopes sous .smf-cover (aucune fuite). Palette = bleu du deck.
+-->
+<style>
+  .smf-cover {
+    position: relative;
+    width: 100%;
+    min-height: 88vh;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 24px;
+    padding: clamp(28px, 4.5%, 60px);
+    color: #eaf1fb;
+    background:
+      radial-gradient(120% 120% at 82% -10%, rgba(59,130,246,.32) 0%, rgba(37,99,235,0) 42%),
+      linear-gradient(160deg, #0f172a 0%, #14203a 46%, #172a4d 100%);
+    overflow: hidden;
+    font-family: var(--font-sans, system-ui, sans-serif);
+  }
+  .smf-cover::before {
+    content: "";
+    position: absolute; left: 0; top: 0;
+    height: 5px; width: 38%;
+    background: linear-gradient(90deg, #0ea5e9, #3b82f6);
+  }
+  .smf-cover .smf-motif {
+    position: absolute; right: -6%; bottom: -16%;
+    width: 52%; max-width: 620px; opacity: .5; pointer-events: none;
+  }
+  .smf-cover .smf-top {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    gap: 20px; position: relative; z-index: 2;
+  }
+  .smf-cover .smf-logo svg,
+  .smf-cover .smf-logo img { height: 44px; width: auto; display: block; }
+  .smf-cover .smf-badge {
+    font-size: .68rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+    color: #cfe0ff; border: 1px solid rgba(147,197,253,.4); border-radius: 999px; padding: 6px 14px;
+    white-space: nowrap;
+  }
+  .smf-cover .smf-mid { position: relative; z-index: 2; }
+  .smf-cover .smf-module {
+    display: inline-flex; align-items: center; font-size: .72rem; font-weight: 700;
+    letter-spacing: .1em; text-transform: uppercase; color: #0b1220;
+    background: linear-gradient(90deg, #60a5fa, #3b82f6);
+    padding: 5px 13px; border-radius: 6px; margin-bottom: 18px;
+  }
+  .smf-cover .smf-title {
+    font-size: clamp(1.7rem, 4.6vw, 3.1rem); line-height: 1.05; letter-spacing: -.025em;
+    font-weight: 800; margin: 0 0 14px; max-width: 20ch; text-wrap: balance; color: #fff;
+  }
+  .smf-cover .smf-lede {
+    font-size: clamp(.9rem, 1.5vw, 1.08rem); line-height: 1.5; color: #b9c8e0;
+    max-width: 52ch; margin: 0;
+  }
+  .smf-cover .smf-bottom { position: relative; z-index: 2; display: flex; flex-direction: column; gap: 16px; }
+  .smf-cover .smf-meta { display: flex; flex-wrap: wrap; gap: 30px; }
+  .smf-cover .smf-k { font-size: .58rem; letter-spacing: .14em; text-transform: uppercase; color: #7f93b3; margin: 0 0 3px; }
+  .smf-cover .smf-v { font-size: .88rem; font-weight: 600; color: #eaf1fb; margin: 0; }
+  .smf-cover .smf-legal {
+    font-size: .6rem; line-height: 1.55; color: #8296b4; margin: 0; max-width: 92ch;
+    border-top: 1px solid rgba(147,197,253,.16); padding-top: 11px;
+  }
+  .smf-cover .smf-legal b { color: #c6d4ea; font-weight: 600; }
+  .smf-cover .smf-legal a { color: #93c5fd; text-decoration: none; border-bottom: 1px solid rgba(147,197,253,.45); }
+  .smf-cover .smf-legal a:hover { color: #bfdbfe; border-bottom-color: #bfdbfe; }
+  .smf-cover .smf-legal .smf-confid { color: #f0a99a; font-weight: 600; }
+
+  @media print {
+    .smf-cover { min-height: 96vh; break-after: page; page-break-after: always; }
+  }
+</style>
+
+<section class="smf-cover">
+  <svg class="smf-motif" viewBox="0 0 100 100" aria-hidden="true">
+    <polygon points="50,8 88,30 88,72 50,94 12,72 12,30" fill="none" stroke="rgba(147,197,253,.25)" stroke-width="1"/>
+    <polygon points="50,8 88,30 50,52 12,30" fill="rgba(96,165,250,.10)"/>
+    <polygon points="50,52 88,30 88,72 50,94" fill="rgba(37,99,235,.10)"/>
+    <line x1="50" y1="52" x2="50" y2="94" stroke="rgba(147,197,253,.20)" stroke-width="1"/>
+  </svg>
+
+  <div class="smf-top">
+    <span class="smf-logo"><svg style="height:44px;width:auto" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="290px" height="84px" viewBox="0 0 290 84" version="1.1">
+<g id="surface1">
+<path style=" stroke:none;fill-rule:nonzero;fill:rgb(96.862745%,73.72549%,59.215686%);fill-opacity:1;" d="M 36.640625 7.238281 L 36.640625 42.078125 L 6.839844 59.359375 L 6.839844 24.160156 Z M 36.640625 7.238281 "/>
+<path style=" stroke:none;fill-rule:nonzero;fill:rgb(89.019608%,37.254902%,17.647059%);fill-opacity:1;" d="M 67.160156 59.601562 L 67.238281 24.71875 L 36.640625 7.238281 L 36.640625 42.078125 Z M 67.160156 59.601562 "/>
+<path style=" stroke:none;fill-rule:nonzero;fill:rgb(93.72549%,49.019608%,29.019608%);fill-opacity:1;" d="M 67.160156 59.601562 L 36.640625 42.078125 L 6.839844 59.359375 L 36.601562 76.679688 Z M 67.160156 59.601562 "/>
+<path style=" stroke:none;fill-rule:nonzero;fill:rgb(14.117647%,24.705882%,22.745098%);fill-opacity:1;" d="M 64.078125 22.921875 L 65.640625 23.839844 L 69.640625 21.519531 L 36.640625 2.320312 L 2.800781 21.921875 L 73.121094 61.558594 C 73.121094 61.558594 73.71875 61.238281 73.761719 61.199219 C 74.039062 60.960938 74.078125 60.558594 73.839844 60.28125 C 73.800781 60.238281 73.761719 60.199219 73.71875 60.160156 C 73.480469 60 6.039062 21.921875 6.039062 21.921875 L 36.640625 3.761719 L 66.480469 21.480469 Z M 64.078125 22.921875 "/>
+<path style=" stroke:none;fill-rule:nonzero;fill:rgb(22.352941%,66.666667%,60.392157%);fill-opacity:1;" d="M 65.640625 23.800781 L 67.238281 24.71875 L 71.839844 22 C 72.078125 21.71875 72.121094 21.320312 71.921875 21 C 71.640625 20.761719 37.121094 0.71875 37.039062 0.640625 C 36.800781 0.519531 36.558594 0.519531 36.320312 0.640625 C 36.078125 0.761719 1 21.199219 0.601562 21.441406 C 0.359375 21.71875 0.359375 22.121094 0.640625 22.359375 C 1.078125 22.601562 71.441406 62.28125 71.441406 62.28125 C 71.441406 62.28125 36.960938 82.039062 36.839844 82.078125 C 36.71875 82.160156 36.558594 82.199219 36.441406 82.160156 C 36.320312 82.121094 8.398438 65.199219 8.28125 65.160156 C 8.160156 65.039062 8.078125 64.921875 8.078125 64.761719 C 8.078125 64.558594 8.078125 60.078125 8.078125 60.078125 L 6.839844 59.359375 C 6.839844 59.359375 6.839844 64.878906 6.839844 65.238281 C 6.878906 65.640625 7.078125 66 7.398438 66.199219 L 36.199219 83.601562 C 36.519531 83.839844 36.921875 83.839844 37.199219 83.601562 C 37.441406 83.480469 73.160156 63 73.359375 62.839844 C 73.640625 62.640625 73.71875 61.839844 73.398438 61.679688 C 73.078125 61.519531 2.800781 21.921875 2.800781 21.921875 L 36.640625 2.320312 L 69.398438 21.441406 Z M 65.640625 23.800781 "/>
+<path style=" stroke:none;fill-rule:nonzero;fill:rgb(14.117647%,24.705882%,22.745098%);fill-opacity:1;" d="M 8.078125 60.078125 L 9.71875 61.039062 L 9.71875 64.199219 C 9.71875 64.199219 36.359375 80.359375 36.480469 80.398438 C 36.601562 80.441406 36.71875 80.519531 36.839844 80.441406 L 69.878906 61.441406 L 71.441406 62.320312 C 71.441406 62.320312 37.039062 82.039062 36.921875 82.121094 C 36.640625 82.28125 36.601562 82.28125 36.28125 82.121094 L 8.320312 65.238281 C 8.160156 65.121094 8.121094 65.078125 8.121094 64.800781 C 8.078125 64.640625 8.078125 60.078125 8.078125 60.078125 Z M 8.078125 60.078125 "/>
+<path style="fill-rule:nonzero;fill:rgb(88.627451%,37.254902%,17.647059%);fill-opacity:1;stroke-width:3;stroke-linecap:butt;stroke-linejoin:miter;stroke:rgb(88.627451%,37.254902%,17.254902%);stroke-opacity:1;stroke-miterlimit:10;" d="M 288.701172 84.404297 L 288.701172 85.996094 L 285.595703 85.996094 L 285.595703 84.404297 C 285.595703 70.400391 271.904297 59.404297 254.101562 59.199219 C 236.503906 59.199219 222.802734 70.498047 222.597656 84.404297 C 222.597656 109.404297 292.099609 109.804688 291.904297 138.300781 C 291.904297 153.603516 274.697266 166.503906 254.296875 166.298828 C 233.701172 166.298828 216.298828 153.496094 216.298828 138.095703 L 216.298828 136.503906 L 219.404297 136.503906 L 219.404297 138.095703 C 219.404297 152.001953 234.697266 163.300781 254.199219 163.095703 C 273.603516 163.095703 288.896484 152.099609 288.701172 138.203125 C 288.701172 112.695312 219.599609 112.695312 219.404297 84.296875 C 219.404297 68.701172 235.302734 56.103516 254.101562 55.898438 C 272.998047 55.996094 288.701172 68.798828 288.701172 84.404297 Z M 288.701172 84.404297 " transform="matrix(0.4,0,0,0.4,0,0)"/>
+<path style="fill-rule:nonzero;fill:rgb(88.627451%,37.254902%,17.647059%);fill-opacity:1;stroke-width:3;stroke-linecap:butt;stroke-linejoin:miter;stroke:rgb(88.627451%,37.254902%,17.254902%);stroke-opacity:1;stroke-miterlimit:10;" d="M 310 125.195312 L 310 122.001953 C 310.703125 99.101562 327.802734 80.898438 347.802734 80.703125 C 368.603516 80.703125 385.595703 100.097656 385.595703 123.496094 L 385.595703 125.097656 L 313.203125 125.097656 C 314.003906 146.699219 331.396484 163.701172 347.998047 163.300781 C 367.402344 162.802734 376.503906 154.804688 379.902344 143.300781 L 380.302734 142.197266 L 383.398438 142.197266 L 382.900391 144.199219 C 379.101562 156.601562 368.398438 166.503906 347.900391 166.503906 C 328.701172 166.503906 310.996094 148.203125 310 125.195312 Z M 313.203125 122.001953 L 382.5 122.001953 C 382.5 101.396484 367.197266 84.003906 347.802734 83.896484 C 329.003906 83.896484 314.003906 100.595703 313.203125 122.001953 Z M 313.203125 122.001953 " transform="matrix(0.4,0,0,0.4,0,0)"/>
+<path style="fill-rule:nonzero;fill:rgb(88.627451%,37.254902%,17.647059%);fill-opacity:1;stroke-width:3;stroke-linecap:butt;stroke-linejoin:miter;stroke:rgb(88.627451%,37.254902%,17.254902%);stroke-opacity:1;stroke-miterlimit:10;" d="M 465.195312 102.802734 C 469.101562 90.097656 479.697266 80.898438 491.904297 80.703125 C 507.5 80.703125 520.400391 95.800781 520.302734 113.496094 L 520.302734 166.396484 L 517.304688 166.396484 L 517.099609 113.496094 C 517.099609 97.001953 506.103516 84.003906 491.904297 83.896484 C 477.998047 83.896484 466.796875 96.796875 466.699219 113.203125 C 466.699219 113.300781 466.699219 113.398438 466.699219 113.496094 L 466.699219 166.396484 L 463.701172 166.396484 L 463.496094 113.496094 C 463.496094 97.001953 452.5 84.003906 438.300781 83.896484 C 424.296875 83.896484 413.095703 97.001953 413.095703 113.496094 L 413.095703 166.298828 L 410 166.298828 L 410 80.800781 L 413.095703 80.800781 L 413.095703 98.798828 C 417.900391 88.300781 427.5 80.898438 438.300781 80.800781 C 450.703125 80.800781 461.298828 90.195312 465.195312 102.802734 Z M 465.195312 102.802734 " transform="matrix(0.4,0,0,0.4,0,0)"/>
+<path style="fill-rule:nonzero;fill:rgb(88.627451%,37.254902%,17.647059%);fill-opacity:1;stroke-width:3;stroke-linecap:butt;stroke-linejoin:miter;stroke:rgb(88.627451%,37.254902%,17.254902%);stroke-opacity:1;stroke-miterlimit:10;" d="M 546.298828 51.796875 L 544.697266 51.796875 L 544.697266 48.603516 L 548.095703 48.603516 L 548.095703 51.796875 Z M 544.697266 80.800781 L 547.900391 80.800781 L 547.900391 166.298828 L 544.697266 166.298828 Z M 544.697266 80.800781 " transform="matrix(0.4,0,0,0.4,0,0)"/>
+<path style="fill-rule:nonzero;fill:rgb(88.627451%,37.254902%,17.647059%);fill-opacity:1;stroke-width:3;stroke-linecap:butt;stroke-linejoin:miter;stroke:rgb(88.627451%,37.254902%,17.254902%);stroke-opacity:1;stroke-miterlimit:10;" d="M 611.601562 54.599609 L 613.203125 54.599609 L 613.203125 57.695312 L 611.601562 57.695312 C 594.404297 57.695312 582.597656 65.400391 582.5 82.304688 L 582.5 91.103516 L 607.695312 91.103516 L 607.695312 94.199219 L 582.5 94.199219 L 582.5 166.201172 L 579.404297 166.201172 L 579.404297 94.199219 L 563.603516 94.199219 L 563.603516 91.103516 L 579.404297 91.103516 L 579.404297 82.304688 C 579.501953 63.896484 593.496094 54.599609 611.601562 54.599609 Z M 611.601562 54.599609 " transform="matrix(0.4,0,0,0.4,0,0)"/>
+<path style="fill-rule:nonzero;fill:rgb(88.627451%,37.254902%,17.647059%);fill-opacity:1;stroke-width:3;stroke-linecap:butt;stroke-linejoin:miter;stroke:rgb(88.627451%,37.254902%,17.254902%);stroke-opacity:1;stroke-miterlimit:10;" d="M 639.199219 51.796875 L 637.597656 51.796875 L 637.597656 48.603516 L 640.996094 48.603516 L 640.996094 51.796875 Z M 637.597656 80.800781 L 640.703125 80.800781 L 640.703125 166.298828 L 637.597656 166.298828 Z M 637.597656 80.800781 " transform="matrix(0.4,0,0,0.4,0,0)"/>
+<path style="fill-rule:nonzero;fill:rgb(88.627451%,37.254902%,17.647059%);fill-opacity:1;stroke-width:3;stroke-linecap:butt;stroke-linejoin:miter;stroke:rgb(88.627451%,37.254902%,17.254902%);stroke-opacity:1;stroke-miterlimit:10;" d="M 674.599609 105.898438 C 681.103516 89.697266 697.304688 80.800781 717.099609 80.800781 L 718.701172 80.800781 L 718.701172 83.896484 L 717.099609 83.896484 C 692.099609 83.896484 674.697266 97.5 674.599609 122.695312 L 674.599609 166.201172 L 671.503906 166.201172 L 671.503906 123.398438 C 671.503906 123.203125 671.503906 122.998047 671.503906 122.802734 L 671.503906 80.800781 L 674.599609 80.800781 Z M 674.599609 105.898438 " transform="matrix(0.4,0,0,0.4,0,0)"/>
+</g>
+</svg></span>
+    <span class="smf-badge">Support de formation</span>
+  </div>
+
+  <div class="smf-mid">
+    
+    <h1 class="smf-title">Projet final — grille d&#x27;évaluation et déroulé de la soutenance</h1>
+    <p class="smf-lede">Ingénieur Cloud OPS — Projet final DevOps multicloud</p>
+  </div>
+
+  <div class="smf-bottom">
+    <div class="smf-meta"><div class="smf-f"><p class="smf-k">Formateur</p><p class="smf-v">Adrien Vossough</p></div><div class="smf-f"><p class="smf-k">Mise à jour</p><p class="smf-v">2026-09-20</p></div><div class="smf-f"><p class="smf-k">Version</p><p class="smf-v">1.0.0</p></div></div>
+    <p class="smf-legal">
+      <b>© 2026 Semifir</b> · <a href="mailto:adrien.vossough@semifir.com">adrien.vossough@semifir.com</a> · <a href="https://semifir.com" target="_blank" rel="noopener">semifir.com</a><br>
+      <span class="smf-confid">Diffusion restreinte —</span> ce support ne peut être reproduit, diffusé ou utilisé en dehors d'une formation donnée par Semifir, sans autorisation écrite.
+    </p>
+  </div>
+</section>
+<p>Lisez ce document au début du projet. Il dit exactement ce qui est regardé, et dans quelles proportions.</p>
+<h2 id="deroule">Déroulé</h2>
+<table>
+<thead>
+<tr>
+<th>Moment</th>
+<th>Durée</th>
+<th>Contenu</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Présentation</td>
+<td>15 min</td>
+<td>Architecture, choix techniques, démonstration en direct</td>
+</tr>
+<tr>
+<td>Questions</td>
+<td>10 min</td>
+<td>Le jury interroge chaque membre sur son domaine</td>
+</tr>
+<tr>
+<td>Délibération</td>
+<td>5 min</td>
+<td>Hors présence de l'équipe</td>
+</tr>
+</tbody>
+</table>
+<p>Le jury a lu votre <code>README.md</code> avant la séance. Ne le récitez pas : racontez ce que vous avez décidé et pourquoi.</p>
+<h3 id="la-presentation">La présentation</h3>
+<p>Cinq à sept diapositives, pas davantage. Un plan qui fonctionne :</p>
+<ol>
+<li>Le besoin FoodTrack et le périmètre que vous avez retenu.</li>
+<li>Le schéma d'architecture, avec les trois environnements visibles.</li>
+<li>Deux ou trois arbitrages structurants, et ce que vous avez écarté.</li>
+<li>Ce que le pipeline garantit, et ce qu'il ne garantit pas.</li>
+<li>Coûts, limites connues, ce que vous feriez avec une semaine de plus.</li>
+</ol>
+<p>Chaque membre prend la parole sur son domaine. Une équipe où une seule personne parle perd des points sur toute la ligne.</p>
+<h3 id="la-demonstration-en-direct">La démonstration en direct</h3>
+<p>Préparez-la, chronométrez-la, prévoyez le repli. Trois minutes suffisent si elle est nette.</p>
+<table>
+<thead>
+<tr>
+<th>Ce que le jury veut voir</th>
+<th>Comment le montrer</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Le pipeline fonctionne</td>
+<td>Un commit poussé en séance, ou l'exécution de la veille rejouée avec son journal</td>
+</tr>
+<tr>
+<td>La validation manuelle existe</td>
+<td>La demande d'approbation bloquée, puis approuvée devant le jury</td>
+</tr>
+<tr>
+<td>Les trois environnements diffèrent</td>
+<td>Deux ConfigMaps côte à côte, ou deux pages d'accueil distinctes</td>
+</tr>
+<tr>
+<td>La supervision vit</td>
+<td>Le tableau de bord avec des données réelles, et l'historique de l'alerte</td>
+</tr>
+<tr>
+<td>L'infrastructure est reproductible</td>
+<td>Un <code>terraform plan</code> qui annonce <code>no changes</code></td>
+</tr>
+</tbody>
+</table>
+<p>🟨 Un <code>terraform apply</code> complet en direct dure trop longtemps. Un <code>plan</code> sans dérive prouve la même chose en trente secondes.</p>
+<h2 id="bareme">Barème</h2>
+<table>
+<thead>
+<tr>
+<th>Axe</th>
+<th>Points</th>
+<th>Ce qui est évalué</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Architecture Google Cloud</td>
+<td>20</td>
+<td>VPC privé et NAT fonctionnels, cluster conforme aux contraintes imposées, bastion, buckets, trois environnements, schéma juste et lisible, dimensionnement justifié</td>
+</tr>
+<tr>
+<td>Déploiement multi-environnement</td>
+<td>20</td>
+<td>Application fonctionnelle sur les trois namespaces, configuration réellement différenciée, secrets hors du dépôt, StorageClass correcte, exposition opérationnelle, autoscaler qui réagit</td>
+</tr>
+<tr>
+<td>Automatisation Terraform</td>
+<td>20</td>
+<td>Code modulaire et réutilisable, variables par environnement, état distant versionné, <code>plan</code> sans dérive, cycle de vie démontré, aucune ressource créée à la main</td>
+</tr>
+<tr>
+<td>Chaîne de livraison</td>
+<td>15</td>
+<td>Pipeline complet de bout en bout, scan de sécurité présent et exploité, validation manuelle avant production, versionnage sémantique, stratégie de release écrite, authentification sans clé</td>
+</tr>
+<tr>
+<td>Supervision et sécurité</td>
+<td>15</td>
+<td>Tableau de bord utile, contrôle de disponibilité, alerte justifiée, script de contrôle de santé, moindre privilège, bastion durci, pare-feu restreint, audit écrit</td>
+</tr>
+<tr>
+<td>Industrialisation</td>
+<td>10</td>
+<td><code>README</code> exploitable par un tiers, scripts d'exploitation rejouables, analyse de coût chiffrée, structure du dépôt, qualité de la soutenance</td>
+</tr>
+<tr>
+<td>Bonus</td>
+<td>+5</td>
+<td>Sauvegarde AWS en Terraform multi-fournisseur, exécuteur auto-hébergé avec plan de contrôle privé, tests dans le pipeline, <code>CronJob</code> de contrôle de santé</td>
+</tr>
+<tr>
+<td><strong>Total</strong></td>
+<td><strong>100 (+5)</strong></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3 id="ce-qui-fait-perdre-des-points-quel-que-soit-laxe">Ce qui fait perdre des points, quel que soit l'axe</h3>
+<table>
+<thead>
+<tr>
+<th>🟥 Constat</th>
+<th>Effet</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Une ressource cruciale créée à la main et absente du code</td>
+<td>L'axe Terraform ne peut pas dépasser la moitié</td>
+</tr>
+<tr>
+<td>Une clé JSON de compte de service dans le dépôt ou dans un secret GitHub</td>
+<td>Retrait sur l'axe sécurité, même si le pipeline marche</td>
+</tr>
+<tr>
+<td>Un secret en clair dans le dépôt ou dans son historique</td>
+<td>Retrait sur l'axe sécurité</td>
+</tr>
+<tr>
+<td><code>roles/editor</code> ou <code>roles/owner</code> porté par un compte de service</td>
+<td>Retrait sur l'axe sécurité</td>
+</tr>
+<tr>
+<td>Un pipeline vert alors que le déploiement a échoué</td>
+<td>Retrait sur l'axe livraison</td>
+</tr>
+<tr>
+<td>Un membre incapable de répondre sur son propre domaine</td>
+<td>Retrait individuel sur l'axe concerné</td>
+</tr>
+<tr>
+<td>Une ressource laissée allumée sans justification en fin de projet</td>
+<td>Retrait sur l'axe industrialisation</td>
+</tr>
+</tbody>
+</table>
+<h3 id="ce-qui-rapporte-au-dela-du-fonctionnel">Ce qui rapporte, au-delà du fonctionnel</h3>
+<p>Un arbitrage discutable mais assumé, chiffré et documenté vaut mieux qu'un choix par défaut jamais questionné. Le jury cherche des ingénieurs qui savent ce qu'ils ont sacrifié.</p>
+<p>Une limite connue et nommée avant que le jury ne la trouve vaut mieux qu'une limite cachée. Dire « notre plan de contrôle est ouvert, voici pourquoi, voici ce que nous aurions fait avec une journée de plus » est une bonne réponse.</p>
+<h2 id="questions-auxquelles-vous-devez-savoir-repondre">Questions auxquelles vous devez savoir répondre</h2>
+<p>Elles tombent presque toujours. Préparez-les en équipe avant la soutenance.</p>
+<table>
+<thead>
+<tr>
+<th>Domaine</th>
+<th>Question type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Architecture</td>
+<td>Pourquoi un seul cluster et trois namespaces, plutôt que trois clusters ? Qu'est-ce que vous perdez ?</td>
+</tr>
+<tr>
+<td>Architecture</td>
+<td>Votre cluster est zonal. Que se passe-t-il si la zone tombe ?</td>
+</tr>
+<tr>
+<td>Réseau</td>
+<td>Vos nœuds n'ont pas d'IP publique. Comment téléchargent-ils leurs images ?</td>
+</tr>
+<tr>
+<td>Stockage</td>
+<td>Pourquoi une StorageClass maison, alors que GKE en fournit déjà ?</td>
+</tr>
+<tr>
+<td>Terraform</td>
+<td>Montrez un changement qui recrée une ressource et un changement qui la modifie en place. Comment le savez-vous avant d'appliquer ?</td>
+</tr>
+<tr>
+<td>Terraform</td>
+<td>Où est votre état, qui y accède, que se passe-t-il si deux personnes appliquent en même temps ?</td>
+</tr>
+<tr>
+<td>Livraison</td>
+<td>Votre pipeline s'authentifie comment ? Détaillez les étapes entre le déclenchement et le premier appel autorisé à Google Cloud.</td>
+</tr>
+<tr>
+<td>Livraison</td>
+<td>Un correctif urgent doit partir en production dans dix minutes. Que faites-vous ?</td>
+</tr>
+<tr>
+<td>Livraison</td>
+<td>Votre dernière mise en production casse le portail. Racontez les cinq minutes suivantes.</td>
+</tr>
+<tr>
+<td>Sécurité</td>
+<td>Votre plan de contrôle est joignable depuis quelles adresses ? Pourquoi, et qu'est-ce que ça expose ?</td>
+</tr>
+<tr>
+<td>Sécurité</td>
+<td>Quelqu'un récupère les droits de votre compte de service de pipeline. Qu'est-ce qu'il peut faire ?</td>
+</tr>
+<tr>
+<td>Supervision</td>
+<td>Votre alerte s'est-elle déjà déclenchée ? À tort ou à raison ?</td>
+</tr>
+<tr>
+<td>Coûts</td>
+<td>Combien coûte votre plateforme par mois si elle tourne en continu ? Quel poste est le plus lourd ?</td>
+</tr>
+</tbody>
+</table>
+<h2 id="auto-evaluation">Auto-évaluation</h2>
+<p>À remplir en équipe la veille de la soutenance. Une case non cochée n'est pas une faute — c'est un point à annoncer vous-même au jury.</p>
+<p><strong>Architecture et Terraform</strong></p>
+<ul class="task-list">
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> <code>terraform plan</code> annonce <code>no changes</code> sur les trois environnements</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Aucune ressource du schéma n'a été créée à la main, sauf le bucket d'état, documenté comme tel</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Le node pool utilise bien <code>pd-standard</code>, vérifié en ligne de commande</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Le dimensionnement du cluster est chiffré et justifié dans le <code>README</code></li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Un membre peut redéployer l'infrastructure depuis un dépôt vierge</li>
+</ul>
+<p><strong>Kubernetes</strong></p>
+<ul class="task-list">
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> L'application répond dans les trois namespaces</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Au moins trois réglages diffèrent réellement entre <code>dev</code> et <code>prod</code></li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Aucune valeur sensible en clair dans le dépôt, historique compris</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Les PVC sont liés et utilisent la StorageClass maison</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> L'autoscaler affiche une valeur chiffrée, pas <code>&lt;unknown&gt;</code></li>
+</ul>
+<p><strong>Livraison</strong></p>
+<ul class="task-list">
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Le pipeline passe du commit à <code>foodtrack-dev</code> sans intervention</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Le passage en production est bloqué tant qu'un humain n'a pas approuvé</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Le scan de sécurité s'exécute et son résultat est lu</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Aucune clé de compte de service n'existe dans le projet</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Les images sont étiquetées de façon traçable jusqu'au commit</li>
+</ul>
+<p><strong>Exploitation</strong></p>
+<ul class="task-list">
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Le tableau de bord affiche des données réelles</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> L'alerte a été déclenchée au moins une fois, volontairement</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Le script Python rend un code de sortie exploitable</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Les trois scripts Bash sont rejouables sans dommage</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> L'extinction du cluster a été utilisée au moins un soir</li>
+</ul>
+<p><strong>Soutenance</strong></p>
+<ul class="task-list">
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Chaque membre sait ce qu'il présente et pendant combien de temps</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> La démonstration a été répétée en conditions réelles</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Un repli existe si le réseau de la salle lâche</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Le <code>README</code> est à jour et lisible par quelqu'un d'extérieur</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Les limites connues sont listées et assumées</li>
+</ul>
+    </article>
+
+    
+    
+    
+    <script>
+    (function() {
+        'use strict';
+        
+        function initMermaidLightbox() {
+            // Crée le conteneur lightbox
+            const lightbox = document.createElement('div');
+            lightbox.className = 'mermaid-lightbox';
+            lightbox.innerHTML = `
+                <div class="mermaid-lightbox-backdrop"></div>
+                <div class="mermaid-lightbox-container">
+                    <div class="mermaid-lightbox-content"></div>
+                </div>
+                <div class="mermaid-lightbox-controls">
+                    <button class="mermaid-lb-btn mermaid-lb-zoom-in" title="Zoom +">+</button>
+                    <button class="mermaid-lb-btn mermaid-lb-zoom-reset" title="Reset">100%</button>
+                    <button class="mermaid-lb-btn mermaid-lb-zoom-out" title="Zoom -">−</button>
+                    <button class="mermaid-lb-btn mermaid-lb-close" title="Fermer">✕</button>
+                </div>
+            `;
+            document.body.appendChild(lightbox);
+
+            // Variables de zoom et pan
+            let scale = 1;
+            let translateX = 0;
+            let translateY = 0;
+            let isDragging = false;
+            let startX, startY;
+
+            const container = lightbox.querySelector('.mermaid-lightbox-container');
+            const content = lightbox.querySelector('.mermaid-lightbox-content');
+            const backdrop = lightbox.querySelector('.mermaid-lightbox-backdrop');
+
+            // Ajoute un bouton d'expansion à chaque diagramme Mermaid / PlantUML
+            document.querySelectorAll('.mermaid, pre.mermaid, .plantuml-diagram').forEach(diagram => {
+                const expandBtn = document.createElement('button');
+                expandBtn.className = 'mermaid-expand-btn';
+                expandBtn.innerHTML = '⛶';
+                expandBtn.title = 'Agrandir le diagramme';
+                expandBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    openLightbox(diagram);
+                });
+                
+                // Wrapper pour positionner le bouton
+                const wrapper = document.createElement('div');
+                wrapper.className = 'mermaid-wrapper';
+                diagram.parentNode.insertBefore(wrapper, diagram);
+                wrapper.appendChild(diagram);
+                wrapper.appendChild(expandBtn);
+            });
+
+            // Rend les images du contenu zoomables (clic = ouverture lightbox)
+            (document.querySelector('article.markdown-body') || document.body)
+                .querySelectorAll('img').forEach(img => {
+                    if (img.closest('.theme-logo')) return;      // pas le logo de marque
+                    if (img.classList.contains('zoomable-img')) return;
+                    img.classList.add('zoomable-img');
+                    img.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        openLightbox(img);
+                    });
+                });
+
+            function openLightbox(diagram) {
+                // Cas image : cloner l'<img> tel quel (zoom/pan identique aux schemas)
+                if (diagram.tagName === 'IMG') {
+                    content.innerHTML = '';
+                    const img = diagram.cloneNode(true);
+                    img.classList.add('lightbox-img');
+                    img.removeAttribute('width');
+                    img.removeAttribute('height');
+                    img.removeAttribute('style');
+                    content.appendChild(img);
+                    scale = 1;
+                    translateX = 0;
+                    translateY = 0;
+                    applyTransform();
+                    lightbox.classList.add('active');
+                    document.body.style.overflow = 'hidden';
+                    return;
+                }
+
+                // Clone le wrapper .mermaid complet (pas juste le SVG) pour que
+                // tous les selecteurs CSS qui ciblent ".mermaid X" continuent
+                // de s'appliquer au SVG cloné dans la lightbox.
+                const svg = diagram.querySelector('svg');
+                if (svg) {
+                    content.innerHTML = '';
+                    const clonedDiagram = diagram.cloneNode(true);
+                    clonedDiagram.classList.add('mermaid-clone');
+
+                    // Nettoyer les eventuels boutons / wrappers parasites copies
+                    clonedDiagram.querySelectorAll('.mermaid-expand-btn').forEach(b => b.remove());
+
+                    const clonedSvg = clonedDiagram.querySelector('svg');
+
+                    // Garder le viewBox pour les proportions
+                    if (clonedSvg && !clonedSvg.hasAttribute('viewBox') && svg.viewBox && svg.viewBox.baseVal) {
+                        const vb = svg.viewBox.baseVal;
+                        if (vb.width && vb.height) {
+                            clonedSvg.setAttribute('viewBox', `${vb.x} ${vb.y} ${vb.width} ${vb.height}`);
+                        }
+                    }
+
+                    if (clonedSvg) {
+                        // Le CSS gère les dimensions (80vw). On NE modifie PAS
+                        // les foreignObject : Mermaid centre les labels via le
+                        // transform du <g class="label"> parent, calculé pour
+                        // la taille originale du foreignObject. Toute mise à
+                        // l'echelle ici décale les textes (flowchart TD, etc.).
+                        clonedSvg.removeAttribute('width');
+                        clonedSvg.removeAttribute('height');
+                    }
+
+                    content.appendChild(clonedDiagram);
+                } else {
+                    content.innerHTML = diagram.innerHTML;
+                }
+                
+                // Reset zoom et position
+                scale = 1;
+                translateX = 0;
+                translateY = 0;
+                applyTransform();
+                
+                lightbox.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            }
+
+            function closeLightbox() {
+                lightbox.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+
+            function applyTransform() {
+                content.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`;
+                lightbox.querySelector('.mermaid-lb-zoom-reset').textContent = Math.round(scale * 100) + '%';
+            }
+
+            function zoomIn() {
+                scale = Math.min(scale * 1.25, 5);
+                applyTransform();
+            }
+
+            function zoomOut() {
+                scale = Math.max(scale / 1.25, 0.25);
+                applyTransform();
+            }
+
+            function zoomReset() {
+                scale = 1;
+                translateX = 0;
+                translateY = 0;
+                applyTransform();
+            }
+
+            // Événements des boutons
+            lightbox.querySelector('.mermaid-lb-close').addEventListener('click', closeLightbox);
+            lightbox.querySelector('.mermaid-lb-zoom-in').addEventListener('click', zoomIn);
+            lightbox.querySelector('.mermaid-lb-zoom-out').addEventListener('click', zoomOut);
+            lightbox.querySelector('.mermaid-lb-zoom-reset').addEventListener('click', zoomReset);
+            backdrop.addEventListener('click', closeLightbox);
+
+            // Fermer avec Escape
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && lightbox.classList.contains('active')) {
+                    closeLightbox();
+                }
+            });
+
+            // Zoom avec la molette
+            container.addEventListener('wheel', (e) => {
+                if (!lightbox.classList.contains('active')) return;
+                e.preventDefault();
+                
+                if (e.deltaY < 0) {
+                    scale = Math.min(scale * 1.1, 5);
+                } else {
+                    scale = Math.max(scale / 1.1, 0.25);
+                }
+                applyTransform();
+            });
+
+            // Pan avec la souris
+            container.addEventListener('mousedown', (e) => {
+                if (e.button !== 0) return;
+                isDragging = true;
+                startX = e.clientX - translateX;
+                startY = e.clientY - translateY;
+                container.style.cursor = 'grabbing';
+                e.preventDefault();
+            });
+
+            document.addEventListener('mousemove', (e) => {
+                if (!isDragging) return;
+                translateX = e.clientX - startX;
+                translateY = e.clientY - startY;
+                applyTransform();
+            });
+
+            document.addEventListener('mouseup', () => {
+                isDragging = false;
+                container.style.cursor = 'grab';
+            });
+
+            // Touch support pour mobile
+            let touchStartX, touchStartY;
+            container.addEventListener('touchstart', (e) => {
+                if (e.touches.length === 1) {
+                    touchStartX = e.touches[0].clientX - translateX;
+                    touchStartY = e.touches[0].clientY - translateY;
+                }
+            });
+
+            container.addEventListener('touchmove', (e) => {
+                if (e.touches.length === 1) {
+                    e.preventDefault();
+                    translateX = e.touches[0].clientX - touchStartX;
+                    translateY = e.touches[0].clientY - touchStartY;
+                    applyTransform();
+                }
+            });
+        }
+
+        // Initialise après le rendu de Mermaid
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof mermaid !== 'undefined') {
+                setTimeout(initMermaidLightbox, 600);
+            } else {
+                initMermaidLightbox();
+            }
+        });
+    })();
+    </script>
+
+    
+    <script>
+    (function() {
+        'use strict';
+
+        // Icones SVG autonomes (les glyphes ⧉/⬇ sont peu fiables en projection)
+        const ICON_COPY = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
+        const ICON_DOWNLOAD = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>';
+        const ICON_CHECK = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>';
+
+        // Copie du texte (repli execCommand pour les pages file:// sans navigator.clipboard)
+        function copyCodeToClipboard(text, btn) {
+            const original = btn.innerHTML;
+            const feedback = () => {
+                btn.classList.add('copied');
+                btn.innerHTML = ICON_CHECK + '<span class="lbl">Copié !</span>';
+                setTimeout(() => { btn.classList.remove('copied'); btn.innerHTML = original; }, 1300);
+            };
+            const fallback = () => {
+                const ta = document.createElement('textarea');
+                ta.value = text;
+                ta.style.position = 'fixed';
+                ta.style.opacity = '0';
+                document.body.appendChild(ta);
+                ta.select();
+                try { document.execCommand('copy'); } catch (e) {}
+                document.body.removeChild(ta);
+                feedback();
+            };
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(feedback).catch(fallback);
+            } else {
+                fallback();
+            }
+        }
+
+        function initCodeButtons() {
+            const docTitle = document.title || 'code';
+            const baseName = docTitle.replace(/[^a-zA-Z0-9_-]/g, '_').toLowerCase();
+            const article = document.querySelector('article.markdown-body') || document.body;
+            let index = 0;
+
+            article.querySelectorAll('pre').forEach(pre => {
+                if (pre.classList.contains('mermaid') || pre.querySelector('.mermaid')) return;
+                if (pre.parentNode && pre.parentNode.classList &&
+                    pre.parentNode.classList.contains('code-wrapper')) return;
+                const code = pre.querySelector('code');
+                if (!code) return;
+
+                index++;
+
+                // Extension selon le langage
+                const langClass = Array.from(code.classList).find(c => c.startsWith('language-'));
+                let ext = 'txt';
+                if (langClass) {
+                    const lang = langClass.replace('language-', '');
+                    const extMap = {
+                        'yaml':'yaml','yml':'yaml','json':'json','javascript':'js','js':'js',
+                        'typescript':'ts','ts':'ts','python':'py','py':'py','bash':'sh',
+                        'shell':'sh','sh':'sh','dockerfile':'Dockerfile','html':'html',
+                        'css':'css','sql':'sql','go':'go','rust':'rs'
+                    };
+                    ext = extMap[lang] || lang || 'txt';
+                }
+                const fileName = baseName + '_' + index + '.' + ext;
+
+                // Wrapper
+                const wrapper = document.createElement('div');
+                wrapper.className = 'code-wrapper';
+                pre.parentNode.insertBefore(wrapper, pre);
+                wrapper.appendChild(pre);
+
+                // Barre d'actions segmentee (copier / telecharger)
+                const actions = document.createElement('div');
+                actions.className = 'code-actions';
+
+                const copyBtn = document.createElement('button');
+                copyBtn.className = 'code-copy-btn';
+                copyBtn.type = 'button';
+                copyBtn.setAttribute('aria-label', 'Copier le code');
+                copyBtn.title = 'Copier le code';
+                copyBtn.innerHTML = ICON_COPY + '<span class="lbl">Copier</span>';
+                copyBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    copyCodeToClipboard(code.textContent || code.innerText, copyBtn);
+                });
+                actions.appendChild(copyBtn);
+
+                const downloadBtn = document.createElement('button');
+                downloadBtn.className = 'code-download-btn';
+                downloadBtn.type = 'button';
+                downloadBtn.setAttribute('aria-label', 'Télécharger le code (' + fileName + ')');
+                downloadBtn.title = 'Télécharger: ' + fileName;
+                downloadBtn.innerHTML = ICON_DOWNLOAD + '<span class="lbl">' + ext + '</span>';
+                downloadBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const blob = new Blob([code.textContent || code.innerText],
+                                          { type: 'text/plain;charset=utf-8' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = fileName;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                });
+                actions.appendChild(downloadBtn);
+
+                wrapper.appendChild(actions);
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', initCodeButtons);
+    })();
+    </script>
+
+</body>
+</html>

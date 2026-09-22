@@ -1,0 +1,4342 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projet final — FoodTrack sur Google Cloud</title>
+    
+    
+    
+    <style>
+/* ============================================
+   Apache Superset - Formation 2026
+   CSS Document Markdown - Cards & Delimiteurs
+   ============================================ */
+
+/* ============================================
+   FONTS (polices systeme, aucune dependance reseau : autonomie hors-ligne)
+   ============================================ */
+
+/* ============================================
+   VARIABLES
+   ============================================ */
+:root {
+    /* Couleurs (alignees sur le bleu du mode slides) */
+    --color-primary: #2563eb;
+    --color-primary-dark: #1d4ed8;
+    --color-primary-light: #dbeafe;
+    --color-primary-gradient: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+    --color-accent: #0ea5e9;
+    --color-accent-light: #e0f2fe;
+    
+    /* Semantique */
+    --color-success: #22c55e;
+    --color-success-light: #dcfce7;
+    --color-warning: #eab308;
+    --color-warning-light: #fef9c3;
+    --color-danger: #ef4444;
+    --color-danger-light: #fee2e2;
+    --color-info: #3b82f6;
+    --color-info-light: #dbeafe;
+    
+    /* Neutres */
+    --gray-50: #fafafa;
+    --gray-100: #f4f4f5;
+    --gray-200: #e4e4e7;
+    --gray-300: #d4d4d8;
+    --gray-400: #a1a1aa;
+    --gray-500: #71717a;
+    --gray-600: #52525b;
+    --gray-700: #3f3f46;
+    --gray-800: #27272a;
+    --gray-900: #18181b;
+
+    /* Bandeau de titre (h2) : gris-bleu distinct du fond de page (sinon invisible) */
+    --title-band: #edeef1;
+    
+    /* Typographie */
+    --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --font-mono: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+    
+    /* Dimensions */
+    --content-max-width: min(62rem, 94%);
+    --content-padding: 2.5rem;
+    
+    /* Bordures & Ombres */
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 16px;
+    --radius-xl: 20px;
+    
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+    --shadow-lg: 0 8px 30px rgba(0,0,0,0.12);
+    --shadow-card: 0 2px 8px rgba(0,0,0,0.06), 0 0 1px rgba(0,0,0,0.1);
+
+    /* Copyright / Footer (personnalisable via --copyright-text) */
+    --copyright-text: "© 2026 Semifir — adrien.vossough@semifir.com — semifir.com";
+    --disclaimer-text: "Ce support ne peut être reproduit, diffusé ou utilisé en dehors d'une formation donnée par Semifir, sans autorisation écrite.";
+    --copyright-color: rgba(15, 23, 42, 0.55);
+}
+
+/* Header copyright en haut a droite, present sur chaque page (screen + print PDF) */
+body::before {
+    content: var(--copyright-text);
+    position: fixed;
+    top: 10px;
+    right: 18px;
+    font-family: var(--font-sans);
+    font-size: 0.65rem;
+    font-weight: 400;
+    letter-spacing: 0.02em;
+    color: var(--copyright-color);
+    z-index: 1002;
+    pointer-events: none;
+    white-space: nowrap;
+}
+
+/* Footer copyright + interdiction de duplication, en bas de chaque page
+   (screen + print PDF). En complement du header (body::before). */
+body::after {
+    content: var(--copyright-text) "  ·  " var(--disclaimer-text);
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    text-align: center;
+    font-family: var(--font-sans);
+    font-size: 0.6rem;
+    letter-spacing: 0.02em;
+    color: var(--copyright-color);
+    background: rgba(255, 255, 255, 0.9);
+    border-top: 1px solid var(--gray-200);
+    padding: 4px 18px;
+    z-index: 1002;
+    pointer-events: none;
+}
+
+/* ============================================
+   RESET
+   ============================================ */
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+/* ============================================
+   BASE
+   ============================================ */
+html {
+    font-size: 16px;
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+}
+
+body {
+    font-family: var(--font-sans);
+    font-size: 1rem;
+    line-height: 1.75;
+    color: var(--gray-800);
+    background: linear-gradient(180deg, var(--gray-100) 0%, var(--gray-50) 100%);
+    min-height: 100vh;
+    margin: 0;
+    padding: 2.5rem 1rem;
+}
+
+/* ============================================
+   CONTAINER - markdown-body
+   ============================================ */
+.markdown-body,
+article,
+main {
+    max-width: var(--content-max-width);
+    margin: 0 auto;
+    background: white;
+    padding: var(--content-padding);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-lg);
+    border: 1px solid var(--gray-200);
+}
+
+/* ============================================
+   HEADINGS
+   ============================================ */
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 600;
+    line-height: 1.3;
+    color: var(--gray-900);
+    margin-top: 2.5rem;
+    margin-bottom: 1rem;
+}
+
+h1 {
+    font-size: 2.25rem;
+    font-weight: 700;
+    margin-top: 0;
+    padding-bottom: 1rem;
+    border-bottom: none;
+    position: relative;
+    color: var(--gray-900);
+}
+
+h1::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 80px;
+    height: 4px;
+    background: var(--color-primary-gradient);
+    border-radius: 2px;
+}
+
+h2 {
+    font-size: 1.5rem;
+    margin-top: 3rem;
+    padding: 1rem 1.25rem;
+    background: var(--title-band);
+    border-left: 4px solid var(--color-primary);
+    border-radius: 0 var(--radius-md) var(--radius-md) 0;
+    color: var(--gray-800);
+}
+
+h3 {
+    font-size: 1.25rem;
+    color: var(--gray-800);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+h3::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    background: var(--color-primary);
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+h4 {
+    font-size: 1.1rem;
+    color: var(--gray-700);
+    border-bottom: 1px dashed var(--gray-300);
+    padding-bottom: 0.5rem;
+}
+
+h5, h6 {
+    font-size: 0.9rem;
+    color: var(--gray-600);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 600;
+}
+
+/* ============================================
+   PARAGRAPHS & TEXT
+   ============================================ */
+p {
+    margin-bottom: 1.25rem;
+}
+
+strong, b {
+    font-weight: 600;
+    color: var(--gray-900);
+}
+
+a {
+    color: var(--color-primary);
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.2s;
+    border-bottom: 1px solid transparent;
+}
+
+a:hover {
+    color: var(--color-primary-dark);
+    border-bottom-color: var(--color-primary);
+}
+
+mark {
+    background: linear-gradient(120deg, #fef08a 0%, #fde047 100%);
+    padding: 0.1em 0.4em;
+    border-radius: 4px;
+}
+
+/* ============================================
+   HORIZONTAL RULE - DELIMITEUR
+   ============================================ */
+hr {
+    border: none;
+    height: 1px;
+    background: var(--gray-200);
+    margin: 3rem 0;
+    position: relative;
+}
+
+hr::before {
+    content: '◆';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    color: var(--color-primary);
+    padding: 0 1rem;
+    font-size: 0.8rem;
+}
+
+/* ============================================
+   LISTS
+   ============================================ */
+ul, ol {
+    margin-bottom: 1.25rem;
+    padding-left: 1.5rem;
+}
+
+li {
+    margin-bottom: 0.5rem;
+    position: relative;
+}
+
+li > ul, li > ol {
+    margin-top: 0.5rem;
+    margin-bottom: 0;
+}
+
+ul { list-style-type: none; }
+
+ul > li::before {
+    content: '▸';
+    color: var(--color-primary);
+    font-weight: bold;
+    position: absolute;
+    left: -1.25rem;
+}
+
+ul ul > li::before {
+    content: '○';
+    font-size: 0.7em;
+}
+
+ol { list-style-type: decimal; }
+
+/* ============================================
+   IMAGES - CARDS
+   ============================================ */
+img {
+    display: block;
+    max-width: 100%;
+    max-height: 500px;
+    height: auto;
+    margin: 2rem auto;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--gray-200);
+    transition: transform 0.2s, box-shadow 0.2s;
+    object-fit: contain;
+}
+
+img:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+
+/* Images contraintes */
+img[src*="screenshot"],
+img[src*="superset.apache.org"] {
+    max-height: 400px;
+    width: auto;
+    object-fit: contain;
+}
+
+/* Images locales dans le dossier images */
+img[src*="images/"] {
+    max-height: 450px;
+    width: auto;
+    object-fit: contain;
+}
+
+/* Images dans les titres - inline pour ne pas casser le titre */
+h1 img, h2 img, h3 img, h4 img, h5 img, h6 img {
+    display: inline-block;
+    margin: 0 0.5rem 0 0;
+    vertical-align: middle;
+    max-height: 1.5em;
+    border-radius: var(--radius-sm);
+    box-shadow: none;
+    border: none;
+}
+
+/* Images dans les tableaux - inline pour ne pas casser la cellule */
+td img, th img {
+    display: inline-block;
+    margin: 0;
+    vertical-align: middle;
+    max-height: 2em;
+    border-radius: var(--radius-sm);
+    box-shadow: none;
+    border: none;
+}
+
+figure {
+    margin: 2rem 0;
+    text-align: center;
+    background: var(--gray-50);
+    padding: 1.5rem;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--gray-200);
+}
+
+figure img {
+    margin: 0 auto 1rem;
+    box-shadow: none;
+    border: none;
+}
+
+figcaption {
+    font-size: 0.875rem;
+    color: var(--gray-500);
+    font-style: italic;
+}
+
+/* ============================================
+   CODE - CARDS
+   ============================================ */
+/* Code inline uniquement (pas dans pre) - discret, sans se confondre avec <mark> */
+code:not(pre code) {
+    font-family: var(--font-mono);
+    font-size: 0.85em;
+    background: var(--gray-100);
+    color: var(--color-primary-dark);
+    padding: 0.15em 0.4em;
+    border-radius: var(--radius-sm);
+    font-weight: 500;
+    border: 1px solid var(--gray-200);
+}
+
+/* Code dans les blocs pre - reset pour garder la coloration syntaxique */
+pre code {
+    background: transparent;
+    color: inherit;
+    padding: 0;
+    border: none;
+    font-weight: inherit;
+}
+
+pre {
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    line-height: 1.6;
+    background: var(--gray-900);
+    color: #e4e4e7;
+    padding: 1.5rem;
+    border-radius: var(--radius-lg);
+    overflow-x: auto;
+    margin: 1.5rem 0;
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--gray-800);
+    position: relative;
+}
+
+pre::before {
+    content: '';
+    position: absolute;
+    top: 12px;
+    left: 16px;
+    width: 12px;
+    height: 12px;
+    background: #ff5f56;
+    border-radius: 50%;
+    box-shadow: 20px 0 0 #ffbd2e, 40px 0 0 #27ca40;
+}
+
+pre code {
+    background: transparent;
+    color: inherit;
+    padding: 0;
+    font-size: inherit;
+    font-weight: normal;
+}
+
+/* ============================================
+   Boutons copier / telecharger — groupe segmente
+   ============================================ */
+.code-wrapper {
+    position: relative;
+    margin: 1.5rem 0;
+}
+
+/* gouttiere haute : evite que les boutons recouvrent la 1re ligne de code */
+.code-wrapper > pre {
+    margin: 0;
+    padding-top: 2.75rem;
+}
+
+.code-actions {
+    position: absolute;
+    top: 8px;
+    right: 10px;
+    display: flex;
+    gap: 1px;
+    background: rgba(15, 23, 42, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    opacity: 0.85;
+    transition: opacity 0.2s ease;
+    z-index: 10;
+}
+
+.code-wrapper:hover .code-actions,
+.code-wrapper:focus-within .code-actions {
+    opacity: 1;
+}
+
+.code-actions button {
+    display: inline-flex;
+    align-items: center;
+    height: 28px;
+    padding: 0 9px;
+    border: 0;
+    background: transparent;
+    color: #e8eef6;
+    font-family: var(--font-sans);
+    font-size: 0.72rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+.code-actions button + button {
+    border-left: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.code-actions button:hover {
+    background: var(--color-primary);
+    color: #fff;
+}
+
+.code-actions button.copied {
+    background: #16a34a;
+    color: #fff;
+}
+
+.code-actions svg {
+    width: 15px;
+    height: 15px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    flex: none;
+}
+
+.code-actions .lbl {
+    max-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    transition: max-width 0.22s ease, margin 0.22s ease;
+}
+
+.code-actions button:hover .lbl,
+.code-actions button:focus-visible .lbl,
+.code-actions button.copied .lbl {
+    max-width: 90px;
+    margin-left: 6px;
+}
+
+/* ============================================
+   TABLES - CARDS
+   ============================================ */
+table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin: 1.5rem 0;
+    font-size: 0.9375rem;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-card);
+    border: 1px solid var(--gray-200);
+}
+
+thead {
+    background: var(--color-primary-gradient);
+    color: white;
+}
+
+th {
+    font-weight: 600;
+    text-align: left;
+    padding: 1rem 1.25rem;
+    font-size: 0.8125rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+td {
+    padding: 0.875rem 1.25rem;
+    border-bottom: 1px solid var(--gray-100);
+    vertical-align: top;
+}
+
+tbody tr:last-child td {
+    border-bottom: none;
+}
+
+tbody tr:nth-child(even) {
+    background: var(--gray-50);
+}
+
+tbody tr {
+    transition: background 0.15s;
+}
+
+tbody tr:hover {
+    background: var(--color-primary-light);
+}
+
+/* ============================================
+   BLOCKQUOTES - CARDS
+   ============================================ */
+blockquote {
+    margin: 2rem 0;
+    padding: 1.5rem 1.5rem 1.5rem 2rem;
+    border-left: 4px solid var(--color-primary);
+    background: linear-gradient(135deg, var(--gray-50) 0%, white 100%);
+    border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
+    color: var(--gray-700);
+    box-shadow: var(--shadow-sm);
+    font-style: italic;
+    position: relative;
+}
+
+blockquote::before {
+    content: '"';
+    position: absolute;
+    top: -10px;
+    left: 15px;
+    font-size: 4rem;
+    color: var(--color-primary);
+    opacity: 0.2;
+    font-family: Georgia, serif;
+    line-height: 1;
+}
+
+blockquote p:last-child {
+    margin-bottom: 0;
+}
+
+/* ============================================
+   DETAILS / ACCORDIONS - CARDS
+   ============================================ */
+details {
+    margin: 1.5rem 0;
+    padding: 0;
+    background: white;
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-card);
+    transition: box-shadow 0.2s;
+}
+
+details:hover {
+    box-shadow: var(--shadow-md);
+}
+
+details[open] {
+    box-shadow: var(--shadow-md);
+    padding: 1rem 1.25rem;
+}
+
+details[open] > summary {
+    /* Compenser le padding du details pour que le summary reste bord a bord */
+    margin: -1rem -1.25rem 1rem -1.25rem;
+}
+
+/* Le div.highlight et pre doivent prendre toute la largeur */
+details > .highlight,
+details > pre {
+    margin-left: -1.25rem;
+    margin-right: -1.25rem;
+    border-radius: 0;
+}
+
+details > .highlight pre {
+    border-radius: 0;
+    margin: 0;
+}
+
+details > .highlight:last-child,
+details > pre:last-child {
+    margin-bottom: -1rem;
+}
+
+summary {
+    font-weight: 600;
+    cursor: pointer;
+    padding: 1rem 1.25rem;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: var(--gray-800);
+    background: var(--gray-50);
+    border-bottom: 1px solid transparent;
+    transition: all 0.2s;
+}
+
+details[open] summary {
+    border-bottom-color: var(--gray-200);
+    background: var(--color-primary-light);
+    color: var(--color-primary-dark);
+}
+
+summary::-webkit-details-marker {
+    display: none;
+}
+
+summary::before {
+    content: '▶';
+    font-size: 0.65rem;
+    color: var(--color-primary);
+    transition: transform 0.2s;
+    flex-shrink: 0;
+}
+
+details[open] summary::before {
+    transform: rotate(90deg);
+}
+
+summary:hover {
+    background: var(--gray-100);
+}
+
+
+/* ============================================
+   MERMAID DIAGRAMS - CARDS
+   ============================================ */
+.mermaid,
+pre.mermaid {
+    background: white;
+    padding: 2rem;
+    margin: 2rem 0;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--gray-200);
+    text-align: center;
+    overflow-x: auto;
+    box-shadow: var(--shadow-card);
+}
+
+.mermaid::before {
+    display: none;
+}
+
+.mermaid svg {
+    max-width: 100%;
+    height: auto;
+}
+
+/* ============================================
+   ALERTS / NOTES - CARDS
+   ============================================ */
+.note, .info, .tip {
+    padding: 1.25rem;
+    margin: 1.5rem 0;
+    border-radius: var(--radius-lg);
+    border-left: 4px solid var(--color-info);
+    background: var(--color-info-light);
+    box-shadow: var(--shadow-sm);
+}
+
+.warning, .attention {
+    border-left-color: var(--color-warning);
+    background: var(--color-warning-light);
+}
+
+.danger, .error {
+    border-left-color: var(--color-danger);
+    background: var(--color-danger-light);
+}
+
+.success {
+    border-left-color: var(--color-success);
+    background: var(--color-success-light);
+}
+
+/* ============================================
+   SECTION DIVIDERS
+   ============================================ */
+/* (Lettrine retiree : une lettrine apres CHAQUE h2 fatigue la lecture d'un
+   long document technique.) */
+
+/* ============================================
+   PRINT
+   ============================================ */
+@media print {
+    body {
+        background: white;
+        padding: 0;
+    }
+    
+    .markdown-body, article, main {
+        box-shadow: none;
+        border: none;
+        padding: 0;
+        max-width: 100%;
+    }
+    
+    pre {
+        background: var(--gray-100) !important;
+        color: var(--gray-900) !important;
+        box-shadow: none;
+        border: 1px solid var(--gray-300);
+    }
+    
+    pre::before {
+        display: none;
+    }
+    
+    a { color: var(--gray-900); }
+    
+    img {
+        max-height: 280px;
+        page-break-inside: avoid;
+        box-shadow: none;
+    }
+    
+    h1, h2, h3 {
+        page-break-after: avoid;
+    }
+    
+    table, pre, blockquote, details {
+        page-break-inside: avoid;
+    }
+    
+    h2 {
+        background: none;
+        padding-left: 0;
+    }
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media (max-width: 768px) {
+    body {
+        padding: 1rem 0.5rem;
+    }
+    
+    .markdown-body, article, main {
+        padding: 1.5rem;
+        border-radius: var(--radius-lg);
+    }
+    
+    h1 { font-size: 1.75rem; }
+    h2 { 
+        font-size: 1.25rem;
+        padding: 0.75rem 1rem;
+    }
+    h3 { font-size: 1.1rem; }
+    
+    table {
+        display: block;
+        overflow-x: auto;
+    }
+    
+    pre {
+        padding: 1rem;
+        font-size: 0.8rem;
+    }
+    
+    img {
+        max-height: 250px;
+    }
+    
+    blockquote::before {
+        display: none;
+    }
+}
+
+/* ============================================
+   LOGO SUPERSET
+   ============================================ */
+img[src*="superset-logo"] {
+    max-height: 80px;
+    margin: 0 0 2rem 0;
+    box-shadow: none;
+    border: none;
+}
+
+img[src*="superset-logo"]:hover {
+    transform: none;
+}
+
+/* ============================================
+   MERMAID LIGHTBOX (zoom diagrammes)
+   ============================================ */
+
+/* Wrapper pour positionner le bouton d'expansion */
+.mermaid-wrapper {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+}
+
+/* Bouton d'expansion */
+.mermaid-expand-btn {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 36px;
+    height: 36px;
+    border: none;
+    border-radius: var(--radius-md);
+    background: rgba(255, 255, 255, 0.9);
+    color: var(--gray-600);
+    font-size: 1.2rem;
+    cursor: pointer;
+    opacity: 0;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--shadow-md);
+    z-index: 10;
+}
+
+.mermaid-wrapper:hover .mermaid-expand-btn {
+    opacity: 1;
+}
+
+.mermaid-expand-btn:hover {
+    background: var(--color-primary);
+    color: white;
+    transform: scale(1.1);
+}
+
+/* Lightbox overlay */
+.mermaid-lightbox {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 10000;
+    display: none;
+}
+
+.mermaid-lightbox.active {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mermaid-lightbox-backdrop {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(8px);
+}
+
+.mermaid-lightbox-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    cursor: grab;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mermaid-lightbox-content {
+    transform-origin: center center;
+    transition: transform 0.1s ease-out;
+    padding: 40px;
+}
+
+/* Le clone du wrapper .mermaid herite des styles de la page (flex, max-height,
+   padding, background, border) qui empechent l'affichage en grand. On les
+   neutralise uniquement dans le contexte de la lightbox pour que le rendu
+   visuel des elements internes (.node, .messageText, .actor, etc.) reste
+   strictement identique a celui de la page. */
+.mermaid-lightbox-content .mermaid,
+.mermaid-lightbox-content .mermaid-clone {
+    display: block !important;
+    width: auto !important;
+    max-width: none !important;
+    max-height: none !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+    background: white !important;
+    border: none !important;
+    border-radius: var(--radius-lg) !important;
+    padding: 32px !important;
+    margin: 0 !important;
+    box-shadow: var(--shadow-lg);
+    text-align: center;
+}
+
+.mermaid-lightbox-content svg,
+.mermaid-lightbox-content .mermaid svg {
+    max-width: none !important;
+    max-height: none !important;
+    width: 80vw !important;
+    height: auto !important;
+    min-width: 800px;
+    background: transparent;
+    border-radius: 0;
+    padding: 0;
+    box-shadow: none;
+}
+
+/* On évite tout override interne sur les foreignObject et leurs enfants :
+   Mermaid calcule le centrage des labels avec leur taille/largeur d'origine
+   (transform du <g class="label">, display: table-cell, etc.). Forcer
+   text-align, white-space ou width casse le rendu (flowchart TD, mindmap...). */
+.mermaid-lightbox.active svg foreignObject {
+    overflow: visible !important;
+}
+
+/* Images zoomables : clic pour agrandir (comme les diagrammes Mermaid) */
+.zoomable-img {
+    cursor: zoom-in;
+    transition: box-shadow 0.15s ease;
+}
+
+.zoomable-img:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
+}
+
+/* Rendu de l'image dans la lightbox (zoom/pan via .mermaid-lightbox-content) */
+.mermaid-lightbox-content img,
+.mermaid-lightbox-content .lightbox-img {
+    display: block;
+    max-width: 88vw !important;
+    max-height: 88vh !important;
+    width: auto !important;
+    height: auto !important;
+    background: white;
+    border-radius: var(--radius-lg);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+}
+
+/* Contrôles du lightbox */
+.mermaid-lightbox-controls {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    display: flex;
+    gap: 8px;
+    z-index: 10001;
+}
+
+.mermaid-lb-btn {
+    width: 44px;
+    height: 44px;
+    border: none;
+    border-radius: var(--radius-md);
+    background: rgba(255, 255, 255, 0.95);
+    color: var(--gray-800);
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    box-shadow: var(--shadow-md);
+}
+
+.mermaid-lb-zoom-reset {
+    width: auto;
+    padding: 0 16px;
+    font-size: 0.9rem;
+}
+
+.mermaid-lb-btn:hover {
+    background: var(--color-primary);
+    color: white;
+    transform: scale(1.05);
+}
+
+.mermaid-lb-close:hover {
+    background: #ef4444;
+    color: white;
+}
+
+/* Instructions en bas */
+.mermaid-lightbox::after {
+    content: 'Molette: zoom • Glisser: déplacer • Échap: fermer';
+    position: absolute;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.85rem;
+    font-weight: 500;
+    background: rgba(0, 0, 0, 0.5);
+    padding: 10px 20px;
+    border-radius: var(--radius-lg);
+}
+
+/* ============================================
+   FINITION : accessibilite, liens, bandeaux, impression
+   ============================================ */
+/* Focus clavier visible (WCAG 2.4.7) */
+a:focus-visible,
+button:focus-visible,
+summary:focus-visible {
+    outline: 3px solid var(--color-primary);
+    outline-offset: 2px;
+}
+
+/* Mouvement reduit (WCAG 2.3.3) */
+@media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after {
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+    }
+}
+
+@media (pointer: coarse) {
+    .code-actions { opacity: 1; }
+}
+
+/* Liens de corps : soulignes discretement (pas seulement la couleur, WCAG 1.4.1) */
+.markdown-body a {
+    text-decoration: underline;
+    text-decoration-color: rgba(37, 99, 235, 0.4);
+    text-underline-offset: 0.15em;
+    text-decoration-thickness: 1px;
+}
+.markdown-body a:hover { text-decoration-color: var(--color-primary); }
+
+/* Bandeaux fixes : reserver l'espace bas + tronquer le copyright etroit */
+body { padding-bottom: 3.5rem; }
+body::before { max-width: 70vw; overflow: hidden; text-overflow: ellipsis; }
+@media (max-width: 768px) {
+    body { padding-bottom: 5rem; }
+}
+
+/* Impression : masquer les boutons, exposer les URL des liens externes */
+@media print {
+    .code-actions { display: none !important; }
+    .markdown-body a { text-decoration: underline; }
+    .markdown-body a[href^="http"]::after {
+        content: " (" attr(href) ")";
+        font-size: 0.8em;
+        color: var(--gray-600);
+        word-break: break-all;
+    }
+}
+
+/* ============================================
+   LIGNE SOURCE SOUS UN VISUEL (R-VISUELS)
+   Paragraphe "Source : ..." place juste sous une image, un schema ou un
+   bloc : classe img-source posee par md2html.py (imgsource.py). Discret :
+   moitie de la taille du texte, gris. Regler --img-source-scale au besoin.
+   ============================================ */
+:root {
+    --img-source-scale: 0.5;
+    --img-source-color: var(--gray-500);
+}
+
+p.img-source {
+    font-size: calc(1em * var(--img-source-scale));
+    color: var(--img-source-color);
+    line-height: 1.4;
+    text-align: center;
+    max-width: 90%;
+    margin: -1.4rem auto 1.8rem;
+}
+
+p.img-source a {
+    color: inherit;
+}
+
+    </style>
+    
+    <style>
+/* ============================================
+   Mermaid Diagram Styles
+   ============================================ */
+
+/* ============================================
+   Pont de variables : diagrams.css consomme des tokens (--color-gray-*,
+   --space-*, semantiques) definis ni dans slides.css ni dans exercice.css.
+   On les fournit ici (avec repli hex) pour que bordures, paddings et fonds
+   des composants ne cassent plus silencieusement. Charge APRES le CSS
+   principal ; les semantiques reprennent les valeurs d'exercice (pas de regression).
+   ============================================ */
+:root {
+    --color-gray-50: var(--gray-50, #f8fafc);
+    --color-gray-100: var(--gray-100, #f1f5f9);
+    --color-gray-200: var(--gray-200, #e2e8f0);
+    --color-gray-300: var(--gray-300, #cbd5e1);
+    --color-gray-400: var(--gray-400, #94a3b8);
+    --color-gray-500: var(--gray-500, #64748b);
+    --color-gray-600: var(--gray-600, #475569);
+    --color-gray-700: var(--gray-700, #334155);
+    --color-gray-800: var(--gray-800, #1e293b);
+    --color-gray-900: var(--gray-900, #0f172a);
+    --space-xs: 0.375rem;
+    --space-sm: 0.625rem;
+    --space-md: 1rem;
+    --space-lg: 1.5rem;
+    --space-xl: 2rem;
+    --font-display: var(--font-sans);
+}
+
+/* Semantiques : definies seulement si absentes du CSS principal (mode slides).
+   En mode exercice, exercice.css les a deja posees avant -> non surchargees ici. */
+:root {
+    --color-success: #22c55e;
+    --color-danger: #ef4444;
+    --color-warning: #eab308;
+    --color-info: #3b82f6;
+}
+
+/* Container pour les diagrammes Mermaid */
+.mermaid-container {
+    background: white;
+    border: 1px solid var(--color-gray-200);
+    border-radius: var(--radius-lg);
+    padding: var(--space-md);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: auto;
+    flex: 1;
+    min-height: 120px;
+    max-height: 600px;
+    max-width: 100%;
+    width: 100%;
+}
+
+.mermaid-container--full {
+    flex: 1;
+    min-height: 0;
+}
+
+.mermaid-container--compact {
+    min-height: 100px;
+    max-height: 350px;
+    flex: 0 0 auto;
+}
+
+.mermaid-container--small {
+    max-height: 300px;
+}
+
+.mermaid-container--medium {
+    max-height: 450px;
+}
+
+.mermaid-container--large {
+    max-height: 700px;
+}
+
+/* Empêcher les diagrammes de déborder */
+.mermaid-container--contained {
+    overflow: hidden;
+}
+
+.mermaid-container--contained .mermaid svg {
+    max-height: 100% !important;
+}
+
+/* Override des styles Mermaid par défaut */
+.mermaid, pre.mermaid {
+    font-family: var(--font-display, 'Inter', sans-serif);
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 24px;
+    margin: 16px 0;
+    text-align: center;
+    max-height: 60vh;
+    overflow: hidden;
+}
+
+.mermaid::before,
+.mermaid::after {
+    display: none;
+}
+
+/* SVG généré par Mermaid - dimensionnement contrôlé */
+.mermaid svg {
+    max-width: 100%;
+    max-height: 60vh;
+    height: auto;
+    width: auto;
+}
+
+/* Les diagrammes Gantt ont un max-width inline (~300px) injecte par Mermaid
+   qui les ecrase. On force la pleine largeur et on libere les contraintes
+   du parent flex (.mermaid). */
+.mermaid svg[aria-roledescription="gantt"] {
+    max-width: none !important;
+    width: 100% !important;
+    min-width: 800px !important;
+    max-height: none !important;
+    height: auto !important;
+    flex: 1 1 auto !important;
+}
+
+/* Le parent .mermaid contenant un Gantt : on casse le flex centre + overflow
+   hidden + max-height qui empechent le SVG de prendre sa place. */
+.mermaid:has(svg[aria-roledescription="gantt"]) {
+    display: block !important;
+    max-height: none !important;
+    overflow-x: auto !important;
+    overflow-y: visible !important;
+    min-width: 0 !important;
+}
+
+/* Pour les diagrammes complexes, permettre le scroll si nécessaire */
+.mermaid-container--scroll {
+    overflow: auto;
+}
+
+.mermaid .node rect,
+.mermaid .node polygon,
+.mermaid .node circle {
+    stroke-width: 2px !important;
+}
+
+.mermaid .edgePath .path {
+    stroke-width: 2px !important;
+}
+
+.mermaid .label {
+    font-family: var(--font-display) !important;
+    font-size: 12px !important;
+    overflow: visible !important;
+}
+
+/* Ajustements pour différentes tailles de diagrammes */
+.mermaid .nodeLabel {
+    font-size: 12px !important;
+    line-height: 1.3 !important;
+    overflow: visible !important;
+    white-space: normal !important;
+    text-overflow: clip !important;
+}
+
+.mermaid .edgeLabel {
+    font-size: 11px !important;
+    overflow: visible !important;
+}
+
+/* Permettre aux nœuds de s'adapter au contenu */
+.mermaid .node rect,
+.mermaid .node polygon {
+    overflow: visible !important;
+}
+
+/* ============================================
+   Cluster / Subgraph Styles
+   Fix pour les titres sur 2 lignes
+   ============================================ */
+.mermaid .cluster rect,
+.mermaid svg .cluster rect {
+    rx: 8px !important;
+    ry: 8px !important;
+}
+
+.mermaid .cluster-label {
+    font-size: 14px !important;
+    font-weight: 700 !important;
+    dominant-baseline: text-before-edge !important;
+}
+
+/* Augmenter l'espace pour les titres de cluster sur plusieurs lignes */
+.mermaid .cluster-label foreignObject {
+    overflow: visible !important;
+}
+
+.mermaid .cluster-label foreignObject div,
+.mermaid .cluster-label foreignObject p,
+.mermaid .cluster-label foreignObject span {
+    padding-bottom: 8px !important;
+    margin-bottom: 4px !important;
+    line-height: 1.4 !important;
+}
+
+/* Padding interne des clusters pour éviter le chevauchement */
+.mermaid .cluster .nodeLabel {
+    margin-top: 4px !important;
+}
+
+/* Style visuel des clusters */
+.mermaid .cluster rect {
+    fill: #f8fafc !important;
+    stroke: #cbd5e1 !important;
+    stroke-width: 2px !important;
+}
+
+/* Texte des labels de cluster - forcer lisibilité */
+.mermaid .cluster-label text,
+.mermaid .cluster-label tspan,
+.mermaid svg .cluster-label text {
+    fill: #1e293b !important;
+    color: #1e293b !important;
+    font-weight: 700 !important;
+}
+
+/* ============================================
+   Mermaid Color Contrast Fixes
+   Le contraste est géré par JavaScript après rendu
+   Voir la fonction fixMermaidContrast() dans les fichiers HTML
+   ============================================ */
+
+/* ============================================
+   Sequence Diagram Specific Styles
+   Palette : fonds pastel/sombres avec texte contrasté
+   ============================================ */
+
+/* Acteurs/Participants - boîtes en haut et en bas - FOND FONCÉ BLEU */
+.mermaid .actor,
+.mermaid svg .actor,
+.mermaid svg rect.actor,
+.mermaid .actor-top,
+.mermaid .actor-bottom,
+.mermaid svg .actor-top,
+.mermaid svg .actor-bottom {
+    fill: #1e3a5f !important;
+    stroke: #0c4a6e !important;
+    stroke-width: 2px !important;
+}
+
+/* Texte des acteurs - FORCER couleur BLANCHE sur fond foncé */
+.mermaid .actor-man,
+.mermaid text.actor,
+.mermaid svg text.actor,
+.mermaid svg .actor-man {
+    fill: #ffffff !important;
+    color: #ffffff !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+}
+
+/* Tspan dans les acteurs */
+.mermaid text.actor tspan,
+.mermaid svg text.actor tspan,
+.mermaid .actor-man tspan {
+    fill: #ffffff !important;
+    color: #ffffff !important;
+}
+
+/* Lignes de vie des acteurs */
+.mermaid .actor-line,
+.mermaid svg .actor-line,
+.mermaid svg line.actor-line {
+    stroke: #64748b !important;
+    stroke-width: 1.5px !important;
+    stroke-dasharray: 4, 4 !important;
+}
+
+/* Flèches de messages - lignes */
+.mermaid .messageLine0,
+.mermaid .messageLine1,
+.mermaid svg .messageLine0,
+.mermaid svg .messageLine1,
+.mermaid svg line.messageLine0,
+.mermaid svg line.messageLine1 {
+    stroke: #1e293b !important;
+    stroke-width: 2px !important;
+}
+
+/* Pointes de flèches */
+.mermaid .arrowhead,
+.mermaid svg .arrowhead {
+    fill: #1e293b !important;
+    stroke: #1e293b !important;
+}
+
+.mermaid #arrowhead path,
+.mermaid marker path,
+.mermaid svg marker path,
+.mermaid svg #arrowhead path {
+    fill: #1e293b !important;
+    stroke: #1e293b !important;
+}
+
+/* Texte des messages - FORCER couleur NOIRE (lisible sur fond blanc) */
+.mermaid .messageText,
+.mermaid svg .messageText,
+.mermaid svg text.messageText {
+    fill: #0f172a !important;
+    color: #0f172a !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    stroke: none !important;
+}
+
+/* Forcer tous les tspan dans messageText */
+.mermaid .messageText tspan,
+.mermaid svg .messageText tspan {
+    fill: #0f172a !important;
+    color: #0f172a !important;
+}
+
+/* Boîtes d'activation - FOND PASTEL BLEU */
+.mermaid .activation0,
+.mermaid .activation1,
+.mermaid .activation2,
+.mermaid svg .activation0,
+.mermaid svg .activation1,
+.mermaid svg .activation2 {
+    fill: #dbeafe !important;
+    stroke: #3b82f6 !important;
+    stroke-width: 2px !important;
+}
+
+/* Boucles (loop), alternatives (alt), options (opt), etc. - FOND PASTEL */
+.mermaid .loopLine,
+.mermaid svg .loopLine {
+    stroke: #64748b !important;
+    stroke-width: 2px !important;
+}
+
+/* Fond des blocs loop/alt/opt */
+.mermaid rect.loopBox,
+.mermaid .loopBox,
+.mermaid svg .loopBox {
+    fill: #f8fafc !important;
+    stroke: #64748b !important;
+    stroke-width: 1.5px !important;
+}
+
+.mermaid .loopText,
+.mermaid .loopText tspan,
+.mermaid svg .loopText,
+.mermaid svg .loopText tspan {
+    fill: #1e293b !important;
+    color: #1e293b !important;
+    font-size: 12px !important;
+    font-weight: 700 !important;
+}
+
+/* Label box (loop, alt, opt, etc.) - FOND PASTEL VERT */
+.mermaid .labelBox,
+.mermaid svg .labelBox {
+    fill: #dcfce7 !important;
+    stroke: #22c55e !important;
+    stroke-width: 1.5px !important;
+}
+
+.mermaid .labelText,
+.mermaid .labelText tspan,
+.mermaid svg .labelText,
+.mermaid svg .labelText tspan {
+    fill: #14532d !important;
+    color: #14532d !important;
+    font-size: 12px !important;
+    font-weight: 700 !important;
+}
+
+/* Notes dans les diagrammes de séquence - FOND PASTEL JAUNE */
+.mermaid .note,
+.mermaid svg .note,
+.mermaid rect.note {
+    fill: #fef9c3 !important;
+    stroke: #ca8a04 !important;
+    stroke-width: 2px !important;
+}
+
+.mermaid .noteText,
+.mermaid .noteText tspan,
+.mermaid svg .noteText,
+.mermaid svg .noteText tspan {
+    fill: #713f12 !important;
+    color: #713f12 !important;
+    font-size: 12px !important;
+    font-weight: 500 !important;
+}
+
+/* Numéros de séquence - FOND SOMBRE avec texte BLANC */
+.mermaid .sequenceNumber,
+.mermaid svg .sequenceNumber {
+    fill: #ffffff !important;
+    color: #ffffff !important;
+}
+
+.mermaid .sequenceNumber-rect,
+.mermaid svg rect.sequenceNumber-rect {
+    fill: #374151 !important;
+    stroke: #1f2937 !important;
+}
+
+/* ============================================
+   Entity Relationship Diagram Styles
+   ============================================ */
+.mermaid .er.entityBox,
+.mermaid .entityBox,
+.mermaid svg .er.entityBox,
+.mermaid svg .entityBox,
+.mermaid svg rect.er {
+    fill: #dbeafe !important;
+    stroke: #3b82f6 !important;
+    stroke-width: 2px !important;
+}
+
+.mermaid .er.entityLabel,
+.mermaid .entityLabel,
+.mermaid svg .er.entityLabel,
+.mermaid svg .entityLabel,
+.mermaid svg text.er {
+    fill: #1e3a8a !important;
+    color: #1e3a8a !important;
+    font-weight: 600 !important;
+}
+
+.mermaid .er.attributeBoxEven,
+.mermaid svg .er.attributeBoxEven {
+    fill: #f8fafc !important;
+    stroke: #cbd5e1 !important;
+}
+
+.mermaid .er.attributeBoxOdd,
+.mermaid svg .er.attributeBoxOdd {
+    fill: #f1f5f9 !important;
+    stroke: #cbd5e1 !important;
+}
+
+.mermaid .er text,
+.mermaid svg g.er text,
+.mermaid svg .erDiagram text {
+    fill: #1e293b !important;
+    color: #1e293b !important;
+}
+
+.mermaid .er.relationshipLine,
+.mermaid svg .er.relationshipLine {
+    stroke: #64748b !important;
+    stroke-width: 1.5px !important;
+}
+
+.mermaid .er.relationshipLabel,
+.mermaid svg .er.relationshipLabel {
+    fill: #475569 !important;
+}
+
+/* ============================================
+   Mindmap Diagram Styles
+   ============================================ */
+.mermaid .mindmap-node rect,
+.mermaid .mindmap-node circle,
+.mermaid .mindmap-node ellipse,
+.mermaid .mindmap-node polygon,
+.mermaid svg .mindmap-node rect,
+.mermaid svg .mindmap-node circle,
+.mermaid svg .mindmap-node ellipse {
+    stroke-width: 2px !important;
+}
+
+/* Forcer des couleurs pastel lisibles sur les mindmaps */
+.mermaid .mindmap-node:nth-child(7n+1) rect,
+.mermaid .mindmap-node:nth-child(7n+1) circle,
+.mermaid .mindmap-node:nth-child(7n+1) ellipse {
+    fill: #dbeafe !important;
+    stroke: #3b82f6 !important;
+}
+.mermaid .mindmap-node:nth-child(7n+1) text,
+.mermaid .mindmap-node:nth-child(7n+1) .nodeLabel {
+    fill: #1e3a8a !important;
+    color: #1e3a8a !important;
+}
+
+.mermaid .mindmap-node:nth-child(7n+2) rect,
+.mermaid .mindmap-node:nth-child(7n+2) circle,
+.mermaid .mindmap-node:nth-child(7n+2) ellipse {
+    fill: #dcfce7 !important;
+    stroke: #22c55e !important;
+}
+.mermaid .mindmap-node:nth-child(7n+2) text,
+.mermaid .mindmap-node:nth-child(7n+2) .nodeLabel {
+    fill: #14532d !important;
+    color: #14532d !important;
+}
+
+.mermaid .mindmap-node:nth-child(7n+3) rect,
+.mermaid .mindmap-node:nth-child(7n+3) circle,
+.mermaid .mindmap-node:nth-child(7n+3) ellipse {
+    fill: #fef9c3 !important;
+    stroke: #eab308 !important;
+}
+.mermaid .mindmap-node:nth-child(7n+3) text,
+.mermaid .mindmap-node:nth-child(7n+3) .nodeLabel {
+    fill: #713f12 !important;
+    color: #713f12 !important;
+}
+
+.mermaid .mindmap-node:nth-child(7n+4) rect,
+.mermaid .mindmap-node:nth-child(7n+4) circle,
+.mermaid .mindmap-node:nth-child(7n+4) ellipse {
+    fill: #fce7f3 !important;
+    stroke: #ec4899 !important;
+}
+.mermaid .mindmap-node:nth-child(7n+4) text,
+.mermaid .mindmap-node:nth-child(7n+4) .nodeLabel {
+    fill: #831843 !important;
+    color: #831843 !important;
+}
+
+.mermaid .mindmap-node:nth-child(7n+5) rect,
+.mermaid .mindmap-node:nth-child(7n+5) circle,
+.mermaid .mindmap-node:nth-child(7n+5) ellipse {
+    fill: #f3e8ff !important;
+    stroke: #a855f7 !important;
+}
+.mermaid .mindmap-node:nth-child(7n+5) text,
+.mermaid .mindmap-node:nth-child(7n+5) .nodeLabel {
+    fill: #581c87 !important;
+    color: #581c87 !important;
+}
+
+.mermaid .mindmap-node:nth-child(7n+6) rect,
+.mermaid .mindmap-node:nth-child(7n+6) circle,
+.mermaid .mindmap-node:nth-child(7n+6) ellipse {
+    fill: #cffafe !important;
+    stroke: #06b6d4 !important;
+}
+.mermaid .mindmap-node:nth-child(7n+6) text,
+.mermaid .mindmap-node:nth-child(7n+6) .nodeLabel {
+    fill: #164e63 !important;
+    color: #164e63 !important;
+}
+
+.mermaid .mindmap-node:nth-child(7n) rect,
+.mermaid .mindmap-node:nth-child(7n) circle,
+.mermaid .mindmap-node:nth-child(7n) ellipse {
+    fill: #ffedd5 !important;
+    stroke: #f97316 !important;
+}
+.mermaid .mindmap-node:nth-child(7n) text,
+.mermaid .mindmap-node:nth-child(7n) .nodeLabel {
+    fill: #7c2d12 !important;
+    color: #7c2d12 !important;
+}
+
+/* Texte mindmap global - fallback */
+.mermaid .mindmap text,
+.mermaid svg [class*="mindmap"] text {
+    font-weight: 500 !important;
+}
+
+/* Liens mindmap */
+.mermaid .mindmap-edge,
+.mermaid svg .mindmap-edge {
+    stroke: #64748b !important;
+    stroke-width: 1.5px !important;
+}
+
+/* Forcer Mermaid à respecter le conteneur */
+.mermaid[data-processed="true"] {
+    min-height: 0 !important;
+}
+
+/* ============================================
+   Diagram Placeholder (pour illustrations)
+   ============================================ */
+.diagram {
+    background: var(--color-gray-50);
+    border: 2px dashed var(--color-gray-300);
+    border-radius: var(--radius-lg);
+    padding: var(--space-lg);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    min-height: 150px;
+    flex: 1;
+}
+
+.diagram--placeholder {
+    background: linear-gradient(135deg, var(--color-gray-50) 0%, var(--color-gray-100) 100%);
+}
+
+.diagram .icon {
+    font-size: 48px;
+    margin-bottom: var(--space-sm);
+    opacity: 0.6;
+}
+
+.diagram .text {
+    font-size: 14px;
+    color: var(--color-gray-500);
+    font-weight: 500;
+}
+
+/* ============================================
+   Architecture Diagram Placeholder Styles
+   ============================================ */
+.arch-diagram {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+    width: 100%;
+}
+
+.arch-layer {
+    display: flex;
+    gap: var(--space-sm);
+    justify-content: center;
+}
+
+.arch-box {
+    background: var(--color-gray-100);
+    border: 2px solid var(--color-gray-300);
+    border-radius: var(--radius-md);
+    padding: var(--space-sm) var(--space-md);
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--color-gray-700);
+    text-align: center;
+    min-width: 100px;
+}
+
+.arch-box--primary {
+    background: rgba(14, 165, 233, 0.15);
+    border-color: var(--color-primary);
+    color: var(--color-primary-dark);
+}
+
+.arch-box--accent {
+    background: rgba(249, 115, 22, 0.15);
+    border-color: var(--color-accent);
+    color: #c2410c;
+}
+
+.arch-box--success {
+    background: rgba(16, 185, 129, 0.15);
+    border-color: var(--color-success);
+    color: #047857;
+}
+
+.arch-box--info {
+    background: rgba(99, 102, 241, 0.15);
+    border-color: var(--color-info);
+    color: #4338ca;
+}
+
+.arch-box--dark {
+    background: var(--color-gray-800);
+    border-color: var(--color-gray-700);
+    color: white;
+}
+
+.arch-connector {
+    display: flex;
+    justify-content: center;
+    color: var(--color-gray-400);
+    font-size: 20px;
+}
+
+/* ============================================
+   Flow Diagram Styles
+   ============================================ */
+.flow {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.flow__item {
+    background: var(--color-gray-100);
+    border: 1px solid var(--color-gray-300);
+    border-radius: var(--radius-md);
+    padding: var(--space-xs) var(--space-md);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--color-gray-700);
+}
+
+.flow__item--highlight {
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+    color: white;
+}
+
+.flow__arrow {
+    color: var(--color-gray-400);
+    font-size: 18px;
+}
+
+/* ============================================
+   Timeline / Process Styles
+   ============================================ */
+.timeline {
+    display: flex;
+    gap: var(--space-lg);
+    align-items: stretch;
+}
+
+.timeline__item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+.timeline__item:not(:last-child)::after {
+    content: '→';
+    position: absolute;
+    right: calc(var(--space-lg) / -2 - 8px);
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--color-gray-400);
+    font-size: 20px;
+}
+
+.timeline__number {
+    width: 28px;
+    height: 28px;
+    background: var(--color-primary);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: var(--space-sm);
+}
+
+.timeline__title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--color-gray-900);
+    margin-bottom: var(--space-xs);
+}
+
+.timeline__text {
+    font-size: 12px;
+    color: var(--color-gray-600);
+    line-height: 1.4;
+}
+
+/* ============================================
+   Stat / KPI Cards
+   ============================================ */
+.stat {
+    text-align: center;
+    padding: var(--space-md);
+}
+
+.stat__value {
+    font-size: 36px;
+    font-weight: 800;
+    color: var(--color-primary);
+    line-height: 1;
+}
+
+.stat__label {
+    font-size: 13px;
+    color: var(--color-gray-600);
+    margin-top: var(--space-xs);
+}
+
+.stat--small .stat__value {
+    font-size: 24px;
+}
+
+/* ============================================
+   Icon Styles
+   ============================================ */
+.icon-box {
+    width: 48px;
+    height: 48px;
+    min-width: 48px;
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 24px;
+    flex-shrink: 0;
+}
+
+.icon-box--sm {
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+    font-size: 18px;
+}
+
+.icon-box--lg {
+    width: 64px;
+    height: 64px;
+    min-width: 64px;
+    font-size: 32px;
+}
+
+.icon-box--accent {
+    background: linear-gradient(135deg, var(--color-accent) 0%, #ea580c 100%);
+}
+
+.icon-box--success {
+    background: linear-gradient(135deg, var(--color-success) 0%, #047857 100%);
+}
+
+.icon-box--info {
+    background: linear-gradient(135deg, var(--color-info) 0%, #4338ca 100%);
+}
+
+/* ============================================
+   Logo Superset
+   ============================================ */
+.superset-logo {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+}
+
+.superset-logo__icon {
+    width: 80px;
+    height: 80px;
+}
+
+.superset-logo__icon svg {
+    width: 100%;
+    height: 100%;
+}
+
+.superset-logo__text {
+    font-size: 32px;
+    font-weight: 700;
+}
+
+.superset-logo__text span {
+    color: var(--color-primary);
+}
+
+/* ============================================
+   Comparison Table Enhancements
+   ============================================ */
+.comparison-table {
+    font-size: 12px;
+}
+
+.comparison-table th {
+    font-size: 11px;
+    padding: 8px 10px;
+}
+
+.comparison-table td {
+    padding: 6px 10px;
+    vertical-align: middle;
+}
+
+.comparison-table .product-name {
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.comparison-table .check {
+    color: var(--color-success);
+    font-weight: bold;
+}
+
+.comparison-table .cross {
+    color: var(--color-danger);
+    font-weight: bold;
+}
+
+.comparison-table .partial {
+    color: var(--color-warning);
+    font-weight: bold;
+}
+
+/* ============================================
+   Use Case Cards
+   ============================================ */
+.use-case {
+    background: var(--color-gray-50);
+    border: 1px solid var(--color-gray-200);
+    border-radius: var(--radius-lg);
+    padding: var(--space-md);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+}
+
+.use-case--positive {
+    border-color: var(--color-success);
+    border-left-width: 4px;
+}
+
+.use-case--negative {
+    border-color: var(--color-danger);
+    border-left-width: 4px;
+}
+
+.use-case__number {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--color-gray-300);
+}
+
+.use-case__title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--color-gray-900);
+}
+
+.use-case__text {
+    font-size: 12px;
+    color: var(--color-gray-600);
+    line-height: 1.4;
+}
+
+/* ============================================
+   Data Stack Layer Visualization
+   ============================================ */
+.stack-layer {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    padding: var(--space-sm) var(--space-md);
+    background: var(--color-gray-50);
+    border-radius: var(--radius-md);
+    margin-bottom: var(--space-sm);
+}
+
+.stack-layer__label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--color-gray-500);
+    width: 100px;
+    flex-shrink: 0;
+}
+
+.stack-layer__items {
+    display: flex;
+    gap: var(--space-xs);
+    flex-wrap: wrap;
+}
+
+.stack-layer__item {
+    background: white;
+    border: 1px solid var(--color-gray-300);
+    border-radius: var(--radius-sm);
+    padding: 4px 10px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--color-gray-700);
+}
+
+.stack-layer__item--highlight {
+    background: var(--color-accent);
+    border-color: var(--color-accent);
+    color: white;
+}
+
+/* ============================================
+   Permissions Matrix
+   ============================================ */
+.permission-matrix {
+    font-size: 12px;
+}
+
+.permission-matrix th:first-child {
+    text-align: left;
+}
+
+.permission-matrix td:not(:first-child),
+.permission-matrix th:not(:first-child) {
+    text-align: center;
+    width: 80px;
+}
+
+.permission-matrix .action {
+    font-weight: 500;
+    text-align: left;
+}
+
+/* ============================================
+   Sources & Links
+   ============================================ */
+.sources {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-md);
+}
+
+.source-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+}
+
+.source-group__title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--color-gray-900);
+    padding-bottom: var(--space-xs);
+    border-bottom: 1px solid var(--color-gray-200);
+    margin-bottom: var(--space-xs);
+}
+
+.source-link {
+    font-size: 12px;
+    color: var(--color-primary);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+}
+
+.source-link:hover {
+    text-decoration: underline;
+}
+
+.source-link::before {
+    content: '→';
+    color: var(--color-gray-400);
+}
+
+/* ============================================
+   Print Optimizations for Diagrams
+   ============================================ */
+@media print {
+    .mermaid-container,
+    .arch-diagram,
+    .diagram {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+        color-adjust: exact !important;
+    }
+    
+    .arch-box,
+    .flow__item,
+    .timeline__number,
+    .icon-box,
+    .stat__value {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+}
+
+/* ============================================
+   Mermaid Contrast Color Palettes
+   Fonds pastel avec texte noir
+   Fonds sombres avec texte blanc
+   ============================================ */
+
+/* Palette Pastel - Texte Noir */
+.mermaid .node.pastel-blue rect,
+.mermaid .node.pastel-blue polygon { fill: #dbeafe !important; stroke: #3b82f6 !important; }
+.mermaid .node.pastel-blue .nodeLabel { fill: #1e3a8a !important; color: #1e3a8a !important; }
+
+.mermaid .node.pastel-green rect,
+.mermaid .node.pastel-green polygon { fill: #dcfce7 !important; stroke: #22c55e !important; }
+.mermaid .node.pastel-green .nodeLabel { fill: #14532d !important; color: #14532d !important; }
+
+.mermaid .node.pastel-yellow rect,
+.mermaid .node.pastel-yellow polygon { fill: #fef9c3 !important; stroke: #eab308 !important; }
+.mermaid .node.pastel-yellow .nodeLabel { fill: #713f12 !important; color: #713f12 !important; }
+
+.mermaid .node.pastel-orange rect,
+.mermaid .node.pastel-orange polygon { fill: #ffedd5 !important; stroke: #f97316 !important; }
+.mermaid .node.pastel-orange .nodeLabel { fill: #7c2d12 !important; color: #7c2d12 !important; }
+
+.mermaid .node.pastel-pink rect,
+.mermaid .node.pastel-pink polygon { fill: #fce7f3 !important; stroke: #ec4899 !important; }
+.mermaid .node.pastel-pink .nodeLabel { fill: #831843 !important; color: #831843 !important; }
+
+.mermaid .node.pastel-purple rect,
+.mermaid .node.pastel-purple polygon { fill: #f3e8ff !important; stroke: #a855f7 !important; }
+.mermaid .node.pastel-purple .nodeLabel { fill: #581c87 !important; color: #581c87 !important; }
+
+.mermaid .node.pastel-cyan rect,
+.mermaid .node.pastel-cyan polygon { fill: #cffafe !important; stroke: #06b6d4 !important; }
+.mermaid .node.pastel-cyan .nodeLabel { fill: #164e63 !important; color: #164e63 !important; }
+
+/* Palette Sombre - Texte Blanc */
+.mermaid .node.dark-blue rect,
+.mermaid .node.dark-blue polygon { fill: #1e3a5f !important; stroke: #0c4a6e !important; }
+.mermaid .node.dark-blue .nodeLabel { fill: #ffffff !important; color: #ffffff !important; }
+
+.mermaid .node.dark-green rect,
+.mermaid .node.dark-green polygon { fill: #14532d !important; stroke: #166534 !important; }
+.mermaid .node.dark-green .nodeLabel { fill: #ffffff !important; color: #ffffff !important; }
+
+.mermaid .node.dark-purple rect,
+.mermaid .node.dark-purple polygon { fill: #4c1d95 !important; stroke: #5b21b6 !important; }
+.mermaid .node.dark-purple .nodeLabel { fill: #ffffff !important; color: #ffffff !important; }
+
+.mermaid .node.dark-gray rect,
+.mermaid .node.dark-gray polygon { fill: #374151 !important; stroke: #4b5563 !important; }
+.mermaid .node.dark-gray .nodeLabel { fill: #ffffff !important; color: #ffffff !important; }
+
+.mermaid .node.dark-slate rect,
+.mermaid .node.dark-slate polygon { fill: #1e293b !important; stroke: #334155 !important; }
+.mermaid .node.dark-slate .nodeLabel { fill: #ffffff !important; color: #ffffff !important; }
+
+/* ============================================
+   Force Contrast on All Mermaid Elements
+   ============================================ */
+
+/* Assurer le contraste sur tous les types de nodes */
+.mermaid g[style*="fill: #"] .nodeLabel,
+.mermaid g[style*="fill:#"] .nodeLabel {
+    text-shadow: none !important;
+}
+
+/* Forcer le texte noir sur fonds clairs */
+.mermaid [style*="fill: #f"][style*="fill: #f"] .nodeLabel,
+.mermaid [style*="fill: #e"][style*="fill: #e"] .nodeLabel,
+.mermaid [style*="fill: #d"][style*="fill: #d"] .nodeLabel,
+.mermaid [style*="fill: #c"][style*="fill: #c"] .nodeLabel,
+.mermaid [style*="fill: rgb(2"][style*="fill: rgb(2"] .nodeLabel {
+    fill: #1e293b !important;
+    color: #1e293b !important;
+}
+
+/* Images dans le dossier target/images */
+img[src*="images/"] {
+    max-width: 100%;
+    max-height: 450px;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    display: block;
+    margin: 1.5rem auto;
+}
+
+/* Captures d'écran Superset */
+img[src*="screenshot"],
+img[src*="superset.apache.org"],
+img[src*="capture"] {
+    max-width: 100%;
+    max-height: 400px;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    border: 1px solid #e4e4e7;
+}
+
+/* Limiter les grandes images */
+.content-image,
+.screenshot {
+    max-width: 100%;
+    max-height: 500px;
+    object-fit: contain;
+}
+
+/* ============================================
+   Diagrammes PlantUML (img serveur ou SVG inline)
+   ============================================ */
+.plantuml,
+.plantuml-diagram {
+    text-align: center;
+    margin: 1.5rem 0;
+}
+
+.plantuml .plantuml-img,
+.plantuml-diagram svg,
+.plantuml-diagram img {
+    max-width: 100%;
+    height: auto;
+}
+
+    </style>
+    
+    
+    
+    
+    
+    
+
+    
+    
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@11.16.0/dist/mermaid.min.js"></script>
+    
+    
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof mermaid !== 'undefined') {
+                mermaid.initialize({
+                    startOnLoad: true,
+                    theme: 'default',
+                    securityLevel: 'loose',
+                    flowchart: {
+                        useMaxWidth: false,
+                        htmlLabels: true
+                    },
+                    sequence: {
+                        useMaxWidth: false
+                    }
+                });
+            }
+        });
+    </script>
+    
+    
+    <script>
+/**
+ * Mermaid Contrast Fix
+ * Corrige automatiquement le contraste texte/fond dans les diagrammes Mermaid
+ * 
+ * Règles de contraste :
+ * - Fonds pastel (clairs) → texte noir (#1e293b)
+ * - Fonds sombres → texte blanc (#ffffff)
+ */
+
+// Palette de couleurs pastel avec bon contraste
+const PASTEL_COLORS = {
+    blue: { bg: '#dbeafe', border: '#3b82f6', text: '#1e3a8a' },
+    green: { bg: '#dcfce7', border: '#22c55e', text: '#14532d' },
+    yellow: { bg: '#fef9c3', border: '#eab308', text: '#713f12' },
+    orange: { bg: '#ffedd5', border: '#f97316', text: '#7c2d12' },
+    pink: { bg: '#fce7f3', border: '#ec4899', text: '#831843' },
+    purple: { bg: '#f3e8ff', border: '#a855f7', text: '#581c87' },
+    cyan: { bg: '#cffafe', border: '#06b6d4', text: '#164e63' },
+    gray: { bg: '#f4f4f5', border: '#71717a', text: '#27272a' }
+};
+
+// Palette de couleurs sombres avec bon contraste
+const DARK_COLORS = {
+    blue: { bg: '#1e3a5f', border: '#0c4a6e', text: '#ffffff' },
+    green: { bg: '#14532d', border: '#166534', text: '#ffffff' },
+    purple: { bg: '#4c1d95', border: '#5b21b6', text: '#ffffff' },
+    gray: { bg: '#374151', border: '#4b5563', text: '#ffffff' },
+    slate: { bg: '#1e293b', border: '#334155', text: '#ffffff' }
+};
+
+function fixMermaidContrast() {
+    // Fonction pour calculer la luminosité relative d'une couleur
+    function getLuminance(hex) {
+        // Convertir hex en RGB
+        let r, g, b;
+        if (!hex || hex === 'none' || hex === 'transparent') {
+            return 0.5;
+        }
+        if (hex.startsWith('rgb')) {
+            const match = hex.match(/\d+/g);
+            if (match) {
+                r = parseInt(match[0]);
+                g = parseInt(match[1]);
+                b = parseInt(match[2]);
+            } else {
+                return 0.5;
+            }
+        } else {
+            hex = hex.replace('#', '');
+            if (hex.length === 3) {
+                hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
+            }
+            if (hex.length !== 6) {
+                return 0.5;
+            }
+            r = parseInt(hex.substr(0, 2), 16);
+            g = parseInt(hex.substr(2, 2), 16);
+            b = parseInt(hex.substr(4, 2), 16);
+        }
+
+        if (isNaN(r) || isNaN(g) || isNaN(b)) {
+            return 0.5;
+        }
+
+        // Formule de luminosité relative (WCAG)
+        const rsRGB = r / 255;
+        const gsRGB = g / 255;
+        const bsRGB = b / 255;
+
+        const rLum = rsRGB <= 0.03928 ? rsRGB / 12.92 : Math.pow((rsRGB + 0.055) / 1.055, 2.4);
+        const gLum = gsRGB <= 0.03928 ? gsRGB / 12.92 : Math.pow((gsRGB + 0.055) / 1.055, 2.4);
+        const bLum = bsRGB <= 0.03928 ? bsRGB / 12.92 : Math.pow((bsRGB + 0.055) / 1.055, 2.4);
+
+        return 0.2126 * rLum + 0.7152 * gLum + 0.0722 * bLum;
+    }
+
+    // Fonction pour déterminer si le texte doit être clair ou sombre
+    // Seuil ajusté pour meilleur contraste WCAG AA
+    function getContrastColor(bgColor) {
+        const luminance = getLuminance(bgColor);
+        // Seuil de 0.35 pour assurer un bon contraste (WCAG AA)
+        return luminance > 0.35 ? '#1e293b' : '#ffffff';
+    }
+    
+    // Fonction pour appliquer la couleur de contraste à un élément texte
+    function applyContrastToText(textEl, contrastColor) {
+        textEl.style.setProperty('color', contrastColor, 'important');
+        textEl.style.setProperty('fill', contrastColor, 'important');
+        textEl.setAttribute('fill', contrastColor);
+        // Aussi les tspan à l'intérieur
+        textEl.querySelectorAll('tspan').forEach(function(tspan) {
+            tspan.style.setProperty('fill', contrastColor, 'important');
+            tspan.setAttribute('fill', contrastColor);
+        });
+    }
+
+    // Parcourir tous les SVG Mermaid
+    document.querySelectorAll('.mermaid svg').forEach(function(svg) {
+        
+        // === FIX POUR LES TITRES DE CLUSTERS SUR PLUSIEURS LIGNES ===
+        svg.querySelectorAll('.cluster').forEach(function(cluster) {
+            const label = cluster.querySelector('.cluster-label');
+            const rect = cluster.querySelector('rect');
+            
+            if (label && rect) {
+                // Récupérer la hauteur du label
+                const labelBBox = label.getBBox ? label.getBBox() : null;
+                const foreignObj = label.querySelector('foreignObject');
+                
+                if (foreignObj) {
+                    // Augmenter l'espace vertical pour le titre
+                    const currentHeight = parseFloat(foreignObj.getAttribute('height')) || 20;
+                    const textContent = foreignObj.textContent || '';
+                    
+                    // Si le texte semble long (plus de 20 caractères), augmenter la hauteur
+                    if (textContent.length > 20 || textContent.includes('\n')) {
+                        foreignObj.setAttribute('height', Math.max(currentHeight, 40));
+                        foreignObj.style.overflow = 'visible';
+                    }
+                }
+                
+                // Forcer le texte du label à être visible et bien contrasté
+                label.querySelectorAll('text, span, div, p, tspan').forEach(function(textEl) {
+                    textEl.style.setProperty('fill', '#1e293b', 'important');
+                    textEl.style.setProperty('color', '#1e293b', 'important');
+                    textEl.style.setProperty('font-weight', '700', 'important');
+                });
+            }
+        });
+        
+        // === CORRECTION GÉNÉRALE DES NODES ===
+        // Corriger les nodes (rectangles, cercles, etc.)
+        svg.querySelectorAll('.node rect, .node polygon, .node circle, .node ellipse').forEach(function(shape) {
+            const fill = shape.getAttribute('fill') || shape.style.fill;
+            if (fill && fill !== 'none' && fill !== 'transparent') {
+                const contrastColor = getContrastColor(fill);
+
+                // Trouver le label associé
+                const parent = shape.closest('.node');
+                if (parent) {
+                    parent.querySelectorAll('.nodeLabel, .label, text, foreignObject span, foreignObject p, foreignObject div').forEach(function(label) {
+                        applyContrastToText(label, contrastColor);
+                    });
+                }
+            }
+        });
+
+        // Corriger les clusters/subgraphs
+        svg.querySelectorAll('.cluster rect, .cluster polygon').forEach(function(shape) {
+            const fill = shape.getAttribute('fill') || shape.style.fill;
+            if (fill && fill !== 'none' && fill !== 'transparent') {
+                const contrastColor = getContrastColor(fill);
+
+                const parent = shape.closest('.cluster');
+                if (parent) {
+                    parent.querySelectorAll('.cluster-label, .cluster-label span, .cluster-label text, .nodeLabel, text').forEach(function(label) {
+                        applyContrastToText(label, contrastColor);
+                    });
+                }
+            }
+        });
+
+        // === FIX POUR LES ÉLÉMENTS AVEC STYLE INLINE ===
+        svg.querySelectorAll('[style*="fill"]').forEach(function(el) {
+            const style = el.getAttribute('style');
+            if (style) {
+                const fillMatch = style.match(/fill:\s*([^;]+)/i);
+                if (fillMatch) {
+                    const fill = fillMatch[1].trim();
+                    if (fill && fill !== 'none' && fill !== 'transparent' && !fill.startsWith('url')) {
+                        const contrastColor = getContrastColor(fill);
+
+                        // Chercher les éléments texte à l'intérieur
+                        el.querySelectorAll('text, span, p, div, .nodeLabel, .label').forEach(function(textEl) {
+                            applyContrastToText(textEl, contrastColor);
+                        });
+
+                        // Si l'élément lui-même est un groupe avec du texte
+                        if (el.tagName.toLowerCase() === 'g') {
+                            el.querySelectorAll('foreignObject *').forEach(function(fo) {
+                                fo.style.setProperty('color', contrastColor, 'important');
+                            });
+                        }
+                    }
+                }
+            }
+        });
+        
+        // === FIX POUR LES DIAGRAMMES FLOWCHART ===
+        // Rectangles et formes avec texte
+        svg.querySelectorAll('g.node').forEach(function(node) {
+            const shape = node.querySelector('rect, polygon, circle, ellipse, path');
+            if (shape) {
+                const fill = shape.getAttribute('fill') || shape.style.fill || 
+                             window.getComputedStyle(shape).fill;
+                if (fill && fill !== 'none' && fill !== 'transparent' && !fill.startsWith('url')) {
+                    const contrastColor = getContrastColor(fill);
+                    node.querySelectorAll('.nodeLabel, .label, text, span, div, p').forEach(function(label) {
+                        applyContrastToText(label, contrastColor);
+                    });
+                }
+            }
+        });
+
+        // === FIX POUR LES DIAGRAMMES DE SÉQUENCE ===
+        
+        // Acteurs boîtes : forcer fond FONCÉ avec texte BLANC
+        svg.querySelectorAll('.actor, rect.actor, .actor-top, .actor-bottom').forEach(function(rect) {
+            rect.style.setProperty('fill', DARK_COLORS.blue.bg, 'important');
+            rect.style.setProperty('stroke', DARK_COLORS.blue.border, 'important');
+            rect.setAttribute('fill', DARK_COLORS.blue.bg);
+            rect.setAttribute('stroke', DARK_COLORS.blue.border);
+        });
+        
+        // Acteurs texte : forcer BLANC sur fond foncé
+        svg.querySelectorAll('text.actor, .actor-man').forEach(function(text) {
+            applyContrastToText(text, DARK_COLORS.blue.text);
+        });
+
+        // Messages : forcer texte NOIR (fond blanc/transparent)
+        svg.querySelectorAll('.messageText').forEach(function(text) {
+            applyContrastToText(text, '#1e293b');
+            text.style.setProperty('stroke', 'none', 'important');
+        });
+
+        // Lignes de messages : forcer visibilité
+        svg.querySelectorAll('.messageLine0, .messageLine1').forEach(function(line) {
+            line.style.setProperty('stroke', '#334155', 'important');
+            line.style.setProperty('stroke-width', '2px', 'important');
+            line.setAttribute('stroke', '#334155');
+            line.setAttribute('stroke-width', '2');
+        });
+
+        // Flèches : forcer visibilité
+        svg.querySelectorAll('.arrowhead path, marker path, #arrowhead path').forEach(function(arrow) {
+            arrow.style.setProperty('fill', '#334155', 'important');
+            arrow.style.setProperty('stroke', '#334155', 'important');
+            arrow.setAttribute('fill', '#334155');
+            arrow.setAttribute('stroke', '#334155');
+        });
+        
+        // Aussi les markers directement
+        svg.querySelectorAll('marker').forEach(function(marker) {
+            marker.querySelectorAll('path, polygon').forEach(function(shape) {
+                shape.style.setProperty('fill', '#334155', 'important');
+                shape.setAttribute('fill', '#334155');
+            });
+        });
+
+        // Lignes de vie des acteurs
+        svg.querySelectorAll('.actor-line').forEach(function(line) {
+            line.style.setProperty('stroke', '#64748b', 'important');
+            line.style.setProperty('stroke-width', '1.5px', 'important');
+            line.setAttribute('stroke', '#64748b');
+        });
+
+        // Labels (boucles, alt, opt, etc.)
+        svg.querySelectorAll('.loopText, .labelText').forEach(function(text) {
+            text.style.setProperty('fill', '#334155', 'important');
+            text.setAttribute('fill', '#334155');
+        });
+        svg.querySelectorAll('.loopText tspan, .labelText tspan').forEach(function(tspan) {
+            tspan.style.setProperty('fill', '#334155', 'important');
+            tspan.setAttribute('fill', '#334155');
+        });
+
+        // Notes - fond pastel jaune avec texte foncé
+        svg.querySelectorAll('.note rect, rect.note').forEach(function(rect) {
+            rect.style.setProperty('fill', PASTEL_COLORS.yellow.bg, 'important');
+            rect.style.setProperty('stroke', PASTEL_COLORS.yellow.border, 'important');
+            rect.setAttribute('fill', PASTEL_COLORS.yellow.bg);
+        });
+        svg.querySelectorAll('.noteText, .noteText tspan').forEach(function(text) {
+            applyContrastToText(text, PASTEL_COLORS.yellow.text);
+        });
+        
+        // Numéros de séquence
+        svg.querySelectorAll('.sequenceNumber').forEach(function(text) {
+            applyContrastToText(text, '#1e293b');
+        });
+        
+        // === FIX POUR DIAGRAMMES CLASS ===
+        svg.querySelectorAll('.classGroup rect, .classGroup polygon').forEach(function(shape) {
+            const fill = shape.getAttribute('fill') || shape.style.fill;
+            if (fill && fill !== 'none' && fill !== 'transparent') {
+                const contrastColor = getContrastColor(fill);
+                const parent = shape.closest('.classGroup');
+                if (parent) {
+                    parent.querySelectorAll('text, .classTitle, .classLabel, tspan').forEach(function(label) {
+                        applyContrastToText(label, contrastColor);
+                    });
+                }
+            }
+        });
+        
+        // === FIX POUR DIAGRAMMES STATE ===
+        svg.querySelectorAll('.stateGroup rect, .statediagram-state rect').forEach(function(shape) {
+            const fill = shape.getAttribute('fill') || shape.style.fill;
+            if (fill && fill !== 'none' && fill !== 'transparent') {
+                const contrastColor = getContrastColor(fill);
+                const parent = shape.closest('.stateGroup, .statediagram-state');
+                if (parent) {
+                    parent.querySelectorAll('text, .stateLabel, tspan, span').forEach(function(label) {
+                        applyContrastToText(label, contrastColor);
+                    });
+                }
+            }
+        });
+        
+        // === FIX POUR DIAGRAMMES ER ===
+        // Entity boxes - forcer fond coloré avec texte lisible
+        svg.querySelectorAll('.er.entityBox, .entityBox, rect.er').forEach(function(shape) {
+            // Forcer un fond pastel bleu avec texte foncé
+            shape.style.setProperty('fill', '#dbeafe', 'important');
+            shape.style.setProperty('stroke', '#3b82f6', 'important');
+            shape.style.setProperty('stroke-width', '2px', 'important');
+            shape.setAttribute('fill', '#dbeafe');
+            shape.setAttribute('stroke', '#3b82f6');
+        });
+        
+        // Texte des entités ER - forcer noir
+        svg.querySelectorAll('.er.entityLabel, .entityLabel, text.er').forEach(function(text) {
+            applyContrastToText(text, '#1e3a8a');
+        });
+        
+        // Attributs ER
+        svg.querySelectorAll('.er.attributeBoxEven, .er.attributeBoxOdd').forEach(function(shape) {
+            const isEven = shape.classList.contains('attributeBoxEven');
+            shape.style.setProperty('fill', isEven ? '#f8fafc' : '#f1f5f9', 'important');
+            shape.style.setProperty('stroke', '#cbd5e1', 'important');
+        });
+        
+        // Tout le texte dans les diagrammes ER
+        svg.querySelectorAll('g.er text, .erDiagram text').forEach(function(text) {
+            const fill = text.getAttribute('fill') || text.style.fill;
+            const lum = getLuminance(fill);
+            // Si texte trop clair, forcer noir
+            if (lum > 0.6 || !fill || fill === 'none') {
+                applyContrastToText(text, '#1e293b');
+            }
+        });
+        
+        // === FIX POUR DIAGRAMMES MINDMAP ===
+        // Forcer des couleurs visibles sur les nodes mindmap
+        const mindmapColors = [
+            { bg: '#dbeafe', border: '#3b82f6', text: '#1e3a8a' },  // blue
+            { bg: '#dcfce7', border: '#22c55e', text: '#14532d' },  // green
+            { bg: '#fef9c3', border: '#eab308', text: '#713f12' },  // yellow
+            { bg: '#fce7f3', border: '#ec4899', text: '#831843' },  // pink
+            { bg: '#f3e8ff', border: '#a855f7', text: '#581c87' },  // purple
+            { bg: '#cffafe', border: '#06b6d4', text: '#164e63' },  // cyan
+            { bg: '#ffedd5', border: '#f97316', text: '#7c2d12' }   // orange
+        ];
+        
+        let colorIndex = 0;
+        svg.querySelectorAll('.mindmap-node').forEach(function(node) {
+            const shape = node.querySelector('rect, circle, ellipse, polygon, path');
+            if (shape) {
+                const color = mindmapColors[colorIndex % mindmapColors.length];
+                shape.style.setProperty('fill', color.bg, 'important');
+                shape.style.setProperty('stroke', color.border, 'important');
+                shape.style.setProperty('stroke-width', '2px', 'important');
+                shape.setAttribute('fill', color.bg);
+                shape.setAttribute('stroke', color.border);
+                
+                // Appliquer le texte contrasté
+                node.querySelectorAll('text, span, .nodeLabel, foreignObject *').forEach(function(label) {
+                    applyContrastToText(label, color.text);
+                });
+                colorIndex++;
+            }
+        });
+        
+        // Fallback: tous les textes mindmap sans shape parent
+        svg.querySelectorAll('.mindmap text, [class*="mindmap"] text').forEach(function(text) {
+            const fill = text.getAttribute('fill') || text.style.fill;
+            const lum = getLuminance(fill);
+            if (lum > 0.6 || !fill || fill === 'none') {
+                applyContrastToText(text, '#1e293b');
+            }
+        });
+        
+        // === DERNIER PASSAGE GLOBAL ===
+        // Parcourir tous les éléments rect/polygon/circle avec fill et vérifier leurs textes
+        svg.querySelectorAll('rect, polygon, circle, ellipse').forEach(function(shape) {
+            const fill = shape.getAttribute('fill') || shape.style.fill;
+            if (fill && fill !== 'none' && fill !== 'transparent' && !fill.startsWith('url')) {
+                const luminance = getLuminance(fill);
+                // Si fond sombre (luminance < 0.35) et texte potentiellement sombre
+                if (luminance < 0.35) {
+                    const parent = shape.parentNode;
+                    if (parent) {
+                        parent.querySelectorAll('text, .nodeLabel, .label, span, tspan').forEach(function(textEl) {
+                            const textFill = textEl.getAttribute('fill') || textEl.style.fill;
+                            const textLum = getLuminance(textFill);
+                            // Si le texte est aussi sombre, on le passe en blanc
+                            if (textLum < 0.5) {
+                                applyContrastToText(textEl, '#ffffff');
+                            }
+                        });
+                    }
+                }
+                // Si fond clair et texte blanc
+                else if (luminance > 0.65) {
+                    const parent = shape.parentNode;
+                    if (parent) {
+                        parent.querySelectorAll('text, .nodeLabel, .label, span, tspan').forEach(function(textEl) {
+                            const textFill = textEl.getAttribute('fill') || textEl.style.fill;
+                            const textLum = getLuminance(textFill);
+                            // Si le texte est clair, on le passe en noir
+                            if (textLum > 0.7) {
+                                applyContrastToText(textEl, '#1e293b');
+                            }
+                        });
+                    }
+                }
+            }
+        });
+    });
+}
+
+// Exporter pour utilisation externe
+if (typeof window !== 'undefined') {
+    window.fixMermaidContrast = fixMermaidContrast;
+    window.MERMAID_PASTEL_COLORS = PASTEL_COLORS;
+    window.MERMAID_DARK_COLORS = DARK_COLORS;
+}
+
+    </script>
+    
+
+    
+    
+
+    
+    
+    
+    <style>
+        @media print {
+            body {
+                max-width: none;
+                padding: 20mm;
+            }
+            
+            pre, code {
+                white-space: pre-wrap;
+                word-wrap: break-word;
+            }
+            
+            table, pre, blockquote, .mermaid {
+                page-break-inside: avoid;
+            }
+            
+            h1, h2, h3 {
+                page-break-after: avoid;
+            }
+        }
+    </style>
+
+</head>
+<body>
+    
+    <article class="markdown-body">
+        <!--
+  Page de garde SEMIFIR. Remplie par md2html.py depuis le frontmatter.
+  Placeholders : <svg style="height:44px;width:auto" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="290px" height="84px" viewBox="0 0 290 84" version="1.1">
+<g id="surface1">
+<path style=" stroke:none;fill-rule:nonzero;fill:rgb(96.862745%,73.72549%,59.215686%);fill-opacity:1;" d="M 36.640625 7.238281 L 36.640625 42.078125 L 6.839844 59.359375 L 6.839844 24.160156 Z M 36.640625 7.238281 "/>
+<path style=" stroke:none;fill-rule:nonzero;fill:rgb(89.019608%,37.254902%,17.647059%);fill-opacity:1;" d="M 67.160156 59.601562 L 67.238281 24.71875 L 36.640625 7.238281 L 36.640625 42.078125 Z M 67.160156 59.601562 "/>
+<path style=" stroke:none;fill-rule:nonzero;fill:rgb(93.72549%,49.019608%,29.019608%);fill-opacity:1;" d="M 67.160156 59.601562 L 36.640625 42.078125 L 6.839844 59.359375 L 36.601562 76.679688 Z M 67.160156 59.601562 "/>
+<path style=" stroke:none;fill-rule:nonzero;fill:rgb(14.117647%,24.705882%,22.745098%);fill-opacity:1;" d="M 64.078125 22.921875 L 65.640625 23.839844 L 69.640625 21.519531 L 36.640625 2.320312 L 2.800781 21.921875 L 73.121094 61.558594 C 73.121094 61.558594 73.71875 61.238281 73.761719 61.199219 C 74.039062 60.960938 74.078125 60.558594 73.839844 60.28125 C 73.800781 60.238281 73.761719 60.199219 73.71875 60.160156 C 73.480469 60 6.039062 21.921875 6.039062 21.921875 L 36.640625 3.761719 L 66.480469 21.480469 Z M 64.078125 22.921875 "/>
+<path style=" stroke:none;fill-rule:nonzero;fill:rgb(22.352941%,66.666667%,60.392157%);fill-opacity:1;" d="M 65.640625 23.800781 L 67.238281 24.71875 L 71.839844 22 C 72.078125 21.71875 72.121094 21.320312 71.921875 21 C 71.640625 20.761719 37.121094 0.71875 37.039062 0.640625 C 36.800781 0.519531 36.558594 0.519531 36.320312 0.640625 C 36.078125 0.761719 1 21.199219 0.601562 21.441406 C 0.359375 21.71875 0.359375 22.121094 0.640625 22.359375 C 1.078125 22.601562 71.441406 62.28125 71.441406 62.28125 C 71.441406 62.28125 36.960938 82.039062 36.839844 82.078125 C 36.71875 82.160156 36.558594 82.199219 36.441406 82.160156 C 36.320312 82.121094 8.398438 65.199219 8.28125 65.160156 C 8.160156 65.039062 8.078125 64.921875 8.078125 64.761719 C 8.078125 64.558594 8.078125 60.078125 8.078125 60.078125 L 6.839844 59.359375 C 6.839844 59.359375 6.839844 64.878906 6.839844 65.238281 C 6.878906 65.640625 7.078125 66 7.398438 66.199219 L 36.199219 83.601562 C 36.519531 83.839844 36.921875 83.839844 37.199219 83.601562 C 37.441406 83.480469 73.160156 63 73.359375 62.839844 C 73.640625 62.640625 73.71875 61.839844 73.398438 61.679688 C 73.078125 61.519531 2.800781 21.921875 2.800781 21.921875 L 36.640625 2.320312 L 69.398438 21.441406 Z M 65.640625 23.800781 "/>
+<path style=" stroke:none;fill-rule:nonzero;fill:rgb(14.117647%,24.705882%,22.745098%);fill-opacity:1;" d="M 8.078125 60.078125 L 9.71875 61.039062 L 9.71875 64.199219 C 9.71875 64.199219 36.359375 80.359375 36.480469 80.398438 C 36.601562 80.441406 36.71875 80.519531 36.839844 80.441406 L 69.878906 61.441406 L 71.441406 62.320312 C 71.441406 62.320312 37.039062 82.039062 36.921875 82.121094 C 36.640625 82.28125 36.601562 82.28125 36.28125 82.121094 L 8.320312 65.238281 C 8.160156 65.121094 8.121094 65.078125 8.121094 64.800781 C 8.078125 64.640625 8.078125 60.078125 8.078125 60.078125 Z M 8.078125 60.078125 "/>
+<path style="fill-rule:nonzero;fill:rgb(88.627451%,37.254902%,17.647059%);fill-opacity:1;stroke-width:3;stroke-linecap:butt;stroke-linejoin:miter;stroke:rgb(88.627451%,37.254902%,17.254902%);stroke-opacity:1;stroke-miterlimit:10;" d="M 288.701172 84.404297 L 288.701172 85.996094 L 285.595703 85.996094 L 285.595703 84.404297 C 285.595703 70.400391 271.904297 59.404297 254.101562 59.199219 C 236.503906 59.199219 222.802734 70.498047 222.597656 84.404297 C 222.597656 109.404297 292.099609 109.804688 291.904297 138.300781 C 291.904297 153.603516 274.697266 166.503906 254.296875 166.298828 C 233.701172 166.298828 216.298828 153.496094 216.298828 138.095703 L 216.298828 136.503906 L 219.404297 136.503906 L 219.404297 138.095703 C 219.404297 152.001953 234.697266 163.300781 254.199219 163.095703 C 273.603516 163.095703 288.896484 152.099609 288.701172 138.203125 C 288.701172 112.695312 219.599609 112.695312 219.404297 84.296875 C 219.404297 68.701172 235.302734 56.103516 254.101562 55.898438 C 272.998047 55.996094 288.701172 68.798828 288.701172 84.404297 Z M 288.701172 84.404297 " transform="matrix(0.4,0,0,0.4,0,0)"/>
+<path style="fill-rule:nonzero;fill:rgb(88.627451%,37.254902%,17.647059%);fill-opacity:1;stroke-width:3;stroke-linecap:butt;stroke-linejoin:miter;stroke:rgb(88.627451%,37.254902%,17.254902%);stroke-opacity:1;stroke-miterlimit:10;" d="M 310 125.195312 L 310 122.001953 C 310.703125 99.101562 327.802734 80.898438 347.802734 80.703125 C 368.603516 80.703125 385.595703 100.097656 385.595703 123.496094 L 385.595703 125.097656 L 313.203125 125.097656 C 314.003906 146.699219 331.396484 163.701172 347.998047 163.300781 C 367.402344 162.802734 376.503906 154.804688 379.902344 143.300781 L 380.302734 142.197266 L 383.398438 142.197266 L 382.900391 144.199219 C 379.101562 156.601562 368.398438 166.503906 347.900391 166.503906 C 328.701172 166.503906 310.996094 148.203125 310 125.195312 Z M 313.203125 122.001953 L 382.5 122.001953 C 382.5 101.396484 367.197266 84.003906 347.802734 83.896484 C 329.003906 83.896484 314.003906 100.595703 313.203125 122.001953 Z M 313.203125 122.001953 " transform="matrix(0.4,0,0,0.4,0,0)"/>
+<path style="fill-rule:nonzero;fill:rgb(88.627451%,37.254902%,17.647059%);fill-opacity:1;stroke-width:3;stroke-linecap:butt;stroke-linejoin:miter;stroke:rgb(88.627451%,37.254902%,17.254902%);stroke-opacity:1;stroke-miterlimit:10;" d="M 465.195312 102.802734 C 469.101562 90.097656 479.697266 80.898438 491.904297 80.703125 C 507.5 80.703125 520.400391 95.800781 520.302734 113.496094 L 520.302734 166.396484 L 517.304688 166.396484 L 517.099609 113.496094 C 517.099609 97.001953 506.103516 84.003906 491.904297 83.896484 C 477.998047 83.896484 466.796875 96.796875 466.699219 113.203125 C 466.699219 113.300781 466.699219 113.398438 466.699219 113.496094 L 466.699219 166.396484 L 463.701172 166.396484 L 463.496094 113.496094 C 463.496094 97.001953 452.5 84.003906 438.300781 83.896484 C 424.296875 83.896484 413.095703 97.001953 413.095703 113.496094 L 413.095703 166.298828 L 410 166.298828 L 410 80.800781 L 413.095703 80.800781 L 413.095703 98.798828 C 417.900391 88.300781 427.5 80.898438 438.300781 80.800781 C 450.703125 80.800781 461.298828 90.195312 465.195312 102.802734 Z M 465.195312 102.802734 " transform="matrix(0.4,0,0,0.4,0,0)"/>
+<path style="fill-rule:nonzero;fill:rgb(88.627451%,37.254902%,17.647059%);fill-opacity:1;stroke-width:3;stroke-linecap:butt;stroke-linejoin:miter;stroke:rgb(88.627451%,37.254902%,17.254902%);stroke-opacity:1;stroke-miterlimit:10;" d="M 546.298828 51.796875 L 544.697266 51.796875 L 544.697266 48.603516 L 548.095703 48.603516 L 548.095703 51.796875 Z M 544.697266 80.800781 L 547.900391 80.800781 L 547.900391 166.298828 L 544.697266 166.298828 Z M 544.697266 80.800781 " transform="matrix(0.4,0,0,0.4,0,0)"/>
+<path style="fill-rule:nonzero;fill:rgb(88.627451%,37.254902%,17.647059%);fill-opacity:1;stroke-width:3;stroke-linecap:butt;stroke-linejoin:miter;stroke:rgb(88.627451%,37.254902%,17.254902%);stroke-opacity:1;stroke-miterlimit:10;" d="M 611.601562 54.599609 L 613.203125 54.599609 L 613.203125 57.695312 L 611.601562 57.695312 C 594.404297 57.695312 582.597656 65.400391 582.5 82.304688 L 582.5 91.103516 L 607.695312 91.103516 L 607.695312 94.199219 L 582.5 94.199219 L 582.5 166.201172 L 579.404297 166.201172 L 579.404297 94.199219 L 563.603516 94.199219 L 563.603516 91.103516 L 579.404297 91.103516 L 579.404297 82.304688 C 579.501953 63.896484 593.496094 54.599609 611.601562 54.599609 Z M 611.601562 54.599609 " transform="matrix(0.4,0,0,0.4,0,0)"/>
+<path style="fill-rule:nonzero;fill:rgb(88.627451%,37.254902%,17.647059%);fill-opacity:1;stroke-width:3;stroke-linecap:butt;stroke-linejoin:miter;stroke:rgb(88.627451%,37.254902%,17.254902%);stroke-opacity:1;stroke-miterlimit:10;" d="M 639.199219 51.796875 L 637.597656 51.796875 L 637.597656 48.603516 L 640.996094 48.603516 L 640.996094 51.796875 Z M 637.597656 80.800781 L 640.703125 80.800781 L 640.703125 166.298828 L 637.597656 166.298828 Z M 637.597656 80.800781 " transform="matrix(0.4,0,0,0.4,0,0)"/>
+<path style="fill-rule:nonzero;fill:rgb(88.627451%,37.254902%,17.647059%);fill-opacity:1;stroke-width:3;stroke-linecap:butt;stroke-linejoin:miter;stroke:rgb(88.627451%,37.254902%,17.254902%);stroke-opacity:1;stroke-miterlimit:10;" d="M 674.599609 105.898438 C 681.103516 89.697266 697.304688 80.800781 717.099609 80.800781 L 718.701172 80.800781 L 718.701172 83.896484 L 717.099609 83.896484 C 692.099609 83.896484 674.697266 97.5 674.599609 122.695312 L 674.599609 166.201172 L 671.503906 166.201172 L 671.503906 123.398438 C 671.503906 123.203125 671.503906 122.998047 671.503906 122.802734 L 671.503906 80.800781 L 674.599609 80.800781 Z M 674.599609 105.898438 " transform="matrix(0.4,0,0,0.4,0,0)"/>
+</g>
+</svg>  Projet final — FoodTrack sur Google Cloud <p class="smf-lede">Ingénieur Cloud OPS — Projet final DevOps multicloud</p> <div class="smf-f"><p class="smf-k">Formateur</p><p class="smf-v">Adrien Vossough</p></div><div class="smf-f"><p class="smf-k">Mise à jour</p><p class="smf-v">2026-09-20</p></div><div class="smf-f"><p class="smf-k">Version</p><p class="smf-v">1.2.0</p></div>
+  Styles scopes sous .smf-cover (aucune fuite). Palette = bleu du deck.
+-->
+<style>
+  .smf-cover {
+    position: relative;
+    width: 100%;
+    min-height: 88vh;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 24px;
+    padding: clamp(28px, 4.5%, 60px);
+    color: #eaf1fb;
+    background:
+      radial-gradient(120% 120% at 82% -10%, rgba(59,130,246,.32) 0%, rgba(37,99,235,0) 42%),
+      linear-gradient(160deg, #0f172a 0%, #14203a 46%, #172a4d 100%);
+    overflow: hidden;
+    font-family: var(--font-sans, system-ui, sans-serif);
+  }
+  .smf-cover::before {
+    content: "";
+    position: absolute; left: 0; top: 0;
+    height: 5px; width: 38%;
+    background: linear-gradient(90deg, #0ea5e9, #3b82f6);
+  }
+  .smf-cover .smf-motif {
+    position: absolute; right: -6%; bottom: -16%;
+    width: 52%; max-width: 620px; opacity: .5; pointer-events: none;
+  }
+  .smf-cover .smf-top {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    gap: 20px; position: relative; z-index: 2;
+  }
+  .smf-cover .smf-logo svg,
+  .smf-cover .smf-logo img { height: 44px; width: auto; display: block; }
+  .smf-cover .smf-badge {
+    font-size: .68rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+    color: #cfe0ff; border: 1px solid rgba(147,197,253,.4); border-radius: 999px; padding: 6px 14px;
+    white-space: nowrap;
+  }
+  .smf-cover .smf-mid { position: relative; z-index: 2; }
+  .smf-cover .smf-module {
+    display: inline-flex; align-items: center; font-size: .72rem; font-weight: 700;
+    letter-spacing: .1em; text-transform: uppercase; color: #0b1220;
+    background: linear-gradient(90deg, #60a5fa, #3b82f6);
+    padding: 5px 13px; border-radius: 6px; margin-bottom: 18px;
+  }
+  .smf-cover .smf-title {
+    font-size: clamp(1.7rem, 4.6vw, 3.1rem); line-height: 1.05; letter-spacing: -.025em;
+    font-weight: 800; margin: 0 0 14px; max-width: 20ch; text-wrap: balance; color: #fff;
+  }
+  .smf-cover .smf-lede {
+    font-size: clamp(.9rem, 1.5vw, 1.08rem); line-height: 1.5; color: #b9c8e0;
+    max-width: 52ch; margin: 0;
+  }
+  .smf-cover .smf-bottom { position: relative; z-index: 2; display: flex; flex-direction: column; gap: 16px; }
+  .smf-cover .smf-meta { display: flex; flex-wrap: wrap; gap: 30px; }
+  .smf-cover .smf-k { font-size: .58rem; letter-spacing: .14em; text-transform: uppercase; color: #7f93b3; margin: 0 0 3px; }
+  .smf-cover .smf-v { font-size: .88rem; font-weight: 600; color: #eaf1fb; margin: 0; }
+  .smf-cover .smf-legal {
+    font-size: .6rem; line-height: 1.55; color: #8296b4; margin: 0; max-width: 92ch;
+    border-top: 1px solid rgba(147,197,253,.16); padding-top: 11px;
+  }
+  .smf-cover .smf-legal b { color: #c6d4ea; font-weight: 600; }
+  .smf-cover .smf-legal a { color: #93c5fd; text-decoration: none; border-bottom: 1px solid rgba(147,197,253,.45); }
+  .smf-cover .smf-legal a:hover { color: #bfdbfe; border-bottom-color: #bfdbfe; }
+  .smf-cover .smf-legal .smf-confid { color: #f0a99a; font-weight: 600; }
+
+  @media print {
+    .smf-cover { min-height: 96vh; break-after: page; page-break-after: always; }
+  }
+</style>
+
+<section class="smf-cover">
+  <svg class="smf-motif" viewBox="0 0 100 100" aria-hidden="true">
+    <polygon points="50,8 88,30 88,72 50,94 12,72 12,30" fill="none" stroke="rgba(147,197,253,.25)" stroke-width="1"/>
+    <polygon points="50,8 88,30 50,52 12,30" fill="rgba(96,165,250,.10)"/>
+    <polygon points="50,52 88,30 88,72 50,94" fill="rgba(37,99,235,.10)"/>
+    <line x1="50" y1="52" x2="50" y2="94" stroke="rgba(147,197,253,.20)" stroke-width="1"/>
+  </svg>
+
+  <div class="smf-top">
+    <span class="smf-logo"><svg style="height:44px;width:auto" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="290px" height="84px" viewBox="0 0 290 84" version="1.1">
+<g id="surface1">
+<path style=" stroke:none;fill-rule:nonzero;fill:rgb(96.862745%,73.72549%,59.215686%);fill-opacity:1;" d="M 36.640625 7.238281 L 36.640625 42.078125 L 6.839844 59.359375 L 6.839844 24.160156 Z M 36.640625 7.238281 "/>
+<path style=" stroke:none;fill-rule:nonzero;fill:rgb(89.019608%,37.254902%,17.647059%);fill-opacity:1;" d="M 67.160156 59.601562 L 67.238281 24.71875 L 36.640625 7.238281 L 36.640625 42.078125 Z M 67.160156 59.601562 "/>
+<path style=" stroke:none;fill-rule:nonzero;fill:rgb(93.72549%,49.019608%,29.019608%);fill-opacity:1;" d="M 67.160156 59.601562 L 36.640625 42.078125 L 6.839844 59.359375 L 36.601562 76.679688 Z M 67.160156 59.601562 "/>
+<path style=" stroke:none;fill-rule:nonzero;fill:rgb(14.117647%,24.705882%,22.745098%);fill-opacity:1;" d="M 64.078125 22.921875 L 65.640625 23.839844 L 69.640625 21.519531 L 36.640625 2.320312 L 2.800781 21.921875 L 73.121094 61.558594 C 73.121094 61.558594 73.71875 61.238281 73.761719 61.199219 C 74.039062 60.960938 74.078125 60.558594 73.839844 60.28125 C 73.800781 60.238281 73.761719 60.199219 73.71875 60.160156 C 73.480469 60 6.039062 21.921875 6.039062 21.921875 L 36.640625 3.761719 L 66.480469 21.480469 Z M 64.078125 22.921875 "/>
+<path style=" stroke:none;fill-rule:nonzero;fill:rgb(22.352941%,66.666667%,60.392157%);fill-opacity:1;" d="M 65.640625 23.800781 L 67.238281 24.71875 L 71.839844 22 C 72.078125 21.71875 72.121094 21.320312 71.921875 21 C 71.640625 20.761719 37.121094 0.71875 37.039062 0.640625 C 36.800781 0.519531 36.558594 0.519531 36.320312 0.640625 C 36.078125 0.761719 1 21.199219 0.601562 21.441406 C 0.359375 21.71875 0.359375 22.121094 0.640625 22.359375 C 1.078125 22.601562 71.441406 62.28125 71.441406 62.28125 C 71.441406 62.28125 36.960938 82.039062 36.839844 82.078125 C 36.71875 82.160156 36.558594 82.199219 36.441406 82.160156 C 36.320312 82.121094 8.398438 65.199219 8.28125 65.160156 C 8.160156 65.039062 8.078125 64.921875 8.078125 64.761719 C 8.078125 64.558594 8.078125 60.078125 8.078125 60.078125 L 6.839844 59.359375 C 6.839844 59.359375 6.839844 64.878906 6.839844 65.238281 C 6.878906 65.640625 7.078125 66 7.398438 66.199219 L 36.199219 83.601562 C 36.519531 83.839844 36.921875 83.839844 37.199219 83.601562 C 37.441406 83.480469 73.160156 63 73.359375 62.839844 C 73.640625 62.640625 73.71875 61.839844 73.398438 61.679688 C 73.078125 61.519531 2.800781 21.921875 2.800781 21.921875 L 36.640625 2.320312 L 69.398438 21.441406 Z M 65.640625 23.800781 "/>
+<path style=" stroke:none;fill-rule:nonzero;fill:rgb(14.117647%,24.705882%,22.745098%);fill-opacity:1;" d="M 8.078125 60.078125 L 9.71875 61.039062 L 9.71875 64.199219 C 9.71875 64.199219 36.359375 80.359375 36.480469 80.398438 C 36.601562 80.441406 36.71875 80.519531 36.839844 80.441406 L 69.878906 61.441406 L 71.441406 62.320312 C 71.441406 62.320312 37.039062 82.039062 36.921875 82.121094 C 36.640625 82.28125 36.601562 82.28125 36.28125 82.121094 L 8.320312 65.238281 C 8.160156 65.121094 8.121094 65.078125 8.121094 64.800781 C 8.078125 64.640625 8.078125 60.078125 8.078125 60.078125 Z M 8.078125 60.078125 "/>
+<path style="fill-rule:nonzero;fill:rgb(88.627451%,37.254902%,17.647059%);fill-opacity:1;stroke-width:3;stroke-linecap:butt;stroke-linejoin:miter;stroke:rgb(88.627451%,37.254902%,17.254902%);stroke-opacity:1;stroke-miterlimit:10;" d="M 288.701172 84.404297 L 288.701172 85.996094 L 285.595703 85.996094 L 285.595703 84.404297 C 285.595703 70.400391 271.904297 59.404297 254.101562 59.199219 C 236.503906 59.199219 222.802734 70.498047 222.597656 84.404297 C 222.597656 109.404297 292.099609 109.804688 291.904297 138.300781 C 291.904297 153.603516 274.697266 166.503906 254.296875 166.298828 C 233.701172 166.298828 216.298828 153.496094 216.298828 138.095703 L 216.298828 136.503906 L 219.404297 136.503906 L 219.404297 138.095703 C 219.404297 152.001953 234.697266 163.300781 254.199219 163.095703 C 273.603516 163.095703 288.896484 152.099609 288.701172 138.203125 C 288.701172 112.695312 219.599609 112.695312 219.404297 84.296875 C 219.404297 68.701172 235.302734 56.103516 254.101562 55.898438 C 272.998047 55.996094 288.701172 68.798828 288.701172 84.404297 Z M 288.701172 84.404297 " transform="matrix(0.4,0,0,0.4,0,0)"/>
+<path style="fill-rule:nonzero;fill:rgb(88.627451%,37.254902%,17.647059%);fill-opacity:1;stroke-width:3;stroke-linecap:butt;stroke-linejoin:miter;stroke:rgb(88.627451%,37.254902%,17.254902%);stroke-opacity:1;stroke-miterlimit:10;" d="M 310 125.195312 L 310 122.001953 C 310.703125 99.101562 327.802734 80.898438 347.802734 80.703125 C 368.603516 80.703125 385.595703 100.097656 385.595703 123.496094 L 385.595703 125.097656 L 313.203125 125.097656 C 314.003906 146.699219 331.396484 163.701172 347.998047 163.300781 C 367.402344 162.802734 376.503906 154.804688 379.902344 143.300781 L 380.302734 142.197266 L 383.398438 142.197266 L 382.900391 144.199219 C 379.101562 156.601562 368.398438 166.503906 347.900391 166.503906 C 328.701172 166.503906 310.996094 148.203125 310 125.195312 Z M 313.203125 122.001953 L 382.5 122.001953 C 382.5 101.396484 367.197266 84.003906 347.802734 83.896484 C 329.003906 83.896484 314.003906 100.595703 313.203125 122.001953 Z M 313.203125 122.001953 " transform="matrix(0.4,0,0,0.4,0,0)"/>
+<path style="fill-rule:nonzero;fill:rgb(88.627451%,37.254902%,17.647059%);fill-opacity:1;stroke-width:3;stroke-linecap:butt;stroke-linejoin:miter;stroke:rgb(88.627451%,37.254902%,17.254902%);stroke-opacity:1;stroke-miterlimit:10;" d="M 465.195312 102.802734 C 469.101562 90.097656 479.697266 80.898438 491.904297 80.703125 C 507.5 80.703125 520.400391 95.800781 520.302734 113.496094 L 520.302734 166.396484 L 517.304688 166.396484 L 517.099609 113.496094 C 517.099609 97.001953 506.103516 84.003906 491.904297 83.896484 C 477.998047 83.896484 466.796875 96.796875 466.699219 113.203125 C 466.699219 113.300781 466.699219 113.398438 466.699219 113.496094 L 466.699219 166.396484 L 463.701172 166.396484 L 463.496094 113.496094 C 463.496094 97.001953 452.5 84.003906 438.300781 83.896484 C 424.296875 83.896484 413.095703 97.001953 413.095703 113.496094 L 413.095703 166.298828 L 410 166.298828 L 410 80.800781 L 413.095703 80.800781 L 413.095703 98.798828 C 417.900391 88.300781 427.5 80.898438 438.300781 80.800781 C 450.703125 80.800781 461.298828 90.195312 465.195312 102.802734 Z M 465.195312 102.802734 " transform="matrix(0.4,0,0,0.4,0,0)"/>
+<path style="fill-rule:nonzero;fill:rgb(88.627451%,37.254902%,17.647059%);fill-opacity:1;stroke-width:3;stroke-linecap:butt;stroke-linejoin:miter;stroke:rgb(88.627451%,37.254902%,17.254902%);stroke-opacity:1;stroke-miterlimit:10;" d="M 546.298828 51.796875 L 544.697266 51.796875 L 544.697266 48.603516 L 548.095703 48.603516 L 548.095703 51.796875 Z M 544.697266 80.800781 L 547.900391 80.800781 L 547.900391 166.298828 L 544.697266 166.298828 Z M 544.697266 80.800781 " transform="matrix(0.4,0,0,0.4,0,0)"/>
+<path style="fill-rule:nonzero;fill:rgb(88.627451%,37.254902%,17.647059%);fill-opacity:1;stroke-width:3;stroke-linecap:butt;stroke-linejoin:miter;stroke:rgb(88.627451%,37.254902%,17.254902%);stroke-opacity:1;stroke-miterlimit:10;" d="M 611.601562 54.599609 L 613.203125 54.599609 L 613.203125 57.695312 L 611.601562 57.695312 C 594.404297 57.695312 582.597656 65.400391 582.5 82.304688 L 582.5 91.103516 L 607.695312 91.103516 L 607.695312 94.199219 L 582.5 94.199219 L 582.5 166.201172 L 579.404297 166.201172 L 579.404297 94.199219 L 563.603516 94.199219 L 563.603516 91.103516 L 579.404297 91.103516 L 579.404297 82.304688 C 579.501953 63.896484 593.496094 54.599609 611.601562 54.599609 Z M 611.601562 54.599609 " transform="matrix(0.4,0,0,0.4,0,0)"/>
+<path style="fill-rule:nonzero;fill:rgb(88.627451%,37.254902%,17.647059%);fill-opacity:1;stroke-width:3;stroke-linecap:butt;stroke-linejoin:miter;stroke:rgb(88.627451%,37.254902%,17.254902%);stroke-opacity:1;stroke-miterlimit:10;" d="M 639.199219 51.796875 L 637.597656 51.796875 L 637.597656 48.603516 L 640.996094 48.603516 L 640.996094 51.796875 Z M 637.597656 80.800781 L 640.703125 80.800781 L 640.703125 166.298828 L 637.597656 166.298828 Z M 637.597656 80.800781 " transform="matrix(0.4,0,0,0.4,0,0)"/>
+<path style="fill-rule:nonzero;fill:rgb(88.627451%,37.254902%,17.647059%);fill-opacity:1;stroke-width:3;stroke-linecap:butt;stroke-linejoin:miter;stroke:rgb(88.627451%,37.254902%,17.254902%);stroke-opacity:1;stroke-miterlimit:10;" d="M 674.599609 105.898438 C 681.103516 89.697266 697.304688 80.800781 717.099609 80.800781 L 718.701172 80.800781 L 718.701172 83.896484 L 717.099609 83.896484 C 692.099609 83.896484 674.697266 97.5 674.599609 122.695312 L 674.599609 166.201172 L 671.503906 166.201172 L 671.503906 123.398438 C 671.503906 123.203125 671.503906 122.998047 671.503906 122.802734 L 671.503906 80.800781 L 674.599609 80.800781 Z M 674.599609 105.898438 " transform="matrix(0.4,0,0,0.4,0,0)"/>
+</g>
+</svg></span>
+    <span class="smf-badge">Support de formation</span>
+  </div>
+
+  <div class="smf-mid">
+    
+    <h1 class="smf-title">Projet final — FoodTrack sur Google Cloud</h1>
+    <p class="smf-lede">Ingénieur Cloud OPS — Projet final DevOps multicloud</p>
+  </div>
+
+  <div class="smf-bottom">
+    <div class="smf-meta"><div class="smf-f"><p class="smf-k">Formateur</p><p class="smf-v">Adrien Vossough</p></div><div class="smf-f"><p class="smf-k">Mise à jour</p><p class="smf-v">2026-09-20</p></div><div class="smf-f"><p class="smf-k">Version</p><p class="smf-v">1.2.0</p></div></div>
+    <p class="smf-legal">
+      <b>© 2026 Semifir</b> · <a href="mailto:adrien.vossough@semifir.com">adrien.vossough@semifir.com</a> · <a href="https://semifir.com" target="_blank" rel="noopener">semifir.com</a><br>
+      <span class="smf-confid">Diffusion restreinte —</span> ce support ne peut être reproduit, diffusé ou utilisé en dehors d'une formation donnée par Semifir, sans autorisation écrite.
+    </p>
+  </div>
+</section>
+<p><strong>4 jours, 28 heures. Travail en équipe. Soutenance en fin de quatrième journée.</strong></p>
+<h2 id="le-contexte">Le contexte</h2>
+<p>FoodTrack équipe des camions de livraison et des entrepôts de capteurs de température connectés. Les relevés remontent en continu vers une plateforme centralisée, que les responsables qualité consultent pour prouver la conformité HACCP de la chaîne du froid. Une rupture de froid non détectée, c'est une palette détruite et un client perdu.</p>
+<p>La plateforme existe, mais sous forme de prototype : trois conteneurs qu'un développeur lance à la main sur son poste. La direction technique vous recrute pour la faire passer en production. Vous n'écrivez pas l'application — elle vous est fournie. Vous construisez tout ce qu'il y a autour : l'infrastructure, son automatisation, la chaîne de livraison, la supervision et la sécurisation.</p>
+<p>Chaque équipe travaille sur son propre projet Google Cloud et gère l'entrepôt FoodTrack d'une ville européenne. Vous êtes cinq équipes sur le même cahier des charges ; vos arbitrages techniques vous appartiennent, et c'est sur eux que porte la soutenance.</p>
+<h2 id="ce-qui-est-attendu-et-ce-qui-ne-lest-pas">Ce qui est attendu, et ce qui ne l'est pas</h2>
+<table>
+<thead>
+<tr>
+<th>Dans le périmètre</th>
+<th>Hors périmètre</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Infrastructure Google Cloud décrite en Terraform</td>
+<td>Développement applicatif : le code des trois tiers est fourni</td>
+</tr>
+<tr>
+<td>Trois environnements isolés et configurés séparément</td>
+<td>Haute disponibilité multi-région</td>
+</tr>
+<tr>
+<td>Chaîne CI/CD hébergée hors de Google Cloud</td>
+<td>Maillage de services, observabilité distribuée</td>
+</tr>
+<tr>
+<td>Supervision, alertes, scripts d'exploitation</td>
+<td>Conformité réglementaire formelle</td>
+</tr>
+<tr>
+<td>Sécurisation des accès et des flux</td>
+<td>Tests de charge, réglage fin des performances</td>
+</tr>
+<tr>
+<td>Documentation et soutenance</td>
+<td>Migration de données existantes</td>
+</tr>
+</tbody>
+</table>
+<h2 id="lapplication-foodtrack">L'application FoodTrack</h2>
+<p>Trois tiers conteneurisés, fournis dans <a href="../../labs/projet-final/README.md"><code>labs/projet-final/</code></a>.</p>
+<table>
+<thead>
+<tr>
+<th>Tier</th>
+<th>Objet Kubernetes</th>
+<th>Image épinglée</th>
+<th>Rôle</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Portail</td>
+<td><code>Deployment/portail-qualite</code></td>
+<td><code>nginx:1.30.5</code></td>
+<td>Portail de suivi qualité, reverse proxy <code>/api/</code> vers l'API capteurs</td>
+</tr>
+<tr>
+<td>API</td>
+<td><code>Deployment/api-capteurs</code></td>
+<td><code>us-docker.pkg.dev/google-samples/containers/gke/hello-app:2.0</code></td>
+<td>API de consultation des relevés de température</td>
+</tr>
+<tr>
+<td>Cache</td>
+<td><code>StatefulSet/cache-releves</code></td>
+<td><code>redis:8.10.1</code></td>
+<td>Cache des derniers relevés, sur volume persistant</td>
+</tr>
+</tbody>
+</table>
+<p>Les manifestes fournis déploient l'application dans <strong>un seul namespace</strong>, sans séparation d'environnement, sans exposition externe et sans mise à l'échelle. Ils constituent votre point de départ, pas votre livrable.</p>
+<h2 id="architecture-cible">Architecture cible</h2>
+<pre class="mermaid">
+flowchart TB
+    t_git["Depot GitHub de l equipe"]
+    t_ci["GitHub Actions"]
+
+    subgraph t_vpc ["VPC prive du projet"]
+        direction TB
+        spacer_1[ ]
+        style spacer_1 width:0px,height:0px,fill:none,stroke:none
+        t_nat["Cloud Router et Cloud NAT"]
+        spacer_1 ~~~ t_nat
+        t_bastion["VM bastion"]
+        t_gke["Cluster GKE Standard zonal&lt;br/&gt;namespaces dev, test et prod"]
+    end
+
+    subgraph t_svc ["Services du projet Google Cloud"]
+        direction TB
+        spacer_2[ ]
+        style spacer_2 width:0px,height:0px,fill:none,stroke:none
+        t_ar["Artifact Registry"]
+        spacer_2 ~~~ t_ar
+        t_gcs["Cloud Storage : tfstate et sauvegardes"]
+        t_obs["Cloud Monitoring et Cloud Logging"]
+    end
+
+    t_git --&gt;|"push ou tag"| t_ci
+    t_ci --&gt;|"OIDC"| t_ar
+    t_ci --&gt;|"kubectl apply"| t_gke
+    t_bastion --&gt; t_gke
+    t_gke --&gt; t_nat
+    t_gke --&gt; t_ar
+    t_gke --&gt; t_obs
+</pre>
+
+<p>En mode Standard, la frontière est celle-ci : GKE exploite le plan de contrôle, vous exploitez les nœuds. C'est ce partage qui met le dimensionnement et le type de disque de votre côté.</p>
+<p><img alt="Architecture d'un cluster GKE : le plan de contrôle, avec serveur d'API, ordonnanceur, contrôleurs et stockage, est géré par Google ; les nœuds qui portent les pods sont gérés par vous en mode Standard ; le cluster consomme les services Google Cloud rattachés — réseau VPC, disque persistant, équilibrage de charge et observabilité" src="../../cours/assets/download/projet-final/gke-architecture.svg" /></p>
+<p class="img-source">Source : documentation Google Cloud, « Cluster architecture », consultée le 2026-09-20.</p>
+<h3 id="contraintes-imposees">Contraintes imposées</h3>
+<p>Ces choix ne sont pas négociables : ils cadrent le projet et garantissent qu'il tient dans les quotas de la session.</p>
+<table>
+<thead>
+<tr>
+<th>Élément</th>
+<th>Contrainte</th>
+<th>Pourquoi</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Mode GKE</td>
+<td><strong>Standard</strong>, cluster <strong>zonal</strong>, un seul cluster</td>
+<td>Le quota de disques SSD de la session interdit Autopilot ; un cluster par environnement serait hors budget</td>
+</tr>
+<tr>
+<td>Disques des nœuds</td>
+<td><strong><code>pd-standard</code></strong> obligatoire, 50 Go maximum</td>
+<td>Le type par défaut de GKE est <code>pd-balanced</code>, adossé au quota SSD. Vous devez le surcharger explicitement</td>
+</tr>
+<tr>
+<td>Famille de machines</td>
+<td><strong>E2</strong> ou <strong>N2</strong></td>
+<td>Les familles C3, G2, G4 et N4 n'acceptent pas de disque de démarrage <code>pd-standard</code></td>
+</tr>
+<tr>
+<td>Volume du cache Redis</td>
+<td>StorageClass <strong>créée par vos soins</strong>, paramètre <code>type: pd-standard</code></td>
+<td>Les StorageClass livrées avec GKE pointent sur du disque SSD</td>
+</tr>
+<tr>
+<td>Environnements</td>
+<td><strong>Trois namespaces</strong> dans le cluster unique : <code>foodtrack-dev</code>, <code>foodtrack-test</code>, <code>foodtrack-prod</code></td>
+<td>Isolation logique, coût maîtrisé</td>
+</tr>
+<tr>
+<td>Nœuds</td>
+<td><strong>Sans adresse IP externe</strong>, sortie Internet par Cloud NAT</td>
+<td>Sans NAT, les images de Docker Hub ne se téléchargent pas</td>
+</tr>
+<tr>
+<td>Chaîne CI/CD</td>
+<td><strong>GitHub Actions</strong>, authentification par <strong>Workload Identity Federation</strong></td>
+<td>Pas de clé de compte de service dans un dépôt</td>
+</tr>
+<tr>
+<td>État Terraform</td>
+<td><strong>Backend distant</strong> sur Cloud Storage, versioning activé</td>
+<td>L'état est partagé par toute l'équipe</td>
+</tr>
+<tr>
+<td>Région</td>
+<td>Celle attribuée à votre équipe, et elle seule</td>
+<td>Les quotas se comptent par région</td>
+</tr>
+</tbody>
+</table>
+<h2 id="organisation">Organisation</h2>
+<h3 id="les-cinq-equipes">Les cinq équipes</h3>
+<p>Chaque équipe dispose de son propre projet Google Cloud et gère l'entrepôt FoodTrack d'une ville européenne. Toutes vos ressources vivent dans votre région, et nulle part ailleurs.</p>
+<table>
+<thead>
+<tr>
+<th>Équipe</th>
+<th>Projet Google Cloud</th>
+<th>Région</th>
+<th>Entrepôt</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A</td>
+<td><code>foodtrack-equipe-a</code></td>
+<td><code>europe-west8</code></td>
+<td>Milan</td>
+</tr>
+<tr>
+<td>B</td>
+<td><code>foodtrack-equipe-b</code></td>
+<td><code>europe-west3</code></td>
+<td>Francfort</td>
+</tr>
+<tr>
+<td>C</td>
+<td><code>foodtrack-equipe-c</code></td>
+<td><code>europe-west2</code></td>
+<td>Londres</td>
+</tr>
+<tr>
+<td>D</td>
+<td><code>foodtrack-equipe-d</code></td>
+<td><code>europe-west4</code></td>
+<td>Eemshaven</td>
+</tr>
+<tr>
+<td>E</td>
+<td><code>foodtrack-equipe-e</code></td>
+<td><code>europe-west9</code></td>
+<td>Paris</td>
+</tr>
+</tbody>
+</table>
+<h3 id="les-roles">Les rôles</h3>
+<p>Chaque membre pilote un domaine et en répond à la soutenance. Piloter ne veut pas dire exécuter seul : tout le monde contribue partout, mais une seule personne porte la décision et l'explique.</p>
+<table>
+<thead>
+<tr>
+<th>Rôle</th>
+<th>Domaine</th>
+<th>Phase dominante</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Lead infrastructure</td>
+<td>VPC, NAT, cluster, bastion, buckets, modules Terraform</td>
+<td>Phase 1</td>
+</tr>
+<tr>
+<td>Lead Kubernetes</td>
+<td>Manifestes, namespaces, configuration par environnement, exposition, mise à l'échelle</td>
+<td>Phase 2</td>
+</tr>
+<tr>
+<td>Lead livraison</td>
+<td>Dépôt, workflow GitHub Actions, Artifact Registry, versions et releases</td>
+<td>Phase 3</td>
+</tr>
+<tr>
+<td>Lead exploitation</td>
+<td>Supervision, alertes, IAM, durcissement, scripts, coûts</td>
+<td>Phases 3 et 4</td>
+</tr>
+<tr>
+<td>Coordination</td>
+<td>Architecture, documentation, intégration, script de contrôle de santé</td>
+<td>Transversal</td>
+</tr>
+</tbody>
+</table>
+<p>Le rôle de coordination n'existe que dans les équipes de cinq. À quatre, il se répartit entre le lead infrastructure, qui porte la documentation d'architecture, et le lead exploitation, qui porte le script de contrôle de santé. À trois, le lead livraison absorbe l'exploitation, et la soutenance porte alors sur trois domaines au lieu de quatre — dites-le au jury en ouverture.</p>
+<h3 id="votre-environnement-de-travail">Votre environnement de travail</h3>
+<p>Cloud Shell suffit et contient déjà <code>gcloud</code>, <code>kubectl</code>, <code>terraform</code>, <code>git</code> et <code>python3</code>. Un poste local convient aussi, à condition d'y installer <code>gcloud</code> avec le composant <code>gke-gcloud-auth-plugin</code>, <code>kubectl</code> et Terraform (1.5 minimum, la dernière version stable de préférence).</p>
+<p>Commencez chaque session par :</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># remplacez la lettre et la region par celles de votre equipe</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">EQUIPE</span><span class="o">=</span><span class="s2">&quot;a&quot;</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">REGION</span><span class="o">=</span><span class="s2">&quot;europe-west8&quot;</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">ZONE</span><span class="o">=</span><span class="s2">&quot;europe-west8-b&quot;</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">PROJECT</span><span class="o">=</span><span class="s2">&quot;foodtrack-equipe-</span><span class="si">${</span><span class="nv">EQUIPE</span><span class="si">}</span><span class="s2">&quot;</span>
+
+gcloud<span class="w"> </span>config<span class="w"> </span><span class="nb">set</span><span class="w"> </span>project<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$PROJECT</span><span class="s2">&quot;</span>
+gcloud<span class="w"> </span>config<span class="w"> </span><span class="nb">set</span><span class="w"> </span>compute/region<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$REGION</span><span class="s2">&quot;</span>
+gcloud<span class="w"> </span>config<span class="w"> </span><span class="nb">set</span><span class="w"> </span>compute/zone<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$ZONE</span><span class="s2">&quot;</span>
+</code></pre></div>
+<h3 id="convention-de-nommage">Convention de nommage</h3>
+<p>Préfixez toutes vos ressources Google Cloud par votre lettre d'équipe. Les noms de buckets sont uniques à l'échelle mondiale : suffixez-les par l'identifiant de votre projet.</p>
+<table>
+<thead>
+<tr>
+<th>Ressource</th>
+<th>Convention</th>
+<th>Exemple, équipe A</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>VPC</td>
+<td><code>foodtrack-&lt;lettre&gt;-vpc</code></td>
+<td><code>foodtrack-a-vpc</code></td>
+</tr>
+<tr>
+<td>Sous-réseau</td>
+<td><code>foodtrack-&lt;lettre&gt;-subnet</code></td>
+<td><code>foodtrack-a-subnet</code></td>
+</tr>
+<tr>
+<td>Cluster</td>
+<td><code>foodtrack-&lt;lettre&gt;-cluster</code></td>
+<td><code>foodtrack-a-cluster</code></td>
+</tr>
+<tr>
+<td>Node pool</td>
+<td><code>foodtrack-&lt;lettre&gt;-pool</code></td>
+<td><code>foodtrack-a-pool</code></td>
+</tr>
+<tr>
+<td>Bastion</td>
+<td><code>foodtrack-&lt;lettre&gt;-bastion</code></td>
+<td><code>foodtrack-a-bastion</code></td>
+</tr>
+<tr>
+<td>Bucket d'état</td>
+<td><code>foodtrack-&lt;lettre&gt;-tfstate-&lt;project-id&gt;</code></td>
+<td><code>foodtrack-a-tfstate-foodtrack-equipe-a</code></td>
+</tr>
+<tr>
+<td>Dépôt d'images</td>
+<td><code>foodtrack-&lt;lettre&gt;-images</code></td>
+<td><code>foodtrack-a-images</code></td>
+</tr>
+<tr>
+<td>Namespaces</td>
+<td><code>foodtrack-dev</code>, <code>foodtrack-test</code>, <code>foodtrack-prod</code></td>
+<td>identiques pour toutes les équipes</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="phase-1-cadrage-et-socle-terraform">Phase 1 — Cadrage et socle Terraform</h2>
+<p><strong>Objectif</strong> : à la fin de la journée, l'infrastructure de votre projet existe entièrement par <code>terraform apply</code>, et personne dans l'équipe n'a créé de ressource à la main dans la console.</p>
+<h3 id="ce-que-vous-produisez">Ce que vous produisez</h3>
+<p>Un dépôt GitHub structuré, un schéma d'architecture, et du code Terraform organisé en modules qui déploie le réseau, la sortie Internet, le cluster, le bastion et les buckets.</p>
+<h3 id="le-point-de-depart-luf-et-la-poule">Le point de départ : l'œuf et la poule</h3>
+<p>Le backend distant de Terraform a besoin d'un bucket qui existe déjà. Créez-le à la main, une fois, avant le premier <code>terraform init</code> — c'est la seule exception à la règle « tout en Terraform », et vous la documenterez comme telle.</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># bucket d etat : cree hors Terraform, versionne, dans la region de l equipe</span>
+gcloud<span class="w"> </span>storage<span class="w"> </span>buckets<span class="w"> </span>create<span class="w"> </span><span class="s2">&quot;gs://foodtrack-</span><span class="si">${</span><span class="nv">EQUIPE</span><span class="si">}</span><span class="s2">-tfstate-</span><span class="si">${</span><span class="nv">PROJECT</span><span class="si">}</span><span class="s2">&quot;</span><span class="w"> </span>--location<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$REGION</span><span class="s2">&quot;</span><span class="w"> </span>--uniform-bucket-level-access
+gcloud<span class="w"> </span>storage<span class="w"> </span>buckets<span class="w"> </span>update<span class="w"> </span><span class="s2">&quot;gs://foodtrack-</span><span class="si">${</span><span class="nv">EQUIPE</span><span class="si">}</span><span class="s2">-tfstate-</span><span class="si">${</span><span class="nv">PROJECT</span><span class="si">}</span><span class="s2">&quot;</span><span class="w"> </span>--versioning
+</code></pre></div>
+<h3 id="decoupage-attendu-du-code">Découpage attendu du code</h3>
+<p>Trois modules au minimum, appelés depuis une racine qui porte le backend et les variables. Un fichier de variables par environnement.</p>
+<div class="highlight"><pre><span></span><code>terraform/
+  main.tf            appelle les modules, declare le backend gcs
+  variables.tf
+  outputs.tf
+  dev.tfvars
+  test.tfvars
+  prod.tfvars
+  modules/
+    reseau/          vpc, sous-reseau, cloud router, cloud nat, regles de pare-feu
+    compute/         cluster gke, node pool, vm bastion
+    stockage/        buckets de sauvegarde et d exports de journaux
+</code></pre></div>
+<h3 id="ressources-et-arguments-cles">Ressources et arguments clés</h3>
+<p>Vous cherchez la documentation vous-même ; voici les points d'entrée et les pièges.</p>
+<table>
+<thead>
+<tr>
+<th>Besoin</th>
+<th>Ressource Terraform</th>
+<th>Le point à ne pas rater</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Réseau privé</td>
+<td><code>google_compute_network</code>, <code>google_compute_subnetwork</code></td>
+<td>Désactivez la création automatique de sous-réseaux ; déclarez deux plages secondaires, une pour les pods, une pour les services</td>
+</tr>
+<tr>
+<td>Sortie Internet</td>
+<td><code>google_compute_router</code>, <code>google_compute_router_nat</code></td>
+<td>Sans cela, aucun pod ne démarre : les images restent en <code>ImagePullBackOff</code></td>
+</tr>
+<tr>
+<td>Cluster</td>
+<td><code>google_container_cluster</code></td>
+<td>Supprimez le node pool par défaut ; activez le mode natif VPC en désignant vos plages secondaires</td>
+</tr>
+<tr>
+<td>Nœuds</td>
+<td><code>google_container_node_pool</code></td>
+<td><code>disk_type</code> à <code>pd-standard</code> et <code>machine_type</code> en famille E2 ou N2, sinon la création échoue ou consomme le quota SSD</td>
+</tr>
+<tr>
+<td>Accès au plan de contrôle</td>
+<td>bloc <code>master_authorized_networks_config</code></td>
+<td>Voir la note sur l'exposition, ci-dessous</td>
+</tr>
+<tr>
+<td>Bastion</td>
+<td><code>google_compute_instance</code></td>
+<td>Restreignez la source SSH, et préférez une machine de la plus petite taille utile</td>
+</tr>
+<tr>
+<td>Pare-feu</td>
+<td><code>google_compute_firewall</code></td>
+<td>Ciblez par étiquette réseau, jamais par plage large</td>
+</tr>
+<tr>
+<td>Images</td>
+<td><code>google_artifact_registry_repository</code></td>
+<td>Format <code>DOCKER</code>, même région que le cluster</td>
+</tr>
+</tbody>
+</table>
+<p>Cloud NAT n'est pas une passerelle posée sur le chemin des paquets : il n'y a aucune machine à exploiter, chaque nœud se voit attribuer une adresse et une plage de ports.</p>
+<p><img alt="Comparaison entre une passerelle NAT classique, où toutes les machines traversent une instance proxy placée sur le chemin des paquets, et Cloud NAT, où aucun équipement intermédiaire n'existe : chaque machine reçoit directement une adresse NAT et une plage de ports réservée" src="../../cours/assets/download/projet-final/cloud-nat.svg" /></p>
+<p class="img-source">Source : documentation Google Cloud, « Cloud NAT overview », consultée le 2026-09-20.</p>
+<p>🟨 <strong>Exposition du plan de contrôle</strong> : vos nœuds n'ont pas d'adresse IP publique, mais le plan de contrôle doit rester joignable depuis GitHub Actions, dont les exécuteurs ont des adresses variables. Vous aurez donc à ouvrir large. Documentez ce compromis, mesurez ce qu'il coûte en sécurité, et proposez au moins une alternative crédible. La question tombera en soutenance.</p>
+<h3 id="dimensionnement">Dimensionnement</h3>
+<p>Personne ne vous donne la taille du cluster. Trois environnements tournent dessus, et l'un d'eux monte en charge sous l'effet de l'autoscaler horizontal. Additionnez les demandes de ressources de vos pods, ajoutez la marge des composants système, puis justifiez votre type de machine et votre nombre de nœuds dans le README. Un cluster surdimensionné est une faute au même titre qu'un cluster saturé.</p>
+<h3 id="le-cycle-de-vie-pas-seulement-la-creation">Le cycle de vie, pas seulement la création</h3>
+<p>Une fois <code>dev</code> déployé, modifiez l'infrastructure et observez : changez le type de machine du bastion, ajoutez une règle de pare-feu, agrandissez le node pool. Lisez le plan avant d'appliquer. Repérez ce que Terraform remplace et ce qu'il modifie en place — la différence vous servira en soutenance.</p>
+<h3 id="verification-de-fin-de-phase">Vérification de fin de phase</h3>
+<div class="highlight"><pre><span></span><code>terraform<span class="w"> </span>plan<span class="w"> </span>-var-file<span class="o">=</span>dev.tfvars<span class="w">   </span><span class="c1"># doit annoncer : no changes</span>
+gcloud<span class="w"> </span>container<span class="w"> </span>clusters<span class="w"> </span>get-credentials<span class="w"> </span><span class="s2">&quot;foodtrack-</span><span class="si">${</span><span class="nv">EQUIPE</span><span class="si">}</span><span class="s2">-cluster&quot;</span><span class="w"> </span>--zone<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$ZONE</span><span class="s2">&quot;</span>
+kubectl<span class="w"> </span>get<span class="w"> </span>nodes<span class="w"> </span>-o<span class="w"> </span>wide<span class="w">             </span><span class="c1"># noeuds Ready, aucune IP externe</span>
+gcloud<span class="w"> </span>compute<span class="w"> </span>routers<span class="w"> </span>nats<span class="w"> </span>list<span class="w"> </span>--router<span class="w"> </span><span class="s2">&quot;foodtrack-</span><span class="si">${</span><span class="nv">EQUIPE</span><span class="si">}</span><span class="s2">-router&quot;</span><span class="w"> </span>--region<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$REGION</span><span class="s2">&quot;</span>
+gcloud<span class="w"> </span>container<span class="w"> </span>node-pools<span class="w"> </span>describe<span class="w"> </span><span class="s2">&quot;foodtrack-</span><span class="si">${</span><span class="nv">EQUIPE</span><span class="si">}</span><span class="s2">-pool&quot;</span><span class="w"> </span>--cluster<span class="w"> </span><span class="s2">&quot;foodtrack-</span><span class="si">${</span><span class="nv">EQUIPE</span><span class="si">}</span><span class="s2">-cluster&quot;</span><span class="w"> </span>--zone<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$ZONE</span><span class="s2">&quot;</span><span class="w"> </span>--format<span class="o">=</span><span class="s2">&quot;value(config.diskType,config.diskSizeGb,config.machineType)&quot;</span>
+</code></pre></div>
+<!-- TODO: capture console Kubernetes Engine > Clusters > foodtrack-a-cluster > onglet Noeuds > pool, montrant Type de disque de demarrage = disque persistant standard -->
+
+<p>La dernière commande doit répondre <code>pd-standard</code>. Si elle répond autre chose, votre quota SSD se vide pendant que vous lisez cette phrase.</p>
+<h3 id="erreurs-frequentes">Erreurs fréquentes</h3>
+<table>
+<thead>
+<tr>
+<th>🟨 Symptôme</th>
+<th>Cause probable</th>
+<th>Comment le détecter</th>
+<th>Correction</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Quota SSD_TOTAL_GB exceeded</code></td>
+<td><code>disk_type</code> laissé par défaut sur le node pool</td>
+<td>Le message nomme la région et le quota</td>
+<td>Forcer <code>pd-standard</code> et relancer</td>
+</tr>
+<tr>
+<td><code>Invalid value for field disk_type</code></td>
+<td>Famille de machines C3, G2, G4 ou N4</td>
+<td>Le message cite le type de machine</td>
+<td>Revenir en E2 ou N2</td>
+</tr>
+<tr>
+<td>Pods bloqués en <code>ImagePullBackOff</code></td>
+<td>Pas de Cloud NAT, ou NAT sur la mauvaise plage</td>
+<td><code>kubectl describe pod</code> montre un dépassement de délai réseau</td>
+<td>Créer le NAT et vérifier qu'il couvre le sous-réseau du cluster</td>
+</tr>
+<tr>
+<td><code>Error acquiring the state lock</code></td>
+<td>Deux membres appliquent en même temps</td>
+<td>Le message nomme le détenteur du verrou</td>
+<td>Un seul pilote applique ; les autres lisent</td>
+</tr>
+<tr>
+<td>Le cluster se recrée à chaque plan</td>
+<td>Un attribut immuable change : plages secondaires, mode réseau</td>
+<td>Le plan affiche <code>forces replacement</code></td>
+<td>Figer l'attribut, ou assumer la recréation en tout début de projet</td>
+</tr>
+<tr>
+<td><code>Required "container.clusters.create" permission</code></td>
+<td>Rôle manquant sur le compte du stagiaire</td>
+<td>Le message nomme la permission</td>
+<td>Signaler au formateur, ne pas contourner par un compte de service surdimensionné</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="phase-2-deploiement-multi-environnement">Phase 2 — Déploiement multi-environnement</h2>
+<p><strong>Objectif</strong> : la même application tourne dans trois namespaces, configurée différemment dans chacun, et vous savez expliquer d'où vient chaque différence.</p>
+<h3 id="ce-que-vous-produisez_1">Ce que vous produisez</h3>
+<p>Des manifestes organisés par environnement, une StorageClass maison, une exposition externe et un mécanisme de mise à l'échelle.</p>
+<h3 id="la-separation-par-environnement">La séparation par environnement</h3>
+<p>Les manifestes fournis ciblent un namespace unique. À vous d'en faire trois, avec des différences réelles et justifiées : nombre de répliques, seuil d'alerte de température, verbosité des journaux, bornes de l'autoscaler, taille du volume du cache.</p>
+<p>Trois approches tiennent la route. Choisissez-en une et défendez-la.</p>
+<table>
+<thead>
+<tr>
+<th>Approche</th>
+<th>Ce que ça donne</th>
+<th>Le prix à payer</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Un répertoire complet par environnement</td>
+<td>Lisible, chaque environnement se lit d'un bloc</td>
+<td>Duplication : une correction se répercute trois fois</td>
+</tr>
+<tr>
+<td>Un socle commun et une substitution de variables (<code>envsubst</code>)</td>
+<td>Pas de duplication, outillage minimal</td>
+<td>Les fichiers ne sont plus valides en l'état, il faut les rendre pour les lire</td>
+</tr>
+<tr>
+<td>Kustomize, socle et surcouches</td>
+<td>L'outil standard pour ce besoin</td>
+<td>À apprendre en cours de projet</td>
+</tr>
+</tbody>
+</table>
+<p>🔷 Quelle que soit l'approche, le principe ne bouge pas : la configuration sort de l'image. Un ConfigMap porte les réglages, un Secret porte ce qui ne doit pas se lire en clair, et les deux diffèrent d'un environnement à l'autre.</p>
+<h3 id="la-storageclass-a-creer">La StorageClass, à créer</h3>
+<p>Aucune StorageClass livrée avec GKE ne provisionne de disque <code>pd-standard</code> : la classe par défaut utilise du disque <code>balanced</code>, adossé au quota SSD. Vous créez donc la vôtre, et le <code>volumeClaimTemplate</code> du StatefulSet la désigne nommément.</p>
+<p>Le provisionneur à utiliser est <code>pd.csi.storage.gke.io</code>, le paramètre qui compte est <code>type</code>. Pensez à <code>volumeBindingMode: WaitForFirstConsumer</code> : sans lui, le disque se crée dans une zone qui peut ne pas être celle du pod. Un exemple complet vous attend dans <a href="../../labs/projet-final/README.md"><code>labs/projet-final/manifests/</code></a>.</p>
+<h3 id="lexposition">L'exposition</h3>
+<p>Un objet <code>Ingress</code> par namespace, servi par le contrôleur d'équilibrage de charge de GKE.</p>
+<p>🔹 Sur un cluster en mode natif VPC — le vôtre —, GKE annote lui-même les Services <code>ClusterIP</code> référencés par un Ingress et leur crée un groupe de points de terminaison réseau. L'équilibreur joint alors les pods directement, sans passer par les nœuds. Vous n'avez donc rien à changer au type des Services, contrairement à ce que raconte une bonne partie de la documentation que vous trouverez en ligne, écrite à l'époque où <code>NodePort</code> était obligatoire. Sachez expliquer pourquoi.</p>
+<p><img alt="Deux chemins comparés : à gauche, l'équilibreur de charge vise un groupe d'instances, entre dans les machines virtuelles et traverse iptables avant d'atteindre les pods ; à droite, il vise un groupe de points de terminaison réseau et joint les pods directement, sans saut intermédiaire" src="../../cours/assets/download/projet-final/gke-container-native-lb-neg.svg" /></p>
+<p class="img-source">Source : documentation Google Cloud, « Container-native load balancing », consultée le 2026-09-20.</p>
+<!-- TODO: capture console Equilibrage de charge > details du backend, montrant un backend HEALTHY et un backend UNHEALTHY cote a cote alors que kubectl get pods affiche Running et Ready -->
+
+<p>La sonde de disponibilité de vos pods définit le test de santé que l'équilibreur applique : si elle pointe sur un chemin qui répond 404, tous vos backends resteront marqués en mauvaise santé alors que Kubernetes les considère prêts. C'est le piège classique de cette phase.</p>
+<p>Comptez quatre minutes avant que l'adresse publique soit attribuée, et huit avant la première réponse 200. C'est normal, ne supprimez pas l'objet pour le recréer.</p>
+<h3 id="la-mise-a-lechelle">La mise à l'échelle</h3>
+<p>Un <code>HorizontalPodAutoscaler</code> sur l'API capteurs, qui absorbe les pics de relevés aux heures de livraison. L'utilisation cible est un pourcentage de la <strong>demande de ressources déclarée</strong>, pas de la capacité du nœud : sans <code>resources.requests.cpu</code>, l'autoscaler reste en <code>&lt;unknown&gt;</code> et ne fait rien.</p>
+<!-- TODO: visuel officiel du HorizontalPodAutoscaler sur utilisation processeur a trouver ; la figure Google d autoscaling pilote par l equilibreur montre une Gateway, hors perimetre du projet -->
+
+<p>Bornez <code>maxReplicas</code> en tenant compte du fait que trois environnements partagent le même node pool. Un autoscaler généreux en <code>dev</code> peut empêcher la production de démarrer.</p>
+<h3 id="verification-de-fin-de-phase_1">Vérification de fin de phase</h3>
+<div class="highlight"><pre><span></span><code><span class="k">for</span><span class="w"> </span>NS<span class="w"> </span><span class="k">in</span><span class="w"> </span>foodtrack-dev<span class="w"> </span>foodtrack-test<span class="w"> </span>foodtrack-prod<span class="p">;</span><span class="w"> </span><span class="k">do</span>
+<span class="w">  </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;--- </span><span class="nv">$NS</span><span class="s2">&quot;</span>
+<span class="w">  </span>kubectl<span class="w"> </span>get<span class="w"> </span>deploy,statefulset,svc,ingress,hpa,pvc<span class="w"> </span>-n<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$NS</span><span class="s2">&quot;</span>
+<span class="k">done</span>
+
+kubectl<span class="w"> </span>get<span class="w"> </span>storageclass
+kubectl<span class="w"> </span>get<span class="w"> </span>pvc<span class="w"> </span>-A<span class="w"> </span>-o<span class="w"> </span>custom-columns<span class="o">=</span>NS:.metadata.namespace,NAME:.metadata.name,SC:.spec.storageClassName,SIZE:.spec.resources.requests.storage
+
+<span class="c1"># la configuration doit differer d un environnement a l autre</span>
+kubectl<span class="w"> </span>get<span class="w"> </span>configmap<span class="w"> </span>foodtrack-config<span class="w"> </span>-n<span class="w"> </span>foodtrack-dev<span class="w"> </span>-o<span class="w"> </span>yaml
+kubectl<span class="w"> </span>get<span class="w"> </span>configmap<span class="w"> </span>foodtrack-config<span class="w"> </span>-n<span class="w"> </span>foodtrack-prod<span class="w"> </span>-o<span class="w"> </span>yaml
+</code></pre></div>
+<h3 id="erreurs-frequentes_1">Erreurs fréquentes</h3>
+<table>
+<thead>
+<tr>
+<th>🟨 Symptôme</th>
+<th>Cause probable</th>
+<th>Comment le détecter</th>
+<th>Correction</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Le cache Redis boucle en <code>CrashLoopBackOff</code></td>
+<td>Le volume est monté avec root pour propriétaire, Redis tourne sous l'uid 999</td>
+<td><code>kubectl logs</code> affiche <code>Can't open or create append-only dir appendonlydir: Permission denied</code></td>
+<td>Déclarer <code>securityContext.fsGroup: 999</code> au niveau du pod. Les manifestes fournis le font déjà : ne l'enlevez pas</td>
+</tr>
+<tr>
+<td>PVC en <code>Pending</code> indéfiniment</td>
+<td>StorageClass absente ou mal nommée dans le <code>volumeClaimTemplate</code></td>
+<td><code>kubectl describe pvc</code> cite la classe demandée</td>
+<td>Créer la classe, ou corriger le nom. Le <code>volumeClaimTemplate</code> d'un StatefulSet ne se modifie pas : supprimer et recréer</td>
+</tr>
+<tr>
+<td>Disque provisionné dans la mauvaise zone</td>
+<td><code>volumeBindingMode: Immediate</code></td>
+<td>Le pod reste <code>Pending</code> sur un conflit d'affinité de volume</td>
+<td>Passer la classe en <code>WaitForFirstConsumer</code></td>
+</tr>
+<tr>
+<td>Ingress sans adresse au bout de dix minutes</td>
+<td>Provisionnement encore en cours, ou service et port référencés introuvables</td>
+<td><code>kubectl describe ingress</code>, section <code>Events</code> et liste des backends</td>
+<td>Patienter jusqu'à dix minutes ; au-delà, vérifier que le nom et le port du Service existent réellement</td>
+</tr>
+<tr>
+<td>Backends en mauvaise santé alors que les pods sont <code>Ready</code></td>
+<td>Le test de santé de l'équilibreur vise un chemin qui ne répond pas 200</td>
+<td>Console, page de l'équilibreur, état des backends</td>
+<td>Aligner la sonde de disponibilité sur le chemin de santé réel</td>
+</tr>
+<tr>
+<td>Pods <code>Pending</code> faute de place</td>
+<td>Somme des demandes supérieure à la capacité du node pool</td>
+<td><code>kubectl describe node</code>, section <code>Allocated resources</code></td>
+<td>Réduire les demandes, ou agrandir le node pool — et corriger le dimensionnement de la phase 1</td>
+</tr>
+<tr>
+<td>L'autoscaler affiche <code>&lt;unknown&gt;</code></td>
+<td>Pas de <code>requests.cpu</code> sur le conteneur</td>
+<td><code>kubectl describe hpa</code></td>
+<td>Déclarer la demande de ressources</td>
+</tr>
+<tr>
+<td>Le Secret est lisible dans le dépôt</td>
+<td>Valeurs écrites en clair dans un fichier versionné</td>
+<td>Relire le dépôt, et son historique</td>
+<td>Sortir les valeurs du dépôt ; documenter comment elles sont injectées</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="phase-3-chaine-de-livraison-et-supervision">Phase 3 — Chaîne de livraison et supervision</h2>
+<p><strong>Objectif</strong> : un commit part sur <code>develop</code> et se retrouve en <code>foodtrack-dev</code> sans qu'aucune main ne touche un <code>kubectl</code>. La mise en production, elle, attend une validation humaine.</p>
+<h3 id="ce-que-vous-produisez_2">Ce que vous produisez</h3>
+<p>Un workflow GitHub Actions complet, une stratégie de versions documentée, un tableau de bord avec alerte, et un script Python de contrôle de santé.</p>
+<h3 id="lauthentification-sans-cle">L'authentification, sans clé</h3>
+<p>Le pipeline s'exécute hors de Google Cloud. Il obtient ses droits par <strong>Workload Identity Federation</strong> : GitHub émet un jeton OIDC, Google le vérifie et le convertit en jeton d'accès sur un compte de service. Aucune clé JSON ne transite ni ne se stocke.</p>
+<p><img alt="Architecture de la fédération d'identités : deux dépôts d'une forge externe passent par le fournisseur OIDC de celle-ci, atteignent un pool d'identités de charge de travail dans un projet Google Cloud, et chaque dépôt emprunte, par son propre attribut de correspondance, un compte de service distinct qui n'a accès qu'au service dont il a besoin" src="../../cours/assets/download/projet-final/workload-identity-federation.png" /></p>
+<p class="img-source">Source : documentation Google Cloud, « Workload identity federation », consultée le 2026-09-20.</p>
+<p>Le code Terraform de cette fédération vous est fourni dans <a href="../../labs/projet-final/terraform-fourni/wif-github/README.md"><code>labs/projet-final/terraform-fourni/wif-github/</code></a>. Vous l'intégrez à votre racine Terraform, vous l'appliquez, et <strong>vous devez savoir expliquer les quatre pièces qui le composent</strong> : le pool d'identités, le fournisseur OIDC, la condition sur l'attribut du dépôt, et la liaison IAM qui autorise l'identité fédérée à emprunter le compte de service.</p>
+<p>🟥 Une clé JSON de compte de service placée dans un secret GitHub fonctionne aussi. Elle coûte des points : elle n'expire pas, elle se copie, et elle finit tôt ou tard dans un historique Git.</p>
+<h3 id="les-etapes-du-workflow">Les étapes du workflow</h3>
+<pre class="mermaid">
+flowchart TB
+    t_push["push sur develop"] --&gt; t_lint["Lint des manifestes et du Terraform"]
+    t_lint --&gt; t_scan["Scan de securite : image et configuration"]
+    t_scan --&gt; t_plan["terraform plan publie dans l execution"]
+    t_plan --&gt; t_build["Build de l image, etiquetee par le SHA du commit"]
+    t_build --&gt; t_ar["Push dans Artifact Registry"]
+    t_ar --&gt; t_dev["Deploiement foodtrack-dev, attente du rollout"]
+    t_dev --&gt; t_test["Deploiement foodtrack-test, attente du rollout"]
+    t_test --&gt; t_gate{"Validation manuelle"}
+    t_gate --&gt;|"approuve"| t_prod["Deploiement foodtrack-prod"]
+    t_gate --&gt;|"refuse"| t_stop["Arret, rien ne part en production"]
+</pre>
+
+<table>
+<thead>
+<tr>
+<th>Étape</th>
+<th>Ce qu'elle vérifie ou produit</th>
+<th>Outil suggéré</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Lint</td>
+<td>Les manifestes sont valides et conformes au schéma Kubernetes</td>
+<td><code>kubeconform</code></td>
+</tr>
+<tr>
+<td>Lint</td>
+<td>Le code Terraform est formaté et cohérent</td>
+<td><code>terraform fmt -check</code>, <code>terraform validate</code></td>
+</tr>
+<tr>
+<td>Scan</td>
+<td>L'image ne porte pas de vulnérabilité critique connue</td>
+<td><code>trivy image</code></td>
+</tr>
+<tr>
+<td>Scan</td>
+<td>Le code Terraform ne contient pas de mauvaise configuration</td>
+<td><code>trivy config</code></td>
+</tr>
+<tr>
+<td>Plan</td>
+<td>Les changements d'infrastructure sont visibles avant d'être appliqués</td>
+<td><code>terraform plan</code>, résumé publié dans l'exécution</td>
+</tr>
+<tr>
+<td>Build et push</td>
+<td>Une image étiquetée par le SHA du commit, poussée dans Artifact Registry</td>
+<td><code>docker/build-push-action</code></td>
+</tr>
+<tr>
+<td>Déploiement</td>
+<td>L'image est déployée, et le déploiement est attendu jusqu'à son terme</td>
+<td><code>kubectl set image</code> puis <code>kubectl rollout status</code></td>
+</tr>
+<tr>
+<td>Validation manuelle</td>
+<td>Un humain autorise la mise en production</td>
+<td>Environnement GitHub protégé, relecteur requis</td>
+</tr>
+</tbody>
+</table>
+<p>Actions à épingler : <code>actions/checkout@v5</code>, <code>google-github-actions/auth@v3</code>, <code>google-github-actions/setup-gcloud@v3</code>, <code>google-github-actions/get-gke-credentials@v3</code>, <code>aquasecurity/trivy-action@v0.36.0</code>, <code>hashicorp/setup-terraform@v4</code>, <code>docker/build-push-action@v7</code>.</p>
+<p>🟨 Le <code>v</code> de <code>trivy-action@v0.36.0</code> n'est pas décoratif : cette action ne publie pas de tag sans préfixe, et une référence sans <code>v</code> fait échouer l'exécution dès la résolution, avant le moindre journal exploitable.</p>
+<!-- TODO: capture GitHub Actions, vue du graphe d execution avec les trois jobs verts, lint puis build puis deploiement -->
+
+<p>Un squelette de workflow, bloc d'authentification rempli et reste à compléter, se trouve dans <a href="../../labs/projet-final/ci/deploy.yml.squelette"><code>labs/projet-final/ci/</code></a>.</p>
+<h3 id="versions-et-releases">Versions et releases</h3>
+<p>Trois branches, trois environnements, une règle de promotion. Étiquetez vos versions selon le versionnage sémantique, et décrivez dans le README ce qui déclenche quoi, comment se traite un correctif urgent, et comment on revient en arrière. Un <code>kubectl rollout undo</code> fonctionne ; dites à quelles conditions il ne suffit pas.</p>
+<h3 id="supervision">Supervision</h3>
+<table>
+<thead>
+<tr>
+<th>Élément</th>
+<th>Attendu</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Tableau de bord</td>
+<td>Processeur, mémoire, pods prêts, taux d'erreurs HTTP, latence — pour <code>foodtrack-prod</code> au minimum</td>
+</tr>
+<tr>
+<td>Contrôle de disponibilité</td>
+<td>Sur l'adresse publique du portail qualité de production</td>
+</tr>
+<tr>
+<td>Alerte</td>
+<td>Notification par courriel si le portail ne répond plus, avec justification écrite du seuil et de la durée retenus</td>
+</tr>
+<tr>
+<td>Journaux</td>
+<td>Une requête enregistrée qui isole les erreurs applicatives d'un namespace</td>
+</tr>
+</tbody>
+</table>
+<h3 id="le-script-de-controle-de-sante">Le script de contrôle de santé</h3>
+<p>Un script Python autonome qui interroge l'API capteurs, vérifie le code de retour, mesure la latence et rend un rapport lisible. Code de sortie 0 si tout va bien, non nul sinon — c'est ce qui le rend utilisable dans un <code>CronJob</code> Kubernetes ou dans le pipeline.</p>
+<h3 id="verification-de-fin-de-phase_2">Vérification de fin de phase</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># la derniere execution du workflow est verte</span>
+gh<span class="w"> </span>run<span class="w"> </span>list<span class="w"> </span>--limit<span class="w"> </span><span class="m">5</span>
+
+<span class="c1"># l image portee par la production correspond au dernier commit promu</span>
+kubectl<span class="w"> </span>get<span class="w"> </span>deploy<span class="w"> </span>api-capteurs<span class="w"> </span>-n<span class="w"> </span>foodtrack-prod<span class="w"> </span>-o<span class="w"> </span><span class="nv">jsonpath</span><span class="o">=</span><span class="s1">&#39;{.spec.template.spec.containers[0].image}&#39;</span>
+
+<span class="c1"># le controle de disponibilite et l alerte existent</span>
+gcloud<span class="w"> </span>monitoring<span class="w"> </span>uptime<span class="w"> </span>list-configs
+gcloud<span class="w"> </span>alpha<span class="w"> </span>monitoring<span class="w"> </span>policies<span class="w"> </span>list<span class="w"> </span>--format<span class="o">=</span><span class="s2">&quot;table(displayName,enabled)&quot;</span>
+</code></pre></div>
+<h3 id="erreurs-frequentes_2">Erreurs fréquentes</h3>
+<table>
+<thead>
+<tr>
+<th>🟨 Symptôme</th>
+<th>Cause probable</th>
+<th>Comment le détecter</th>
+<th>Correction</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Échange de jeton OIDC refusé</td>
+<td>Condition d'attribut qui ne correspond pas au dépôt, ou liaison IAM absente</td>
+<td>Le message cite le pool et le sujet refusé</td>
+<td>Vérifier le nom complet du dépôt dans la condition, et la liaison <code>workloadIdentityUser</code></td>
+</tr>
+<tr>
+<td><code>Unable to connect to the server</code> au <code>kubectl</code> du pipeline</td>
+<td>Le plan de contrôle n'accepte pas l'adresse de l'exécuteur</td>
+<td>L'étape expire après plusieurs minutes</td>
+<td>Élargir les réseaux autorisés, ou passer par un exécuteur auto-hébergé</td>
+</tr>
+<tr>
+<td><code>denied: Permission artifactregistry.repositories.uploadArtifacts</code></td>
+<td>Le compte de service du pipeline n'a pas le rôle d'écriture</td>
+<td>Le message nomme le dépôt</td>
+<td>Ajouter le rôle d'écriture sur Artifact Registry, sur ce dépôt uniquement</td>
+</tr>
+<tr>
+<td>Le pipeline passe au vert alors que les pods bouclent</td>
+<td><code>kubectl apply</code> sans <code>kubectl rollout status</code></td>
+<td>Comparer l'état du déploiement et celui de l'exécution</td>
+<td>Ajouter l'attente, avec un délai maximal</td>
+</tr>
+<tr>
+<td>Le scan bloque sur des failles hors de votre contrôle</td>
+<td>Seuil réglé sur toutes les sévérités</td>
+<td>Le rapport liste des failles de l'image de base</td>
+<td>Régler le seuil, documenter la décision, ne pas désactiver le scan</td>
+</tr>
+<tr>
+<td>Alerte qui se déclenche en boucle</td>
+<td>Durée d'observation nulle ou trop courte</td>
+<td>Historique des incidents de la règle</td>
+<td>Allonger la fenêtre, et l'expliquer</td>
+</tr>
+<tr>
+<td>Le workflow tourne sur chaque push de chaque branche</td>
+<td>Déclencheurs non filtrés</td>
+<td>Onglet des exécutions</td>
+<td>Filtrer par branche, par chemin et par étiquette</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="phase-4-securisation-industrialisation-soutenance">Phase 4 — Sécurisation, industrialisation, soutenance</h2>
+<p><strong>Objectif de la matinée</strong> : rendre le projet défendable. Ce qui est en place doit être justifié ; ce qui manque doit être identifié et nommé.</p>
+<h3 id="audit-de-securite">Audit de sécurité</h3>
+<p>Passez votre propre infrastructure en revue et rendez un état écrit, court et factuel.</p>
+<table>
+<thead>
+<tr>
+<th>Point de contrôle</th>
+<th>Ce qu'on attend</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Comptes de service</td>
+<td>Un compte par usage, avec le minimum de rôles. <code>roles/editor</code> sur un compte de service est un constat d'échec</td>
+</tr>
+<tr>
+<td>Rôles des membres</td>
+<td>Qui peut quoi sur le projet, et pourquoi</td>
+</tr>
+<tr>
+<td>Pare-feu</td>
+<td>Chaque règle a une justification et une cible restreinte ; aucune règle SSH ouverte à <code>0.0.0.0/0</code></td>
+</tr>
+<tr>
+<td>Bastion</td>
+<td>Authentification par mot de passe désactivée, clés uniquement, source SSH restreinte</td>
+</tr>
+<tr>
+<td>Plan de contrôle</td>
+<td>L'exposition retenue, le risque assumé, l'alternative envisagée</td>
+</tr>
+<tr>
+<td>Secrets</td>
+<td>Rien de sensible en clair dans le dépôt. Vérifiez aussi l'historique</td>
+</tr>
+<tr>
+<td>Images</td>
+<td>Origine et étiquetage des images déployées, résultat du dernier scan</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight"><pre><span></span><code><span class="c1"># qui a quoi sur le projet</span>
+gcloud<span class="w"> </span>projects<span class="w"> </span>get-iam-policy<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$PROJECT</span><span class="s2">&quot;</span><span class="w"> </span>--flatten<span class="o">=</span><span class="s2">&quot;bindings[].members&quot;</span><span class="w"> </span>--format<span class="o">=</span><span class="s2">&quot;table(bindings.role,bindings.members)&quot;</span>
+
+<span class="c1"># les regles de pare-feu et leurs sources</span>
+gcloud<span class="w"> </span>compute<span class="w"> </span>firewall-rules<span class="w"> </span>list<span class="w"> </span>--format<span class="o">=</span><span class="s2">&quot;table(name,sourceRanges.list(),targetTags.list(),allowed[].map().firewall_rule().list())&quot;</span>
+
+<span class="c1"># ce que le depot a deja vu passer</span>
+git<span class="w"> </span>log<span class="w"> </span>--all<span class="w"> </span>--full-history<span class="w"> </span>--name-only<span class="w"> </span>--pretty<span class="o">=</span>format:%h<span class="w"> </span>--<span class="w"> </span><span class="s2">&quot;*.json&quot;</span><span class="w"> </span><span class="s2">&quot;*.tfvars&quot;</span><span class="w"> </span><span class="s2">&quot;.env&quot;</span>
+</code></pre></div>
+<h3 id="scripts-dexploitation">Scripts d'exploitation</h3>
+<p>Trois scripts Bash commentés, avec <code>set -euo pipefail</code>, rejouables sans dommage :</p>
+<ul>
+<li>une sauvegarde de la configuration vers une archive horodatée dans le bucket dédié ;</li>
+<li>une purge des exports de journaux au-delà de trente jours ;</li>
+<li><strong>l'extinction du cluster</strong> : le node pool descend à zéro nœud le soir et remonte le matin. Sur un cluster Standard, les nœuds sont facturés tant qu'ils tournent. Ce script n'est pas un bonus, c'est ce qui rend votre projet finançable.</li>
+</ul>
+<h3 id="documentation">Documentation</h3>
+<p>Le <code>README.md</code> du dépôt est lu par le jury avant la démonstration. Il contient l'architecture et son schéma, les prérequis, la procédure de déploiement depuis zéro, la description du pipeline, la procédure de retour arrière, l'analyse de coût, et les choix techniques avec leurs raisons. Écrivez-le pour quelqu'un qui reprendrait le projet sans vous.</p>
+<p>Pour le coût, appuyez-vous sur le calculateur officiel et sur les rapports de facturation du projet. Distinguez ce qui tourne en continu de ce qui se facture à l'usage, et chiffrez ce que l'extinction nocturne économise.</p>
+<h3 id="composante-multicloud-en-bonus">Composante multicloud, en bonus</h3>
+<p>Un fournisseur AWS ajouté à votre Terraform, un bucket S3 de sauvegarde, un script de réplication, et une page sur ce qui est portable et ce qui ne l'est pas. Valorisé, jamais au détriment du reste.</p>
+<h3 id="la-soutenance">La soutenance</h3>
+<p>Quinze minutes de présentation avec démonstration en direct, dix minutes de questions. Chaque membre prend la parole sur son domaine. Le déroulé et le barème sont dans <a href="GRILLE_SOUTENANCE.md"><code>GRILLE_SOUTENANCE.md</code></a> — lisez-le en début de projet, pas la veille.</p>
+<hr />
+<h2 id="livrables">Livrables</h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Livrable</th>
+<th>Statut</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Dépôt GitHub structuré : Terraform, manifestes, workflow, scripts</td>
+<td>Obligatoire</td>
+</tr>
+<tr>
+<td>2</td>
+<td><code>README.md</code> complet, schéma d'architecture inclus</td>
+<td>Obligatoire</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Infrastructure reproductible par <code>terraform apply</code>, état distant</td>
+<td>Obligatoire</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Application fonctionnelle sur les trois namespaces, configurée différemment</td>
+<td>Obligatoire</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Workflow GitHub Actions avec scan de sécurité et validation manuelle avant production</td>
+<td>Obligatoire</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Tableau de bord, contrôle de disponibilité et alerte</td>
+<td>Obligatoire</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Script Python de contrôle de santé</td>
+<td>Obligatoire</td>
+</tr>
+<tr>
+<td>8</td>
+<td>Scripts Bash : sauvegarde, purge, extinction du cluster</td>
+<td>Obligatoire</td>
+</tr>
+<tr>
+<td>9</td>
+<td>Audit de sécurité écrit</td>
+<td>Obligatoire</td>
+</tr>
+<tr>
+<td>10</td>
+<td>Analyse de coût</td>
+<td>Obligatoire</td>
+</tr>
+<tr>
+<td>11</td>
+<td>Démonstration en direct et support de présentation</td>
+<td>Obligatoire</td>
+</tr>
+<tr>
+<td>12</td>
+<td>Sauvegarde AWS par Terraform multi-fournisseur</td>
+<td>Bonus</td>
+</tr>
+<tr>
+<td>13</td>
+<td>Exécuteur auto-hébergé sur le bastion, plan de contrôle entièrement privé</td>
+<td>Bonus</td>
+</tr>
+<tr>
+<td>14</td>
+<td>Tests automatisés dans le pipeline, <code>CronJob</code> de contrôle de santé</td>
+<td>Bonus</td>
+</tr>
+</tbody>
+</table>
+<h2 id="regles-de-cout-et-de-nettoyage">Règles de coût et de nettoyage</h2>
+<p>Le projet est facturé sur un compte de formation réel.</p>
+<ul>
+<li>Le node pool descend à <strong>zéro nœud</strong> chaque soir. Automatisez-le dès que possible.</li>
+<li>Un équilibreur de charge inutilisé se facture. Si un environnement ne sert plus, supprimez son <code>Ingress</code>.</li>
+<li>Ne créez jamais un deuxième cluster. Ni pour tester, ni pour dépanner.</li>
+<li>Restez dans votre région. Une ressource créée ailleurs échappe à votre suivi et consomme un autre quota.</li>
+<li>Après la soutenance, sur consigne du formateur : <code>terraform destroy</code>, puis vérification dans la console qu'il ne reste ni disque, ni adresse IP réservée, ni image.</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="c1"># extinction du soir</span>
+gcloud<span class="w"> </span>container<span class="w"> </span>clusters<span class="w"> </span>resize<span class="w"> </span><span class="s2">&quot;foodtrack-</span><span class="si">${</span><span class="nv">EQUIPE</span><span class="si">}</span><span class="s2">-cluster&quot;</span><span class="w"> </span>--node-pool<span class="w"> </span><span class="s2">&quot;foodtrack-</span><span class="si">${</span><span class="nv">EQUIPE</span><span class="si">}</span><span class="s2">-pool&quot;</span><span class="w"> </span>--num-nodes<span class="w"> </span><span class="m">0</span><span class="w"> </span>--zone<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$ZONE</span><span class="s2">&quot;</span><span class="w"> </span>--quiet
+
+<span class="c1"># ce qui reste facture malgre l extinction</span>
+gcloud<span class="w"> </span>compute<span class="w"> </span>addresses<span class="w"> </span>list
+gcloud<span class="w"> </span>compute<span class="w"> </span>disks<span class="w"> </span>list
+gcloud<span class="w"> </span>compute<span class="w"> </span>forwarding-rules<span class="w"> </span>list
+</code></pre></div>
+<h2 id="ressources-fournies">Ressources fournies</h2>
+<table>
+<thead>
+<tr>
+<th>Ressource</th>
+<th>Emplacement</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Manifestes de départ, StorageClass d'exemple, squelette de workflow, module Terraform de fédération d'identité</td>
+<td><a href="../../labs/projet-final/README.md"><code>labs/projet-final/</code></a></td>
+</tr>
+<tr>
+<td>Grille d'évaluation et déroulé de la soutenance</td>
+<td><a href="GRILLE_SOUTENANCE.md"><code>GRILLE_SOUTENANCE.md</code></a></td>
+</tr>
+<tr>
+<td>Projet Google Cloud, rôles et région</td>
+<td>Fiche d'accès remise par le formateur</td>
+</tr>
+</tbody>
+</table>
+<p>Documentation de référence : <code>cloud.google.com/kubernetes-engine/docs</code>, <code>registry.terraform.io/providers/hashicorp/google/latest/docs</code>, <code>docs.github.com/actions</code>, <code>cloud.google.com/iam/docs/workload-identity-federation-with-deployment-pipelines</code>, <code>cloud.google.com/products/calculator</code>.</p>
+<hr />
+<h2 id="recap">Récap</h2>
+<p>🟢 Ce que vous savez faire à l'issue du projet :</p>
+<ul>
+<li>concevoir et défendre une architecture Google Cloud à trois environnements sous contrainte de quota et de budget ;</li>
+<li>décrire cette infrastructure en Terraform modulaire, avec état partagé et cycle de vie maîtrisé ;</li>
+<li>déployer une application conteneurisée sur GKE avec une configuration propre à chaque environnement ;</li>
+<li>livrer en continu depuis une chaîne externe, authentifiée sans clé, avec contrôle de sécurité et validation humaine avant production ;</li>
+<li>superviser, alerter, auditer et chiffrer ce que vous exploitez.</li>
+</ul>
+<p>🟨 Pièges à retenir :</p>
+<ul>
+<li>le type de disque par défaut de GKE consomme le quota SSD, et rien ne vous prévient avant l'échec ;</li>
+<li>sans Cloud NAT, un cluster à nœuds privés ne télécharge aucune image ;</li>
+<li>une sonde de disponibilité mal placée rend tous vos backends invalides alors que Kubernetes les dit prêts ;</li>
+<li>un <code>volumeClaimTemplate</code> de StatefulSet ne se modifie pas après coup ;</li>
+<li>un cluster Standard se facture la nuit, week-end compris.</li>
+</ul>
+<p>🔷 Points clés à retenir :</p>
+<ul>
+<li>ce qui n'est pas dans Terraform n'existe pas : une ressource créée à la main disparaîtra au premier <code>apply</code> de quelqu'un d'autre ;</li>
+<li>un compromis de sécurité assumé et documenté vaut mieux qu'un compromis caché ;</li>
+<li>le jury note vos arbitrages autant que votre infrastructure.</li>
+</ul>
+    </article>
+
+    
+    
+    
+    <script>
+    (function() {
+        'use strict';
+        
+        function initMermaidLightbox() {
+            // Crée le conteneur lightbox
+            const lightbox = document.createElement('div');
+            lightbox.className = 'mermaid-lightbox';
+            lightbox.innerHTML = `
+                <div class="mermaid-lightbox-backdrop"></div>
+                <div class="mermaid-lightbox-container">
+                    <div class="mermaid-lightbox-content"></div>
+                </div>
+                <div class="mermaid-lightbox-controls">
+                    <button class="mermaid-lb-btn mermaid-lb-zoom-in" title="Zoom +">+</button>
+                    <button class="mermaid-lb-btn mermaid-lb-zoom-reset" title="Reset">100%</button>
+                    <button class="mermaid-lb-btn mermaid-lb-zoom-out" title="Zoom -">−</button>
+                    <button class="mermaid-lb-btn mermaid-lb-close" title="Fermer">✕</button>
+                </div>
+            `;
+            document.body.appendChild(lightbox);
+
+            // Variables de zoom et pan
+            let scale = 1;
+            let translateX = 0;
+            let translateY = 0;
+            let isDragging = false;
+            let startX, startY;
+
+            const container = lightbox.querySelector('.mermaid-lightbox-container');
+            const content = lightbox.querySelector('.mermaid-lightbox-content');
+            const backdrop = lightbox.querySelector('.mermaid-lightbox-backdrop');
+
+            // Ajoute un bouton d'expansion à chaque diagramme Mermaid / PlantUML
+            document.querySelectorAll('.mermaid, pre.mermaid, .plantuml-diagram').forEach(diagram => {
+                const expandBtn = document.createElement('button');
+                expandBtn.className = 'mermaid-expand-btn';
+                expandBtn.innerHTML = '⛶';
+                expandBtn.title = 'Agrandir le diagramme';
+                expandBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    openLightbox(diagram);
+                });
+                
+                // Wrapper pour positionner le bouton
+                const wrapper = document.createElement('div');
+                wrapper.className = 'mermaid-wrapper';
+                diagram.parentNode.insertBefore(wrapper, diagram);
+                wrapper.appendChild(diagram);
+                wrapper.appendChild(expandBtn);
+            });
+
+            // Rend les images du contenu zoomables (clic = ouverture lightbox)
+            (document.querySelector('article.markdown-body') || document.body)
+                .querySelectorAll('img').forEach(img => {
+                    if (img.closest('.theme-logo')) return;      // pas le logo de marque
+                    if (img.classList.contains('zoomable-img')) return;
+                    img.classList.add('zoomable-img');
+                    img.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        openLightbox(img);
+                    });
+                });
+
+            function openLightbox(diagram) {
+                // Cas image : cloner l'<img> tel quel (zoom/pan identique aux schemas)
+                if (diagram.tagName === 'IMG') {
+                    content.innerHTML = '';
+                    const img = diagram.cloneNode(true);
+                    img.classList.add('lightbox-img');
+                    img.removeAttribute('width');
+                    img.removeAttribute('height');
+                    img.removeAttribute('style');
+                    content.appendChild(img);
+                    scale = 1;
+                    translateX = 0;
+                    translateY = 0;
+                    applyTransform();
+                    lightbox.classList.add('active');
+                    document.body.style.overflow = 'hidden';
+                    return;
+                }
+
+                // Clone le wrapper .mermaid complet (pas juste le SVG) pour que
+                // tous les selecteurs CSS qui ciblent ".mermaid X" continuent
+                // de s'appliquer au SVG cloné dans la lightbox.
+                const svg = diagram.querySelector('svg');
+                if (svg) {
+                    content.innerHTML = '';
+                    const clonedDiagram = diagram.cloneNode(true);
+                    clonedDiagram.classList.add('mermaid-clone');
+
+                    // Nettoyer les eventuels boutons / wrappers parasites copies
+                    clonedDiagram.querySelectorAll('.mermaid-expand-btn').forEach(b => b.remove());
+
+                    const clonedSvg = clonedDiagram.querySelector('svg');
+
+                    // Garder le viewBox pour les proportions
+                    if (clonedSvg && !clonedSvg.hasAttribute('viewBox') && svg.viewBox && svg.viewBox.baseVal) {
+                        const vb = svg.viewBox.baseVal;
+                        if (vb.width && vb.height) {
+                            clonedSvg.setAttribute('viewBox', `${vb.x} ${vb.y} ${vb.width} ${vb.height}`);
+                        }
+                    }
+
+                    if (clonedSvg) {
+                        // Le CSS gère les dimensions (80vw). On NE modifie PAS
+                        // les foreignObject : Mermaid centre les labels via le
+                        // transform du <g class="label"> parent, calculé pour
+                        // la taille originale du foreignObject. Toute mise à
+                        // l'echelle ici décale les textes (flowchart TD, etc.).
+                        clonedSvg.removeAttribute('width');
+                        clonedSvg.removeAttribute('height');
+                    }
+
+                    content.appendChild(clonedDiagram);
+                } else {
+                    content.innerHTML = diagram.innerHTML;
+                }
+                
+                // Reset zoom et position
+                scale = 1;
+                translateX = 0;
+                translateY = 0;
+                applyTransform();
+                
+                lightbox.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            }
+
+            function closeLightbox() {
+                lightbox.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+
+            function applyTransform() {
+                content.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`;
+                lightbox.querySelector('.mermaid-lb-zoom-reset').textContent = Math.round(scale * 100) + '%';
+            }
+
+            function zoomIn() {
+                scale = Math.min(scale * 1.25, 5);
+                applyTransform();
+            }
+
+            function zoomOut() {
+                scale = Math.max(scale / 1.25, 0.25);
+                applyTransform();
+            }
+
+            function zoomReset() {
+                scale = 1;
+                translateX = 0;
+                translateY = 0;
+                applyTransform();
+            }
+
+            // Événements des boutons
+            lightbox.querySelector('.mermaid-lb-close').addEventListener('click', closeLightbox);
+            lightbox.querySelector('.mermaid-lb-zoom-in').addEventListener('click', zoomIn);
+            lightbox.querySelector('.mermaid-lb-zoom-out').addEventListener('click', zoomOut);
+            lightbox.querySelector('.mermaid-lb-zoom-reset').addEventListener('click', zoomReset);
+            backdrop.addEventListener('click', closeLightbox);
+
+            // Fermer avec Escape
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && lightbox.classList.contains('active')) {
+                    closeLightbox();
+                }
+            });
+
+            // Zoom avec la molette
+            container.addEventListener('wheel', (e) => {
+                if (!lightbox.classList.contains('active')) return;
+                e.preventDefault();
+                
+                if (e.deltaY < 0) {
+                    scale = Math.min(scale * 1.1, 5);
+                } else {
+                    scale = Math.max(scale / 1.1, 0.25);
+                }
+                applyTransform();
+            });
+
+            // Pan avec la souris
+            container.addEventListener('mousedown', (e) => {
+                if (e.button !== 0) return;
+                isDragging = true;
+                startX = e.clientX - translateX;
+                startY = e.clientY - translateY;
+                container.style.cursor = 'grabbing';
+                e.preventDefault();
+            });
+
+            document.addEventListener('mousemove', (e) => {
+                if (!isDragging) return;
+                translateX = e.clientX - startX;
+                translateY = e.clientY - startY;
+                applyTransform();
+            });
+
+            document.addEventListener('mouseup', () => {
+                isDragging = false;
+                container.style.cursor = 'grab';
+            });
+
+            // Touch support pour mobile
+            let touchStartX, touchStartY;
+            container.addEventListener('touchstart', (e) => {
+                if (e.touches.length === 1) {
+                    touchStartX = e.touches[0].clientX - translateX;
+                    touchStartY = e.touches[0].clientY - translateY;
+                }
+            });
+
+            container.addEventListener('touchmove', (e) => {
+                if (e.touches.length === 1) {
+                    e.preventDefault();
+                    translateX = e.touches[0].clientX - touchStartX;
+                    translateY = e.touches[0].clientY - touchStartY;
+                    applyTransform();
+                }
+            });
+        }
+
+        // Initialise après le rendu de Mermaid
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof mermaid !== 'undefined') {
+                setTimeout(initMermaidLightbox, 600);
+            } else {
+                initMermaidLightbox();
+            }
+        });
+    })();
+    </script>
+
+    
+    <script>
+    (function() {
+        'use strict';
+
+        // Icones SVG autonomes (les glyphes ⧉/⬇ sont peu fiables en projection)
+        const ICON_COPY = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
+        const ICON_DOWNLOAD = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>';
+        const ICON_CHECK = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>';
+
+        // Copie du texte (repli execCommand pour les pages file:// sans navigator.clipboard)
+        function copyCodeToClipboard(text, btn) {
+            const original = btn.innerHTML;
+            const feedback = () => {
+                btn.classList.add('copied');
+                btn.innerHTML = ICON_CHECK + '<span class="lbl">Copié !</span>';
+                setTimeout(() => { btn.classList.remove('copied'); btn.innerHTML = original; }, 1300);
+            };
+            const fallback = () => {
+                const ta = document.createElement('textarea');
+                ta.value = text;
+                ta.style.position = 'fixed';
+                ta.style.opacity = '0';
+                document.body.appendChild(ta);
+                ta.select();
+                try { document.execCommand('copy'); } catch (e) {}
+                document.body.removeChild(ta);
+                feedback();
+            };
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(feedback).catch(fallback);
+            } else {
+                fallback();
+            }
+        }
+
+        function initCodeButtons() {
+            const docTitle = document.title || 'code';
+            const baseName = docTitle.replace(/[^a-zA-Z0-9_-]/g, '_').toLowerCase();
+            const article = document.querySelector('article.markdown-body') || document.body;
+            let index = 0;
+
+            article.querySelectorAll('pre').forEach(pre => {
+                if (pre.classList.contains('mermaid') || pre.querySelector('.mermaid')) return;
+                if (pre.parentNode && pre.parentNode.classList &&
+                    pre.parentNode.classList.contains('code-wrapper')) return;
+                const code = pre.querySelector('code');
+                if (!code) return;
+
+                index++;
+
+                // Extension selon le langage
+                const langClass = Array.from(code.classList).find(c => c.startsWith('language-'));
+                let ext = 'txt';
+                if (langClass) {
+                    const lang = langClass.replace('language-', '');
+                    const extMap = {
+                        'yaml':'yaml','yml':'yaml','json':'json','javascript':'js','js':'js',
+                        'typescript':'ts','ts':'ts','python':'py','py':'py','bash':'sh',
+                        'shell':'sh','sh':'sh','dockerfile':'Dockerfile','html':'html',
+                        'css':'css','sql':'sql','go':'go','rust':'rs'
+                    };
+                    ext = extMap[lang] || lang || 'txt';
+                }
+                const fileName = baseName + '_' + index + '.' + ext;
+
+                // Wrapper
+                const wrapper = document.createElement('div');
+                wrapper.className = 'code-wrapper';
+                pre.parentNode.insertBefore(wrapper, pre);
+                wrapper.appendChild(pre);
+
+                // Barre d'actions segmentee (copier / telecharger)
+                const actions = document.createElement('div');
+                actions.className = 'code-actions';
+
+                const copyBtn = document.createElement('button');
+                copyBtn.className = 'code-copy-btn';
+                copyBtn.type = 'button';
+                copyBtn.setAttribute('aria-label', 'Copier le code');
+                copyBtn.title = 'Copier le code';
+                copyBtn.innerHTML = ICON_COPY + '<span class="lbl">Copier</span>';
+                copyBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    copyCodeToClipboard(code.textContent || code.innerText, copyBtn);
+                });
+                actions.appendChild(copyBtn);
+
+                const downloadBtn = document.createElement('button');
+                downloadBtn.className = 'code-download-btn';
+                downloadBtn.type = 'button';
+                downloadBtn.setAttribute('aria-label', 'Télécharger le code (' + fileName + ')');
+                downloadBtn.title = 'Télécharger: ' + fileName;
+                downloadBtn.innerHTML = ICON_DOWNLOAD + '<span class="lbl">' + ext + '</span>';
+                downloadBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const blob = new Blob([code.textContent || code.innerText],
+                                          { type: 'text/plain;charset=utf-8' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = fileName;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                });
+                actions.appendChild(downloadBtn);
+
+                wrapper.appendChild(actions);
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', initCodeButtons);
+    })();
+    </script>
+
+</body>
+</html>
