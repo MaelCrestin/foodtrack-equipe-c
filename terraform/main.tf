@@ -1,20 +1,6 @@
-# FoodTrack - equipe C - racine Terraform
-#
-# Cette racine declare le backend distant et appelle les modules. Le bucket
-# de backend est cree a la main (exception documentee dans le README).
-
 terraform {
-  required_version = ">= 1.5"
-
-  required_providers {
-    google = {
-      source  = "hashicorp/google"
-      version = "~> 6.0" # A FAIRE : verifier la derniere version stable
-    }
-  }
-
   backend "gcs" {
-    bucket = "foodtrack-c-tfstate-foodtrack-equipe-c"
+    bucket = "foodtrack-c-tfstate-poei-formation-gcp"
     prefix = "terraform/state"
   }
 }
@@ -22,33 +8,79 @@ terraform {
 provider "google" {
   project = var.project_id
   region  = var.region
+  zone    = var.zone
 }
 
-# A FAIRE : module reseau (vpc, sous-reseau, cloud router, cloud nat, pare-feu)
-# module "reseau" {
-#   source = "./modules/reseau"
-#   ...
-# }
+locals {
+  prefix = "foodtrack-c"
+  required_apis = toset([
+    "artifactregistry.googleapis.com",
+    "compute.googleapis.com",
+    "container.googleapis.com",
+    "logging.googleapis.com",
+    "storage.googleapis.com",
+  ])
+}
 
-# A FAIRE : module compute (cluster gke, node pool, bastion)
-# module "compute" {
-#   source = "./modules/compute"
-#   ...
-# }
+resource "google_project_service" "required" {
+  for_each           = local.required_apis
+  project            = var.project_id
+  service            = each.value
+  disable_on_destroy = false
+}
 
-# A FAIRE : module stockage (buckets de sauvegarde et d exports de journaux)
-# module "stockage" {
-#   source = "./modules/stockage"
-#   ...
-# }
+module "reseau" {
+  source = "./modules/reseau"
 
-# Fourni : federation d identite GitHub Actions -> Google Cloud.
-# Copiez le contenu de labs/projet-final/terraform-fourni/wif-github/ dans
-# terraform/modules/wif-github/ puis decommentez :
-# module "wif_github" {
-#   source = "./modules/wif-github"
-#
-#   project_id   = var.project_id
-#   github_owner = "VOTRE-ORGANISATION-GITHUB"
-#   github_repo  = "foodtrack-equipe-c"
-# }
+  project_id          = var.project_id
+  region              = var.region
+  name_prefix         = local.prefix
+  subnet_cidr         = var.subnet_cidr
+  pods_cidr           = var.pods_cidr
+  services_cidr       = var.services_cidr
+  admin_ssh_cidrs     = var.admin_ssh_cidrs
+  pods_range_name     = "${local.prefix}-pods"
+  services_range_name = "${local.prefix}-services"
+
+  depends_on = [google_project_service.required]
+}
+
+module "compute" {
+  source = "./modules/compute"
+
+  project_id                     = var.project_id
+  region                         = var.region
+  zone                           = var.zone
+  name_prefix                    = local.prefix
+  network_id                     = module.reseau.network_id
+  subnetwork_id                  = module.reseau.subnetwork_id
+  pods_range_name                = module.reseau.pods_range_name
+  services_range_name            = module.reseau.services_range_name
+  master_ipv4_cidr_block         = var.master_ipv4_cidr_block
+  master_authorized_networks     = var.master_authorized_networks
+  enable_private_endpoint        = var.enable_private_endpoint
+  node_machine_type              = var.node_machine_type
+  node_count                     = var.node_count
+  min_node_count                 = var.min_node_count
+  max_node_count                 = var.max_node_count
+  bastion_machine_type           = var.bastion_machine_type
+  bastion_network_tag            = module.reseau.bastion_network_tag
+  bastion_source_image           = var.bastion_source_image
+
+  depends_on = [google_project_service.required, module.reseau]
+}
+
+module "stockage" {
+  source = "./modules/stockage"
+
+  project_id             = var.project_id
+  location               = var.storage_location
+  name_prefix            = local.prefix
+  backup_bucket_name     = var.backup_bucket_name
+  logs_bucket_name       = var.logs_bucket_name
+  retention_days         = var.retention_days
+  force_destroy          = var.force_destroy_buckets
+  log_filter             = var.log_filter
+
+  depends_on = [google_project_service.required]
+}
