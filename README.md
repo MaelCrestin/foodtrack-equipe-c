@@ -50,24 +50,92 @@ Socle Google Cloud de l'entrepôt de Londres, dans le projet `foodtrack-equipe-c
 ### Architecture
 
 ```mermaid
-flowchart TB
-  Admin["Équipe C / SSH autorisé"] --> Bastion["foodtrack-c-bastion"]
-  GHA["GitHub Actions — phase 3"] --> API["Endpoint public GKE"]
+flowchart TD
 
-  subgraph VPC["foodtrack-c-vpc — europe-west2"]
-    Subnet["foodtrack-c-subnet — primaire + pods + services"]
-    Bastion --> Subnet
-    Subnet --> GKE["foodtrack-c-cluster — GKE Standard zonal"]
-    GKE --> Pool["foodtrack-c-pool — nœuds privés pd-standard"]
-    Subnet --> NAT["foodtrack-c-router + NAT"]
-  end
+subgraph group_iac["Infrastructure Terraform"]
+  node_terraform_root["Configuration Terraform"]
+  node_network["Réseau VPC"]
+  node_compute["Cluster et bastion"]
+  node_storage[("Stockage GCP")]
+  node_wif["Fédération GitHub"]
+end
 
-  API --> GKE
-  NAT --> Internet["Internet / registres externes"]
-  AR["foodtrack-c-images — Artifact Registry"] --> GKE
-  GKE --> Logs["Bucket d'exports de journaux"]
-  GKE --> Backup["Bucket de sauvegarde"]
-  State["Bucket GCS tfstate versionné"] -. "état Terraform" .-> VPC
+subgraph group_platform["Plateforme GCP"]
+  node_vpc_nat["VPC NAT pare-feu<br/>[main.tf]"]
+  node_gke["Cluster GKE<br/>[main.tf]"]
+  node_bastion["VM bastion<br/>[main.tf]"]
+  node_backup_buckets[("Buckets sauvegarde logs<br/>[main.tf]")]
+end
+
+subgraph group_workloads["Workloads Kubernetes"]
+  node_namespaces["Namespaces environnements<br/>[00-namespace.yaml]"]
+  node_config["Configuration et secrets<br/>[01-configmap.yaml]"]
+  node_quality_portal["Portail qualité"]
+  node_sensor_api["API capteurs"]
+  node_readings_cache[("Cache relevés")]
+  node_services["Services exposition<br/>[06-services.yaml]"]
+end
+
+subgraph group_delivery["Livraison et exploitation"]
+  node_ci_skeleton["Workflow CI/CD"]
+  node_artifact_registry[("Artifact Registry")]
+  node_health_operations["Santé et exploitation"]
+end
+
+node_operator(("Opérateur cloud"))
+node_github(("GitHub Actions"))
+
+node_operator -->|"déclenche Terraform"| node_terraform_root
+node_terraform_root -->|"appelle module"| node_network
+node_terraform_root -->|"appelle module"| node_compute
+node_terraform_root -->|"appelle module"| node_storage
+node_terraform_root -->|"appelle module"| node_wif
+node_network -->|"provisionne réseau"| node_vpc_nat
+node_compute -->|"provisionne cluster"| node_gke
+node_compute -->|"provisionne bastion"| node_bastion
+node_storage -->|"provisionne buckets"| node_backup_buckets
+node_github -->|"exécute workflow"| node_ci_skeleton
+node_ci_skeleton -->|"utilise fédération"| node_wif
+node_ci_skeleton -->|"publie artefacts"| node_artifact_registry
+node_ci_skeleton -->|"déploie workloads"| node_gke
+node_gke -->|"héberge namespaces"| node_namespaces
+node_namespaces -->|"configure environnements"| node_config
+node_namespaces -->|"déploie portail"| node_quality_portal
+node_namespaces -->|"déploie API"| node_sensor_api
+node_namespaces -->|"déploie cache"| node_readings_cache
+node_namespaces -->|"expose workloads"| node_services
+node_health_operations -.->|"supervise cluster"| node_gke
+node_health_operations -.->|"contrôle stockage"| node_backup_buckets
+
+click node_terraform_root "https://github.com/maelcrestin/foodtrack-equipe-c/tree/main/terraform"
+click node_network "https://github.com/maelcrestin/foodtrack-equipe-c/tree/main/terraform/modules/reseau"
+click node_compute "https://github.com/maelcrestin/foodtrack-equipe-c/tree/main/terraform/modules/compute"
+click node_storage "https://github.com/maelcrestin/foodtrack-equipe-c/tree/main/terraform/modules/stockage"
+click node_wif "https://github.com/maelcrestin/foodtrack-equipe-c/tree/main/terraform/modules/wif-github"
+click node_vpc_nat "https://github.com/maelcrestin/foodtrack-equipe-c/blob/main/terraform/modules/reseau/main.tf"
+click node_gke "https://github.com/maelcrestin/foodtrack-equipe-c/blob/main/terraform/modules/compute/main.tf"
+click node_bastion "https://github.com/maelcrestin/foodtrack-equipe-c/blob/main/terraform/modules/compute/main.tf"
+click node_backup_buckets "https://github.com/maelcrestin/foodtrack-equipe-c/blob/main/terraform/modules/stockage/main.tf"
+click node_namespaces "https://github.com/maelcrestin/foodtrack-equipe-c/blob/main/labs/projet-final/manifests/00-namespace.yaml"
+click node_config "https://github.com/maelcrestin/foodtrack-equipe-c/blob/main/labs/projet-final/manifests/01-configmap.yaml"
+click node_quality_portal "https://github.com/maelcrestin/foodtrack-equipe-c/blob/main/labs/projet-final/manifests/03-deployment-portail-qualite.yaml"
+click node_sensor_api "https://github.com/maelcrestin/foodtrack-equipe-c/blob/main/labs/projet-final/manifests/04-deployment-api-capteurs.yaml"
+click node_readings_cache "https://github.com/maelcrestin/foodtrack-equipe-c/blob/main/labs/projet-final/manifests/05-statefulset-cache-releves.yaml"
+click node_services "https://github.com/maelcrestin/foodtrack-equipe-c/blob/main/labs/projet-final/manifests/06-services.yaml"
+click node_ci_skeleton "https://github.com/maelcrestin/foodtrack-equipe-c/tree/main/labs/projet-final/ci"
+
+classDef toneNeutral fill:#f8fafc,stroke:#334155,stroke-width:1.5px,color:#0f172a
+classDef toneBlue fill:#dbeafe,stroke:#2563eb,stroke-width:1.5px,color:#172554
+classDef toneAmber fill:#fef3c7,stroke:#d97706,stroke-width:1.5px,color:#78350f
+classDef toneMint fill:#dcfce7,stroke:#16a34a,stroke-width:1.5px,color:#14532d
+classDef toneRose fill:#ffe4e6,stroke:#e11d48,stroke-width:1.5px,color:#881337
+classDef toneIndigo fill:#e0e7ff,stroke:#4f46e5,stroke-width:1.5px,color:#312e81
+classDef toneTeal fill:#ccfbf1,stroke:#0f766e,stroke-width:1.5px,color:#134e4a
+class node_terraform_root,node_network,node_compute,node_storage,node_wif toneBlue
+class node_vpc_nat,node_gke,node_bastion,node_backup_buckets toneAmber
+class node_namespaces,node_config,node_quality_portal,node_sensor_api,node_readings_cache,node_services toneMint
+class node_ci_skeleton,node_artifact_registry,node_health_operations toneRose
+class node_operator,node_github toneIndigo
 ```
 
 Un seul cluster hébergera en phase 2 les namespaces `foodtrack-dev`, `foodtrack-test` et `foodtrack-prod`. Les nœuds n'ont aucune IP externe ; Cloud NAT couvre la plage primaire et les deux plages secondaires.
@@ -143,62 +211,6 @@ La dernière commande doit afficher `pd-standard`, `50` et `e2-standard-2`. Les 
 
 Le cahier des charges prépare des runners GitHub hébergés aux adresses variables. Le profil ouvre donc le endpoint public Kubernetes avec `master_authorized_networks_config = 0.0.0.0/0`. Cette ouverture ne contourne pas l'authentification IAM/Kubernetes, mais agrandit fortement la surface réseau exposée.
 
-<<<<<<< HEAD
-_À documenter au fil du projet — c'est ce que le jury lit avant la soutenance._
-
-
-```mermaid
-flowchart TB
-    users["Responsables qualite<br/>navigateur"]
-    admin["Equipe FoodTrack<br/>SSH admin"]
-    git["Depot GitHub<br/>foodtrack-equipe-c"]
-    ci["GitHub Actions"]
-    internet(("Internet"))
-
-    subgraph vpc ["VPC prive foodtrack-c-vpc - europe-west2"]
-        direction TB
-        lb["Ingress et equilibreur de charge<br/>un par namespace"]
-        nat["foodtrack-c-router et Cloud NAT"]
-        bastion["VM bastion<br/>foodtrack-c-bastion"]
-
-        subgraph gke ["Cluster GKE Standard zonal - foodtrack-c-cluster"]
-            direction TB
-            subgraph prod ["namespace foodtrack-prod"]
-                direction LR
-                portail["portail-qualite<br/>nginx"]
-                api["api-capteurs"]
-                cache["cache-releves<br/>Redis et volume pd-standard"]
-                portail -->|"/api/"| api
-                api --> cache
-            end
-            test_dev["namespaces foodtrack-test et foodtrack-dev<br/>meme structure, configuration differente"]
-        end
-    end
-
-    subgraph gcp_svc ["Services du projet form-gke-eleve03-a8e9"]
-        direction TB
-        ar["Artifact Registry<br/>foodtrack-c-images"]
-        gcs["Cloud Storage<br/>tfstate et sauvegardes"]
-        obs["Cloud Monitoring et Logging"]
-    end
-
-    users -->|HTTPS| lb
-    lb --> portail
-
-    admin -->|SSH restreint, cle uniquement| bastion
-    bastion --> gke
-
-    git -->|push ou tag| ci
-    ci -->|OIDC, sans cle| ar
-    ci -->|kubectl apply| gke
-
-    gke --> nat
-    nat --> internet
-    gke --> ar
-    gke --> obs
-    gke --> gcs
-```
-=======
 Alternative recommandée : endpoint privé et runner GitHub auto-hébergé sur le bastion ou dans le VPC. Une autre option est le endpoint DNS GKE avec IAM et Workload Identity Federation. Ce compromis doit être réévalué en phase 3.
 
 ### Cycle de vie et coûts
@@ -208,4 +220,4 @@ Alternative recommandée : endpoint privé et runner GitHub auto-hébergé sur l
 - `force_destroy_buckets` n'est activé que dans le profil dev.
 - Ne jamais appliquer plusieurs profils avec des backends distincts : ils pilotent tous le cluster unique.
 - Ne versionner ni état, ni plan, ni secrets.
->>>>>>> main
+
