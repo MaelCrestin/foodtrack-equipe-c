@@ -1,7 +1,7 @@
 variable "project_id" {
   description = "Projet Google Cloud de l equipe"
   type        = string
-  default     = "foodtrack-equipe-c"
+  default = "poei-formation-gcp"
 }
 
 variable "region" {

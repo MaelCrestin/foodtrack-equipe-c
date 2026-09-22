@@ -14,7 +14,7 @@ terraform {
   }
 
   backend "gcs" {
-    bucket = "foodtrack-c-tfstate-foodtrack-equipe-c"
+    bucket = "foodtrack-c-tfstate-poei-formation-gcp"
     prefix = "terraform/state"
   }
 }
