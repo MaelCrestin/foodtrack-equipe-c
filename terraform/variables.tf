@@ -1,10 +1,3 @@
-<<<<<<< HEAD
-variable "project_id" {
-  description = "Projet Google Cloud, PARTAGE entre les 5 equipes de la formation"
-  type        = string
-  default     = "poei-formation-gcp"
-}
-=======
 variable "project_id" { type = string }
 variable "region" { type = string }
 variable "zone" { type = string }
@@ -19,7 +12,6 @@ variable "admin_ssh_cidrs" {
     condition     = length(var.admin_ssh_cidrs) > 0 && !contains(var.admin_ssh_cidrs, "0.0.0.0/0")
     error_message = "Fournissez au moins un CIDR d'administration précis ; 0.0.0.0/0 est interdit."
   }
->>>>>>> main
 }
 variable "master_authorized_networks" {
   type = list(object({ cidr_block = string, display_name = string }))
@@ -29,14 +21,6 @@ variable "enable_private_endpoint" {
   type    = bool
   default = false
 }
-<<<<<<< HEAD
-
-variable "equipe" {
-  description = "Lettre de l equipe, utilisee dans le prefixe de toutes les ressources"
-  type        = string
-  default     = "c"
-}
-=======
 variable "node_machine_type" {
   type    = string
   default = "e2-standard-2"
@@ -75,4 +59,3 @@ variable "log_filter" {
   type    = string
   default = "resource.type=\"k8s_container\""
 }
->>>>>>> main
