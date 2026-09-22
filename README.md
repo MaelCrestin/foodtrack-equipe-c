@@ -48,7 +48,7 @@ assets/                 logos et schemas
 export EQUIPE="c"
 export REGION="europe-west2"
 export ZONE="europe-west2-b"
-export PROJECT="foodtrack-equipe-c"
+export PROJECT="poei-formation-gcp"
 
 gcloud config set project "$PROJECT"
 gcloud config set compute/region "$REGION"
