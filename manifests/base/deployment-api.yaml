@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-capteurs
+  labels:
+    app.kubernetes.io/name: api-capteurs
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: api-capteurs
+  strategy:
+    type: RollingUpdate
+    rollingUpdate: {maxSurge: 1, maxUnavailable: 0}
+  template:
+    metadata:
+      labels:
+        app: api-capteurs
+        app.kubernetes.io/name: api-capteurs
+    spec:
+      terminationGracePeriodSeconds: 30
+      containers:
+        - name: api
+          image: us-docker.pkg.dev/google-samples/containers/gke/hello-app:2.0
+          ports:
+            - {name: http, containerPort: 8080}
+          env:
+            - name: POD_NAME
+              valueFrom: {fieldRef: {fieldPath: metadata.name}}
+            - name: SEUIL_TEMPERATURE_C
+              valueFrom: {configMapKeyRef: {name: foodtrack-config, key: SEUIL_TEMPERATURE_C}}
+            - name: NIVEAU_JOURNAL
+              valueFrom: {configMapKeyRef: {name: foodtrack-config, key: NIVEAU_JOURNAL}}
+            - name: INGEST_TOKEN
+              valueFrom: {secretKeyRef: {name: foodtrack-api-config, key: INGEST_TOKEN}}
+          resources:
+            requests: {cpu: "100m", memory: "128Mi"}
+            limits: {cpu: "300m", memory: "256Mi"}
+          startupProbe:
+            httpGet: {path: /, port: 8080}
+            periodSeconds: 2
+            failureThreshold: 30
+          readinessProbe:
+            httpGet: {path: /, port: 8080}
+            periodSeconds: 5
+            timeoutSeconds: 2
+            failureThreshold: 2
+          livenessProbe:
+            httpGet: {path: /, port: 8080}
+            periodSeconds: 10
+            timeoutSeconds: 2
+            failureThreshold: 3
+          lifecycle:
+            preStop:
+              sleep: {seconds: 10}
+

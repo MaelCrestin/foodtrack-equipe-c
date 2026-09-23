@@ -1,0 +1,20 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: foodtrack-test
+resources:
+  - ../../base
+  - namespace.yaml
+labels:
+  - pairs:
+      foodtrack.example/env: test
+    includeSelectors: true
+    includeTemplates: true
+secretGenerator:
+  - name: foodtrack-api-config
+    envs:
+      - secret.env
+patches:
+  - path: patch-configmap.yaml
+  - path: patch-hpa.yaml
+  - path: patch-storage.yaml
+

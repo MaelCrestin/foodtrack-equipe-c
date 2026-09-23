@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: cache-releves
+  labels:
+    app.kubernetes.io/name: cache-releves
+spec:
+  serviceName: cache-releves
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cache-releves
+  template:
+    metadata:
+      labels:
+        app: cache-releves
+        app.kubernetes.io/name: cache-releves
+    spec:
+      terminationGracePeriodSeconds: 30
+      securityContext:
+        fsGroup: 999
+      containers:
+        - name: redis
+          image: redis:8.10.1
+          args: ["--appendonly", "yes", "--dir", "/data"]
+          ports:
+            - {name: redis, containerPort: 6379}
+          resources:
+            requests: {cpu: "200m", memory: "256Mi"}
+            limits: {cpu: "500m", memory: "512Mi"}
+          startupProbe:
+            exec: {command: ["redis-cli", "ping"]}
+            periodSeconds: 3
+            failureThreshold: 20
+          readinessProbe:
+            exec: {command: ["redis-cli", "ping"]}
+            periodSeconds: 5
+            timeoutSeconds: 2
+            failureThreshold: 2
+          livenessProbe:
+            tcpSocket: {port: 6379}
+            periodSeconds: 10
+            failureThreshold: 3
+          volumeMounts:
+            - {name: donnees, mountPath: /data}
+  volumeClaimTemplates:
+    - metadata:
+        name: donnees
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        storageClassName: foodtrack-hdd
+        resources:
+          requests:
+            storage: 10Gi
+

@@ -120,3 +120,4 @@ resource "google_artifact_registry_repository" "docker" {
   description   = "Images Docker de ${var.name_prefix}"
   format        = "DOCKER"
 }
+
