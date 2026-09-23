@@ -1,7 +1,37 @@
-qualite/Dockerfile
+# FoodTrack - equipe C - pipeline de livraison
+#
+# Base sur le squelette fourni (labs/projet-final/ci/deploy.yml.squelette) :
+# le bloc d authentification OIDC et la recuperation des acces cluster sont
+# repris tels quels, le reste a ete complete par l equipe.
+#
+# Variables a definir dans Settings > Secrets and variables > Actions > Variables :
+#   GCP_PROJECT_ID   GCP_REGION   GCP_ZONE   GKE_CLUSTER
+#   WIF_PROVIDER          sortie Terraform "wif_provider_name"
+#   CI_SERVICE_ACCOUNT   sortie Terraform "ci_service_account_email"
+#   NOTIFICATION_EMAIL   la meme adresse que var.notification_email cote Terraform
+#
+# Aucun secret GitHub n est utilise : tout passe par la federation d identite.
+
+name: foodtrack
+
+on:
+  push:
+    branches: [develop, main]
+    tags: ["v*"]
+  pull_request:
+    branches: [develop, main]
+
+# Obligatoire pour que GitHub emette un jeton OIDC.
+permissions:
+  contents: read
+  id-token: write
+
+env:
+  IMAGE_NAME: portail-qualite
+  AR_REPO: foodtrack-c-images
+  DOCKERFILE_PATH: applications/Dockerfile
 
 jobs:
-
   # ---------------------------------------------------------------------
   # Lint et scan : tourne sur TOUT evenement (push et pull_request), sans
   # jamais toucher a Google Cloud. Pas d authentification necessaire ici.
