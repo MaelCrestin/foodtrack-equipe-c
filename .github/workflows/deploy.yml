@@ -257,7 +257,7 @@ permissions:
 env:
   IMAGE_NAME: portail-qualite
   AR_REPO: foodtrack-c-images
-  DOCKERFILE_PATH: app/portail-
+  DOCKERFILE_PATH: applications-
       - uses: google-github-actions/setup-gcloud@v3
         with:
           install_components: kubectl
