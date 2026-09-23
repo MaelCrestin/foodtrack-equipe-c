@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: foodtrack-config
+data:
+  SEUIL_TEMPERATURE_C: "6"
+  NIVEAU_JOURNAL: "info"
+  index.html: |
+    <!doctype html>
+    <html lang="fr">
+      <head><meta charset="utf-8"><title>FoodTrack TEST</title></head>
+      <body><h1>FoodTrack — TEST</h1><p>API disponible sous <code>/api/</code>.</p></body>
+    </html>
+
