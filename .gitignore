@@ -1,4 +1,4 @@
-
+manifests/overlays/prod/secret.env
 .terraform/
 *.tfstate
 *.tfstate.*

@@ -18,4 +18,5 @@ patches:
   - path: patch-hpa.yaml
   - path: patch-portail.yaml
   - path: patch-storage.yaml
+  - path: ingress-patch.yaml
 

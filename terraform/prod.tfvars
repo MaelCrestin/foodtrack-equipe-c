@@ -1,7 +1,6 @@
 
 
-# project_id       = "foodtrack-equipe-c"
-project_id       = "poei-formation-gcp"
+project_id       = "form-gke-eleve03-a8e9"
 
 region           = "europe-west2"
 zone             = "europe-west2-b"

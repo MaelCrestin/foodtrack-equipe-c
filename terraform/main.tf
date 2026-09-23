@@ -84,3 +84,11 @@ module "stockage" {
 
   depends_on = [google_project_service.required]
 }
+
+module "wif_github" {
+  source = "./modules/wif-github"
+
+  project_id  = var.project_id
+  github_owner = "MaelCrestin"
+  github_repo  = "foodtrack-equipe-c"
+}

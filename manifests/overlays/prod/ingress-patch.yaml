@@ -1,0 +1,17 @@
+# prod uniquement : epingle l'Ingress sur l'IP publique fixe reservee par
+# Terraform (terraform/phase3-supervision.tf), pour que le controle de
+# disponibilite (phase 3) surveille une adresse stable. dev et test gardent
+# une IP ephemere, attribuee automatiquement - aucune supervision externe
+# n'en depend.
+#
+# Le nom "foodtrack-c-portail-prod-ip" doit correspondre exactement au nom
+# donne a la ressource google_compute_global_address cote Terraform.
+#
+# Si votre Ingress porte un autre metadata.name que "foodtrack" (verifiez
+# avec `kubectl get ingress -n foodtrack-prod`), corrigez-le ci-dessous.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: portail-qualite
+  annotations:
+    kubernetes.io/ingress.global-static-ip-name: foodtrack-c-portail-prod-ip
