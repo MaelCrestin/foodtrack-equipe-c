@@ -256,6 +256,9 @@ jobs:
           location: ${{ vars.GCP_ZONE }}
       # --- fin du bloc fourni ------------------------------------------------
 
+      - name: Preparer le secret d ingestion
+        run: echo "INGEST_TOKEN=${{ secrets.INGEST_TOKEN_DEV }}" > manifests/overlays/dev/secret.env
+
       - name: Appliquer les manifestes dev
         run: kubectl apply -k manifests/overlays/dev
 
@@ -309,6 +312,9 @@ jobs:
           cluster_name: ${{ vars.GKE_CLUSTER }}
           location: ${{ vars.GCP_ZONE }}
 
+      - name: Preparer le secret d ingestion
+        run: echo "INGEST_TOKEN=${{ secrets.INGEST_TOKEN_TEST }}" > manifests/overlays/test/secret.env
+        
       - name: Appliquer les manifestes test
         run: kubectl apply -k manifests/overlays/test
 
@@ -368,6 +374,9 @@ jobs:
           cluster_name: ${{ vars.GKE_CLUSTER }}
           location: ${{ vars.GCP_ZONE }}
 
+      - name: Preparer le secret d ingestion
+        run: echo "INGEST_TOKEN=${{ secrets.INGEST_TOKEN_PROD }}" > manifests/overlays/prod/secret.env
+        
       - name: Appliquer les manifestes prod
         run: kubectl apply -k manifests/overlays/prod
 
