@@ -11,6 +11,9 @@
 #   NOTIFICATION_EMAIL   la meme adresse que var.notification_email cote Terraform
 #
 # Aucun secret GitHub n est utilise : tout passe par la federation d identite.
+#
+# Les commentaires "A VERIFIER (n)" marquent les valeurs supposees : cherchez
+# ce texte dans le fichier pour les retrouver toutes.
 
 name: foodtrack
 
@@ -28,7 +31,9 @@ permissions:
 
 env:
   IMAGE_NAME: portail-qualite
+  # A VERIFIER (9) : nom du depot Artifact Registry
   AR_REPO: foodtrack-c-images
+  # A VERIFIER (8) : chemin du Dockerfile
   DOCKERFILE_PATH: applications/Dockerfile
 
 jobs:
@@ -72,6 +77,8 @@ jobs:
                   -kubernetes-version 1.31.0 \
                   -ignore-missing-schemas
           done
+        # A VERIFIER (7) : -kubernetes-version 1.31.0 doit correspondre a la
+        # version de votre cluster GKE.
         # -ignore-missing-schemas : les CRD et ressources propres a GKE
         # (BackendConfig, etc.) n ont pas de schema public standard. On ignore
         # leur absence de schema, on ne les exempte pas d etre bien formees.
@@ -122,23 +129,26 @@ jobs:
 
       - name: terraform init
         working-directory: terraform
-        run: terraform init
+        run: terraform init -input=false
 
       # NOTE : un seul cluster, une seule infrastructure partagee par les
-      # trois namespaces (cf. phase 1) - il n y a donc qu'un plan a jouer,
-      # pas un par environnement. Le fichier .tfvars ci-dessous doit rester
-      # celui que l equipe utilise reellement pour l infrastructure partagee ;
-      # adaptez son nom si votre convention differe.
+      # trois namespaces (cf. phase 1) - il n y a donc qu un plan a jouer,
+      # pas un par environnement.
+      # A VERIFIER (1) : nom du fichier .tfvars (ici dev.tfvars).
+      # A VERIFIER (2) : le compte de service doit pouvoir poser le verrou
+      # d etat sur le bucket (ecriture), sinon ajouter -lock=false.
       - name: terraform plan
         working-directory: terraform
+        # shell: bash active "pipefail" : sans lui, un plan en echec reste
+        # vert a cause du "| tee".
+        shell: bash
         run: |
-          terraform plan -no-color -out=tfplan -var-file="dev.tfvars" \
+          terraform plan -no-color -input=false -out=tfplan -var-file="dev.tfvars" \
             -var="notification_email=${{ vars.NOTIFICATION_EMAIL }}" \
             | tee plan.txt
 
-      # "publie dans l execution" : le resume de plan.txt devient visible
-      # directement dans l onglet Summary de l execution, sans avoir a
-      # ouvrir les journaux etape par etape.
+      # Le resume de plan.txt devient visible directement dans l onglet
+      # Summary de l execution, sans ouvrir les journaux etape par etape.
       - name: Publier le resume du plan
         working-directory: terraform
         run: |
@@ -185,6 +195,8 @@ jobs:
       - name: Construire et publier l image
         uses: docker/build-push-action@v7
         with:
+          # A VERIFIER (8) : le contexte de build "." (racine du depot)
+          # doit correspondre aux COPY de votre Dockerfile.
           context: .
           file: ${{ env.DOCKERFILE_PATH }}
           push: true
@@ -208,6 +220,11 @@ jobs:
   # ---------------------------------------------------------------------
   # Deploiement dev : uniquement pour un push sur develop. C est le seul
   # environnement qui ne demande aucune validation humaine.
+  #
+  # A VERIFIER (3) pour les trois deploiements : nom du conteneur "nginx",
+  # noms des Deployments (portail-qualite, api-capteurs), namespaces
+  # (foodtrack-dev / -test / -prod), service portail-qualite:8080 et route
+  # /healthz.
   # ---------------------------------------------------------------------
   deploy-dev:
     name: Deploiement dev
@@ -226,38 +243,7 @@ jobs:
           project_id: ${{ vars.GCP_PROJECT_ID }}
           workload_identity_provider: ${{ vars.WIF_PROVIDER }}
           service_account: ${{ vars.CI_SERVICE_ACCOUNT }}
-# FoodTrack - equipe C - pipeline de livraison
-#
-# Base sur le squelette fourni (labs/projet-final/ci/deploy.yml.squelette) :
-# le bloc d authentification OIDC et la recuperation des acces cluster sont
-# repris tels quels, le reste a ete complete par l equipe.
-#
-# Variables a definir dans Settings > Secrets and variables > Actions > Variables :
-#   GCP_PROJECT_ID   GCP_REGION   GCP_ZONE   GKE_CLUSTER
-#   WIF_PROVIDER          sortie Terraform "wif_provider_name"
-#   CI_SERVICE_ACCOUNT   sortie Terraform "ci_service_account_email"
-#   NOTIFICATION_EMAIL   la meme adresse que var.notification_email cote Terraform
-#
-# Aucun secret GitHub n est utilise : tout passe par la federation d identite.
 
-name: foodtrack
-
-on:
-  push:
-    branches: [develop, main]
-    tags: ["v*"]
-  pull_request:
-    branches: [develop, main]
-
-# Obligatoire pour que GitHub emette un jeton OIDC.
-permissions:
-  contents: read
-  id-token: write
-
-env:
-  IMAGE_NAME: portail-qualite
-  AR_REPO: foodtrack-c-images
-  DOCKERFILE_PATH: applications/Dockerfile
       - uses: google-github-actions/setup-gcloud@v3
         with:
           install_components: kubectl
@@ -282,6 +268,8 @@ env:
           kubectl rollout status deployment/portail-qualite -n foodtrack-dev --timeout=180s
           kubectl rollout status deployment/api-capteurs   -n foodtrack-dev --timeout=180s
 
+      # A VERIFIER (4) : ce pod de test peut etre bloque par une NetworkPolicy
+      # ou une Pod Security "restricted" (voir la note dans ma reponse).
       - name: Verifier que l application repond
         run: |
           kubectl run verif-dev-$RANDOM --rm -i --restart=Never --image=curlimages/curl:8.10.1 \
@@ -344,10 +332,18 @@ env:
   # (Settings > Environments > production > Required reviewers), pas dans
   # ce fichier. C est cette configuration, pas un "if", qui bloque
   # reellement le job tant que personne n a valide.
+  #
+  # CORRECTIONS :
+  #  - "build" ajoute dans needs : sinon needs.build.outputs.image est vide
+  #    (le contexte needs ne contient que les dependances directes).
+  #  - condition "if" ajoutee : la production ne se deploie que depuis main
+  #    ou une etiquette de version, jamais depuis un push sur develop.
+  #    A VERIFIER (5) : c est mon choix, adaptez si votre regle differe.
   # ---------------------------------------------------------------------
   deploy-prod:
     name: Deploiement production
-    needs: deploy-test
+    needs: [build, deploy-test]
+    if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
     environment:
       name: production
