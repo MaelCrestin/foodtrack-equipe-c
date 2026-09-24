@@ -151,7 +151,7 @@ resource "google_monitoring_dashboard" "foodtrack_prod" {
       columns = 12
       tiles = [
         {
-          width = 6
+          width  = 6
           height = 4
           widget = {
             title = "CPU - foodtrack-prod"
@@ -161,10 +161,10 @@ resource "google_monitoring_dashboard" "foodtrack_prod" {
                   timeSeriesFilter = {
                     filter = "resource.type=\"k8s_container\" AND resource.labels.namespace_name=\"foodtrack-prod\" AND metric.type=\"kubernetes.io/container/cpu/core_usage_time\""
                     aggregation = {
-                      alignmentPeriod     = "60s"
-                      perSeriesAligner    = "ALIGN_RATE"
-                      crossSeriesReducer  = "REDUCE_SUM"
-                      groupByFields       = ["resource.label.pod_name"]
+                      alignmentPeriod    = "60s"
+                      perSeriesAligner   = "ALIGN_RATE"
+                      crossSeriesReducer = "REDUCE_SUM"
+                      groupByFields      = ["resource.label.pod_name"]
                     }
                   }
                 }
@@ -175,7 +175,7 @@ resource "google_monitoring_dashboard" "foodtrack_prod" {
           }
         },
         {
-          width = 6
+          width  = 6
           height = 4
           xPos   = 6
           widget = {
@@ -200,7 +200,7 @@ resource "google_monitoring_dashboard" "foodtrack_prod" {
           }
         },
         {
-          width = 6
+          width  = 6
           height = 4
           yPos   = 4
           widget = {
@@ -225,7 +225,7 @@ resource "google_monitoring_dashboard" "foodtrack_prod" {
           }
         },
         {
-          width = 6
+          width  = 6
           height = 4
           xPos   = 6
           yPos   = 4

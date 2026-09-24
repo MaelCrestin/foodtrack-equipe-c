@@ -50,12 +50,12 @@ resource "google_compute_router_nat" "this" {
 }
 
 resource "google_compute_firewall" "bastion_ssh" {
-  project     = var.project_id
-  name        = "${var.name_prefix}-allow-bastion-ssh"
-  network     = google_compute_network.this.name
-  direction   = "INGRESS"
+  project       = var.project_id
+  name          = "${var.name_prefix}-allow-bastion-ssh"
+  network       = google_compute_network.this.name
+  direction     = "INGRESS"
   source_ranges = var.admin_ssh_cidrs
-  target_tags = [local.bastion_tag]
+  target_tags   = [local.bastion_tag]
 
   allow {
     protocol = "tcp"

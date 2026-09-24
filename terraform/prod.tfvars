@@ -1,6 +1,6 @@
 
 
-project_id       = "form-gke-eleve03-a8e9"
+project_id = "form-gke-eleve03-a8e9"
 
 region           = "europe-west2"
 zone             = "europe-west2-b"

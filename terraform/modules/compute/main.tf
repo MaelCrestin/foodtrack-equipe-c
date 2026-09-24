@@ -79,7 +79,7 @@ resource "google_container_cluster" "this" {
   workload_identity_config { workload_pool = "${var.project_id}.svc.id.goog" }
   logging_service    = "logging.googleapis.com/kubernetes"
   monitoring_service = "monitoring.googleapis.com/kubernetes"
-  depends_on = [google_project_iam_member.nodes]
+  depends_on         = [google_project_iam_member.nodes]
 }
 
 resource "google_container_node_pool" "primary" {
