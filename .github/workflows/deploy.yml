@@ -1,0 +1,398 @@
+# FoodTrack - equipe C - pipeline de livraison
+#
+# Base sur le squelette fourni (labs/projet-final/ci/deploy.yml.squelette) :
+# le bloc d authentification OIDC et la recuperation des acces cluster sont
+# repris tels quels, le reste a ete complete par l equipe.
+#
+# Variables a definir dans Settings > Secrets and variables > Actions > Variables :
+#   GCP_PROJECT_ID   GCP_REGION   GCP_ZONE   GKE_CLUSTER
+#   WIF_PROVIDER          sortie Terraform "wif_provider_name"
+#   CI_SERVICE_ACCOUNT   sortie Terraform "ci_service_account_email"
+#   NOTIFICATION_EMAIL   la meme adresse que var.notification_email cote Terraform
+#
+# Aucun secret GitHub n est utilise : tout passe par la federation d identite.
+#
+# Les commentaires "A VERIFIER (n)" marquent les valeurs supposees : cherchez
+# ce texte dans le fichier pour les retrouver toutes.
+
+name: foodtrack
+
+on:
+  push:
+    branches: [develop, main]
+    tags: ["v*"]
+  pull_request:
+    branches: [develop, main]
+
+# Obligatoire pour que GitHub emette un jeton OIDC.
+permissions:
+  contents: read
+  id-token: write
+
+env:
+  IMAGE_NAME: portail-qualite
+  # A VERIFIER (9) : nom du depot Artifact Registry
+  AR_REPO: foodtrack-c-images
+  # A VERIFIER (8) : chemin du Dockerfile
+  DOCKERFILE_PATH: applications/Dockerfile
+
+jobs:
+  # ---------------------------------------------------------------------
+  # Lint et scan : tourne sur TOUT evenement (push et pull_request), sans
+  # jamais toucher a Google Cloud. Pas d authentification necessaire ici.
+  # ---------------------------------------------------------------------
+  qualite:
+    name: Lint et scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Terraform - format et coherence
+        uses: hashicorp/setup-terraform@v4
+        with:
+          terraform_wrapper: false
+
+      - name: terraform fmt -check
+        working-directory: terraform
+        run: terraform fmt -check -recursive
+
+      - name: terraform validate
+        working-directory: terraform
+        run: |
+          terraform init -backend=false
+          terraform validate
+
+      - name: Installer kubeconform
+        run: |
+          curl -sSL https://github.com/yannh/kubeconform/releases/download/v0.6.7/kubeconform-linux-amd64.tar.gz \
+            | tar xz kubeconform
+          sudo mv kubeconform /usr/local/bin/kubeconform
+
+      - name: Manifestes Kubernetes - validite contre le schema
+        run: |
+          for ENV in dev test prod; do
+            echo "--- overlay $ENV"
+            kubectl kustomize "manifests/overlays/$ENV" \
+              | kubeconform -strict -summary \
+                  -kubernetes-version 1.31.0 \
+                  -ignore-missing-schemas
+          done
+        # A VERIFIER (7) : -kubernetes-version 1.31.0 doit correspondre a la
+        # version de votre cluster GKE.
+        # -ignore-missing-schemas : les CRD et ressources propres a GKE
+        # (BackendConfig, etc.) n ont pas de schema public standard. On ignore
+        # leur absence de schema, on ne les exempte pas d etre bien formees.
+
+      - name: Terraform - scan de configuration
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          scan-type: config
+          scan-ref: terraform
+          trivyignores: .trivyignore
+          exit-code: "1"
+          severity: CRITICAL,HIGH
+          # Seuil retenu : CRITICAL et HIGH font echouer le job. Les severites
+          # LOW et MEDIUM restent visibles dans le rapport mais ne bloquent
+          # pas - beaucoup d entre elles concernent des choix deliberes et
+          # deja documentes du projet (ex. plan de controle expose, phase 1).
+          # Le scan reste actif sur 100% du code, seul le seuil de blocage
+          # est ajuste - jamais desactive.
+
+  # ---------------------------------------------------------------------
+  # terraform plan : les changements d infrastructure doivent etre visibles
+  # AVANT d etre appliques, meme si cette pipeline n applique jamais elle-
+  # meme (l apply reste un geste humain, cf. README). Necessite l acces au
+  # bucket d etat et une lecture seule du projet - roles ajoutes au compte
+  # de service via terraform/phase3-wif-extra.tf, en plus du minimum fourni
+  # par le module wif-github.
+  #
+  # Uniquement sur push : une pull_request venant d un fork n a pas ces
+  # droits, et ne doit pas les avoir.
+  # ---------------------------------------------------------------------
+  terraform-plan:
+    name: Terraform plan
+    needs: qualite
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - id: auth
+        uses: google-github-actions/auth@v3
+        with:
+          project_id: ${{ vars.GCP_PROJECT_ID }}
+          workload_identity_provider: ${{ vars.WIF_PROVIDER }}
+          service_account: ${{ vars.CI_SERVICE_ACCOUNT }}
+
+      - uses: hashicorp/setup-terraform@v4
+        with:
+          terraform_wrapper: false
+
+      - name: terraform init
+        working-directory: terraform
+        run: terraform init -input=false
+
+      # NOTE : un seul cluster, une seule infrastructure partagee par les
+      # trois namespaces (cf. phase 1) - il n y a donc qu un plan a jouer,
+      # pas un par environnement.
+      # A VERIFIER (1) : nom du fichier .tfvars (ici dev.tfvars).
+      # A VERIFIER (2) : le compte de service doit pouvoir poser le verrou
+      # d etat sur le bucket (ecriture), sinon ajouter -lock=false.
+      - name: terraform plan
+        working-directory: terraform
+        # shell: bash active "pipefail" : sans lui, un plan en echec reste
+        # vert a cause du "| tee".
+        shell: bash
+        run: |
+          terraform plan -no-color -input=false -out=tfplan -var-file="dev.tfvars" \
+            -var="notification_email=${{ vars.NOTIFICATION_EMAIL }}" \
+            | tee plan.txt
+
+      # Le resume de plan.txt devient visible directement dans l onglet
+      # Summary de l execution, sans ouvrir les journaux etape par etape.
+      - name: Publier le resume du plan
+        working-directory: terraform
+        run: |
+          {
+            echo "## Résumé de \`terraform plan\`"
+            echo '```'
+            tail -n 40 plan.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  # ---------------------------------------------------------------------
+  # Build et publication : seulement sur push (jamais sur une pull_request,
+  # qui peut venir d un fork sans les memes droits).
+  # ---------------------------------------------------------------------
+  build:
+    name: Build et publication de l image
+    needs: terraform-plan
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    outputs:
+      image: ${{ steps.image.outputs.full }}
+    steps:
+      - uses: actions/checkout@v5
+
+      # --- FOURNI : authentification sans cle -------------------------------
+      - id: auth
+        uses: google-github-actions/auth@v3
+        with:
+          project_id: ${{ vars.GCP_PROJECT_ID }}
+          workload_identity_provider: ${{ vars.WIF_PROVIDER }}
+          service_account: ${{ vars.CI_SERVICE_ACCOUNT }}
+
+      - uses: google-github-actions/setup-gcloud@v3
+
+      - name: Autoriser Docker aupres d Artifact Registry
+        run: gcloud auth configure-docker ${{ vars.GCP_REGION }}-docker.pkg.dev --quiet
+      # --- fin du bloc fourni ------------------------------------------------
+
+      - name: Calculer le nom complet de l image
+        id: image
+        run: |
+          echo "full=${{ vars.GCP_REGION }}-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/${{ env.AR_REPO }}/${{ env.IMAGE_NAME }}:${{ github.sha }}" >> "$GITHUB_OUTPUT"
+
+      - name: Construire et publier l image
+        uses: docker/build-push-action@v7
+        with:
+          # A VERIFIER (8) : le contexte de build "." (racine du depot)
+          # doit correspondre aux COPY de votre Dockerfile.
+          context: .
+          file: ${{ env.DOCKERFILE_PATH }}
+          push: true
+          tags: ${{ steps.image.outputs.full }}
+          # Etiquetee par le SHA du commit : jamais "latest", sinon impossible
+          # de dire quelle version tourne reellement en production.
+
+      - name: Scanner l image publiee
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          scan-type: image
+          image-ref: ${{ steps.image.outputs.full }}
+          trivyignores: .trivyignore-image
+          exit-code: "1"
+          severity: CRITICAL
+          # Seuil plus strict que sur le Terraform (CRITICAL seul) : une image
+          # deployee tourne en continu et expose une vraie surface d attaque.
+          # HIGH reste affiche dans le rapport mais ne bloque pas - beaucoup
+          # de failles HIGH de l image de base nginx ne sont pas corrigeables
+          # cote equipe et bloqueraient le pipeline en permanence sans raison.
+
+  # ---------------------------------------------------------------------
+  # Deploiement dev : uniquement pour un push sur develop. C est le seul
+  # environnement qui ne demande aucune validation humaine.
+  #
+  # A VERIFIER (3) pour les trois deploiements : nom du conteneur "nginx",
+  # noms des Deployments (portail-qualite, api-capteurs), namespaces
+  # (foodtrack-dev / -test / -prod), service portail-qualite:8080 et route
+  # /healthz.
+  # ---------------------------------------------------------------------
+  deploy-dev:
+    name: Deploiement dev
+    needs: build
+    if: github.ref == 'refs/heads/develop'
+    runs-on: ubuntu-latest
+    environment:
+      name: dev
+    steps:
+      - uses: actions/checkout@v5
+
+      # --- FOURNI : acces au cluster ----------------------------------------
+      - id: auth
+        uses: google-github-actions/auth@v3
+        with:
+          project_id: ${{ vars.GCP_PROJECT_ID }}
+          workload_identity_provider: ${{ vars.WIF_PROVIDER }}
+          service_account: ${{ vars.CI_SERVICE_ACCOUNT }}
+
+      - uses: google-github-actions/setup-gcloud@v3
+        with:
+          install_components: kubectl
+
+      - uses: google-github-actions/get-gke-credentials@v3
+        with:
+          cluster_name: ${{ vars.GKE_CLUSTER }}
+          location: ${{ vars.GCP_ZONE }}
+      # --- fin du bloc fourni ------------------------------------------------
+
+      - name: Preparer le secret d ingestion
+        run: echo "INGEST_TOKEN=${{ secrets.INGEST_TOKEN_DEV }}" > manifests/overlays/dev/secret.env
+
+      - name: Appliquer les manifestes dev
+        run: kubectl apply -k manifests/overlays/dev
+
+      - name: Mettre a jour l image du portail
+        run: |
+          kubectl set image deployment/portail-qualite \
+            nginx=${{ needs.build.outputs.image }} \
+            -n foodtrack-dev
+
+      - name: Attendre la fin du deploiement
+        run: |
+          kubectl rollout status deployment/portail-qualite -n foodtrack-dev --timeout=180s
+          kubectl rollout status deployment/api-capteurs   -n foodtrack-dev --timeout=180s
+
+      # A VERIFIER (4) : ce pod de test peut etre bloque par une NetworkPolicy
+      # ou une Pod Security "restricted" (voir la note dans ma reponse).
+      - name: Verifier que l application repond
+        run: |
+          kubectl run verif-dev-$RANDOM --rm -i --restart=Never --image=curlimages/curl:8.10.1 \
+            -n foodtrack-dev -- \
+            curl -sf --max-time 5 http://portail-qualite:8080/healthz
+
+  # ---------------------------------------------------------------------
+  # Deploiement test : toujours dans le chemin, que l execution vienne
+  # d un push develop (juste apres dev) ou d un push main / d une etiquette
+  # de version (promotion directe, sans repasser par dev).
+  # ---------------------------------------------------------------------
+  deploy-test:
+    name: Deploiement test
+    needs: [build, deploy-dev]
+    if: always() && needs.build.result == 'success' && (needs.deploy-dev.result == 'success' || needs.deploy-dev.result == 'skipped')
+    runs-on: ubuntu-latest
+    environment:
+      name: test
+    steps:
+      - uses: actions/checkout@v5
+
+      - id: auth
+        uses: google-github-actions/auth@v3
+        with:
+          project_id: ${{ vars.GCP_PROJECT_ID }}
+          workload_identity_provider: ${{ vars.WIF_PROVIDER }}
+          service_account: ${{ vars.CI_SERVICE_ACCOUNT }}
+
+      - uses: google-github-actions/setup-gcloud@v3
+        with:
+          install_components: kubectl
+
+      - uses: google-github-actions/get-gke-credentials@v3
+        with:
+          cluster_name: ${{ vars.GKE_CLUSTER }}
+          location: ${{ vars.GCP_ZONE }}
+
+      - name: Preparer le secret d ingestion
+        run: echo "INGEST_TOKEN=${{ secrets.INGEST_TOKEN_TEST }}" > manifests/overlays/test/secret.env
+        
+      - name: Appliquer les manifestes test
+        run: kubectl apply -k manifests/overlays/test
+
+      - name: Mettre a jour l image du portail
+        run: |
+          kubectl set image deployment/portail-qualite \
+            nginx=${{ needs.build.outputs.image }} \
+            -n foodtrack-test
+
+      - name: Attendre la fin du deploiement
+        run: |
+          kubectl rollout status deployment/portail-qualite -n foodtrack-test --timeout=180s
+          kubectl rollout status deployment/api-capteurs   -n foodtrack-test --timeout=180s
+
+      - name: Verifier que l application repond
+        run: |
+          kubectl run verif-test-$RANDOM --rm -i --restart=Never --image=curlimages/curl:8.10.1 \
+            -n foodtrack-test -- \
+            curl -sf --max-time 5 http://portail-qualite:8080/healthz
+
+  # ---------------------------------------------------------------------
+  # Production : la porte d approbation se configure cote depot GitHub
+  # (Settings > Environments > production > Required reviewers), pas dans
+  # ce fichier. C est cette configuration, pas un "if", qui bloque
+  # reellement le job tant que personne n a valide.
+  #
+  # CORRECTIONS :
+  #  - "build" ajoute dans needs : sinon needs.build.outputs.image est vide
+  #    (le contexte needs ne contient que les dependances directes).
+  #  - condition "if" ajoutee : la production ne se deploie que depuis main
+  #    ou une etiquette de version, jamais depuis un push sur develop.
+  #    A VERIFIER (5) : c est mon choix, adaptez si votre regle differe.
+  # ---------------------------------------------------------------------
+  deploy-prod:
+    name: Deploiement production
+    needs: [build, deploy-test]
+    if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+    steps:
+      - uses: actions/checkout@v5
+
+      - id: auth
+        uses: google-github-actions/auth@v3
+        with:
+          project_id: ${{ vars.GCP_PROJECT_ID }}
+          workload_identity_provider: ${{ vars.WIF_PROVIDER }}
+          service_account: ${{ vars.CI_SERVICE_ACCOUNT }}
+
+      - uses: google-github-actions/setup-gcloud@v3
+        with:
+          install_components: kubectl
+
+      - uses: google-github-actions/get-gke-credentials@v3
+        with:
+          cluster_name: ${{ vars.GKE_CLUSTER }}
+          location: ${{ vars.GCP_ZONE }}
+
+      - name: Preparer le secret d ingestion
+        run: echo "INGEST_TOKEN=${{ secrets.INGEST_TOKEN_PROD }}" > manifests/overlays/prod/secret.env
+        
+      - name: Appliquer les manifestes prod
+        run: kubectl apply -k manifests/overlays/prod
+
+      - name: Mettre a jour l image du portail
+        run: |
+          kubectl set image deployment/portail-qualite \
+            nginx=${{ needs.build.outputs.image }} \
+            -n foodtrack-prod
+
+      - name: Attendre la fin du deploiement
+        run: |
+          kubectl rollout status deployment/portail-qualite -n foodtrack-prod --timeout=180s
+          kubectl rollout status deployment/api-capteurs   -n foodtrack-prod --timeout=180s
+
+      - name: Verifier que l application repond
+        run: |
+          kubectl run verif-prod-$RANDOM --rm -i --restart=Never --image=curlimages/curl:8.10.1 \
+            -n foodtrack-prod -- \
+            curl -sf --max-time 5 http://portail-qualite:8080/healthz

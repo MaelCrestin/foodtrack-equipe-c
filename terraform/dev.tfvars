@@ -17,7 +17,7 @@ master_authorized_networks = [
 enable_private_endpoint = false
 
 node_machine_type    = "e2-standard-2"
-node_count           = 1
+node_count           = 2
 min_node_count       = 0
 max_node_count       = 2
 bastion_machine_type = "e2-micro"
