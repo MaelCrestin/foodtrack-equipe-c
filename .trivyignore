@@ -1,0 +1,14 @@
+# AVD-GCP-0061 : plan de controle GKE expose a 0.0.0.0/0 (aucun reseau
+# autorise restreint). Compromis documente et assume - voir README,
+# section "Exposition du plan de controle GKE" : les executeurs GitHub
+# Actions herberges ont des adresses IP variables, restreindre l acces au
+# plan de controle casserait le pipeline. Alternative envisagee :
+# executeur auto-heberge sur le bastion (bonus phase 4).
+AVD-GCP-0061
+
+# AVD-GCP-0031 : le bastion a une IP publique - c est voulu, un bastion
+# sert justement de point d entree public restreint pour rebondir vers le
+# reseau prive. La vraie protection est l authentification par cle
+# uniquement et le pare-feu SSH restreint a des sources precises (cf.
+# cahier, phase 4), pas l absence d IP publique.
+AVD-GCP-0031

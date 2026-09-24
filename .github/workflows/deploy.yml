@@ -88,6 +88,7 @@ jobs:
         with:
           scan-type: config
           scan-ref: terraform
+          trivyignores: terraform/.trivyignore
           exit-code: "1"
           severity: CRITICAL,HIGH
           # Seuil retenu : CRITICAL et HIGH font echouer le job. Les severites
