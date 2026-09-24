@@ -351,7 +351,7 @@ jobs:
   deploy-prod:
     name: Deploiement production
     needs: [build, deploy-test]
-    if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
+    if: github.ref_name == 'main' || startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
     environment:
       name: production
@@ -376,7 +376,7 @@ jobs:
 
       - name: Preparer le secret d ingestion
         run: echo "INGEST_TOKEN=${{ secrets.INGEST_TOKEN_PROD }}" > manifests/overlays/prod/secret.env
-        
+
       - name: Appliquer les manifestes prod
         run: kubectl apply -k manifests/overlays/prod
 
