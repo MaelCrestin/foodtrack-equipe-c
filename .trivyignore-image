@@ -1,0 +1,11 @@
+# CVE-2026-6653 (libxml2, CRITICAL, deni de service via XML malveillant) :
+# aucun correctif disponible au 2026-09-24 - Trivy indique "Fixed Version"
+# vide, le paquet Debian n'est pas encore patche en amont, ce n'est pas un
+# oubli de notre part. Impact reel limite : l'application n'analyse aucun
+# XML externe non fiable (l'API capteurs echange en JSON, cf.
+# scripts/healthcheck.py) - libxml2 est present via l'image de base
+# Debian, pas par un usage direct dans notre code.
+# A retirer de cette liste des qu'un correctif existe : reverifier en
+# relancant le job "Scanner l image publiee" sans cette ligne avant la
+# soutenance.
+CVE-2026-6653
