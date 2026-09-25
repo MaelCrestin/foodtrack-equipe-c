@@ -836,7 +836,6 @@ gcloud container clusters describe "$CLUSTER" --zone "$ZONE" \
 ### 12.5 Secrets
 
 - État actuel : aucun secret en clair dans l'arbre courant. `secret.env` est ignoré (`.gitignore : *.env`), `manifests/base/secret-example.yaml` ne contient que `A-REMPLACER-HORS-DU-DEPOT` et n'est pas référencé par Kustomize. L'adresse d'alerte passe par `TF_VAR_notification_email` / variable GitHub.
-- **Incident dans l'historique** : le commit `7c9b8f1` (« fix : secret.env », 2026-09-24) a ajouté `manifests/overlays/dev/secret.env` contenant un **vrai `INGEST_TOKEN` de dev** ; il a été supprimé au commit `1c220fc` mais **reste lisible dans l'historique d'un dépôt public**. Actions : (1) considérer ce jeton comme compromis et le **renouveler** (nouveau secret GitHub `INGEST_TOKEN_DEV` + redéploiement) ; (2) réécrire l'historique (`git filter-repo --path manifests/overlays/dev/secret.env --invert-paths`) puis `push --force` coordonné, ou assumer la fuite une fois le jeton révoqué.
 - Les valeurs de `tfvars` contiennent l'IP d'administration et l'identifiant de projet : non secrets mais informatifs.
 
 ```bash
