@@ -188,10 +188,17 @@ jobs:
         run: gcloud auth configure-docker ${{ vars.GCP_REGION }}-docker.pkg.dev --quiet
       # --- fin du bloc fourni ------------------------------------------------
 
-      - name: Calculer le nom complet de l image
+      - name: Calculer les etiquettes de l image
         id: image
         run: |
-          echo "full=${{ vars.GCP_REGION }}-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/${{ env.AR_REPO }}/${{ env.IMAGE_NAME }}:${{ github.sha }}" >> "$GITHUB_OUTPUT"
+          BASE="${{ vars.GCP_REGION }}-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/${{ env.AR_REPO }}/${{ env.IMAGE_NAME }}"
+          TAGS="${BASE}:${{ github.sha }}"
+          if [[ "${{ github.ref }}" == refs/tags/v* ]]; then
+            VERSION="${GITHUB_REF#refs/tags/}"
+            TAGS="${TAGS},${BASE}:${VERSION}"
+          fi
+          echo "full=${BASE}:${{ github.sha }}" >> "$GITHUB_OUTPUT"
+          echo "tags=${TAGS}" >> "$GITHUB_OUTPUT"
 
       - name: Construire et publier l image
         uses: docker/build-push-action@v7
@@ -201,7 +208,7 @@ jobs:
           context: .
           file: ${{ env.DOCKERFILE_PATH }}
           push: true
-          tags: ${{ steps.image.outputs.full }}
+          tags: ${{ steps.image.outputs.tags }}
           # Etiquetee par le SHA du commit : jamais "latest", sinon impossible
           # de dire quelle version tourne reellement en production.
 
