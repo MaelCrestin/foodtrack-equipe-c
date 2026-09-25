@@ -1,3 +1,14 @@
+# Racine Terraform de FoodTrack : état distant, fournisseur Google, activation
+# des API et appel des modules réseau, compute, stockage et fédération
+# d'identité GitHub. La supervision et les droits complémentaires du pipeline
+# sont dans phase3-monitoring.tf et phase3-wif-extra.tf ; Terraform fusionne
+# tous les fichiers .tf du dossier.
+
+# État distant sur Cloud Storage, versioning activé sur le bucket (contrainte
+# du CDC : l'état est partagé par toute l'équipe). Le bucket est créé à la main
+# avant le premier terraform init : c'est la seule ressource hors Terraform,
+# documentée comme telle. Un backend n'accepte ni variable ni local, d'où le
+# nom en dur, qui doit rester égal à local.tfstate_bucket.
 terraform {
   backend "gcs" {
     bucket = "foodtrack-c-tfstate-form-gke-eleve03-a8e9"
@@ -5,23 +16,50 @@ terraform {
   }
 }
 
+# Fournisseur Google, cantonné au projet et à la région attribués à l'équipe.
+# default_labels pose les labels communs sur toutes les ressources qui
+# acceptent des labels, pour suivre les coûts dans les rapports de facturation.
 provider "google" {
-  project = var.project_id
-  region  = var.region
-  zone    = var.zone
+  project        = var.project_id
+  region         = var.region
+  zone           = var.zone
+  default_labels = local.labels_communs
 }
 
+# Valeurs dérivées partagées par toute la racine. L'environnement vaut
+# "mutualise" : un seul cluster porte dev, test et prod, les environnements
+# ne se distinguent qu'au niveau Kubernetes (namespaces et Kustomize).
+# required_apis couvre toutes les API appelées par la configuration, y compris
+# celles de la fédération d'identité (iam, iamcredentials, sts), pour qu'un
+# redéploiement depuis un projet vierge fonctionne.
 locals {
-  prefix = "foodtrack-c"
+  prefix         = "foodtrack-${var.equipe}"
+  tfstate_bucket = "${local.prefix}-tfstate-${var.project_id}"
+
+  labels_communs = {
+    projet        = "foodtrack"
+    equipe        = var.equipe
+    environnement = "mutualise"
+    gere_par      = "terraform"
+  }
+
   required_apis = toset([
     "artifactregistry.googleapis.com",
+    "cloudresourcemanager.googleapis.com",
     "compute.googleapis.com",
     "container.googleapis.com",
+    "iam.googleapis.com",
+    "iamcredentials.googleapis.com",
     "logging.googleapis.com",
+    "monitoring.googleapis.com",
     "storage.googleapis.com",
+    "sts.googleapis.com",
   ])
 }
 
+# Active les API nécessaires avant toute autre ressource. disable_on_destroy
+# à false : un destroy ne coupe pas une API dont d'autres ressources du projet
+# peuvent dépendre.
 resource "google_project_service" "required" {
   for_each           = local.required_apis
   project            = var.project_id
@@ -29,6 +67,9 @@ resource "google_project_service" "required" {
   disable_on_destroy = false
 }
 
+# Réseau privé : VPC, sous-réseau avec plages secondaires pour les pods et les
+# services (mode natif VPC), Cloud NAT pour la sortie Internet des nœuds sans
+# IP publique, pare-feu SSH du bastion.
 module "reseau" {
   source = "./modules/reseau"
 
@@ -45,6 +86,8 @@ module "reseau" {
   depends_on = [google_project_service.required]
 }
 
+# Calcul : cluster GKE Standard zonal unique, node pool pd-standard, bastion et
+# dépôt d'images. La dépendance au réseau passe par les sorties référencées.
 module "compute" {
   source = "./modules/compute"
 
@@ -67,9 +110,11 @@ module "compute" {
   bastion_network_tag        = module.reseau.bastion_network_tag
   bastion_source_image       = var.bastion_source_image
 
-  depends_on = [google_project_service.required, module.reseau]
+  depends_on = [google_project_service.required]
 }
 
+# Stockage : bucket de sauvegardes et bucket d'exports de journaux, avec le
+# puits de journaux qui l'alimente.
 module "stockage" {
   source = "./modules/stockage"
 
@@ -85,10 +130,15 @@ module "stockage" {
   depends_on = [google_project_service.required]
 }
 
+# Fédération d'identité GitHub Actions (module fourni) : le pipeline obtient
+# un jeton de courte durée sans clé JSON de compte de service (contrainte du
+# CDC).
 module "wif_github" {
   source = "./modules/wif-github"
 
   project_id   = var.project_id
-  github_owner = "MaelCrestin"
-  github_repo  = "foodtrack-equipe-c"
+  github_owner = var.github_owner
+  github_repo  = var.github_repo
+
+  depends_on = [google_project_service.required]
 }

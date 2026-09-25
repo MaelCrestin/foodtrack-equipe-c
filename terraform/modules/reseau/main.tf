@@ -1,3 +1,22 @@
+# Module réseau : VPC privé, sous-réseau avec plages secondaires pour GKE,
+# sortie Internet par Cloud NAT et règle de pare-feu SSH du bastion.
+
+terraform {
+  required_providers {
+    google = {
+      source = "hashicorp/google"
+    }
+  }
+}
+
+locals {
+  # Étiquette réseau du bastion : le pare-feu cible cette étiquette plutôt
+  # qu'une plage d'adresses (exigence du CDC).
+  bastion_tag = "${var.name_prefix}-bastion"
+}
+
+# VPC en mode personnalisé : la création automatique de sous-réseaux dans
+# toutes les régions est désactivée, l'équipe reste dans sa seule région.
 resource "google_compute_network" "this" {
   project                 = var.project_id
   name                    = "${var.name_prefix}-vpc"
@@ -5,6 +24,9 @@ resource "google_compute_network" "this" {
   routing_mode            = "REGIONAL"
 }
 
+# Sous-réseau des nœuds et du bastion. Les deux plages secondaires permettent
+# le mode natif VPC du cluster ; l'accès privé Google laisse les nœuds sans IP
+# publique joindre les API Google.
 resource "google_compute_subnetwork" "this" {
   project                  = var.project_id
   name                     = "${var.name_prefix}-subnet"
@@ -23,6 +45,7 @@ resource "google_compute_subnetwork" "this" {
   }
 }
 
+# Routeur Cloud, support obligatoire de la passerelle Cloud NAT.
 resource "google_compute_router" "this" {
   project = var.project_id
   name    = "${var.name_prefix}-router"
@@ -30,6 +53,9 @@ resource "google_compute_router" "this" {
   network = google_compute_network.this.id
 }
 
+# Cloud NAT : sortie Internet des nœuds sans IP publique, indispensable pour
+# tirer les images de Docker Hub. Limité au sous-réseau du cluster ; seuls les
+# échecs de traduction sont journalisés, pour limiter le volume de journaux.
 resource "google_compute_router_nat" "this" {
   project                            = var.project_id
   name                               = "${var.name_prefix}-nat"
@@ -49,6 +75,8 @@ resource "google_compute_router_nat" "this" {
   }
 }
 
+# SSH vers le bastion uniquement, depuis les seules adresses d'administration,
+# ciblé par étiquette réseau. Journalisé pour l'audit.
 resource "google_compute_firewall" "bastion_ssh" {
   project       = var.project_id
   name          = "${var.name_prefix}-allow-bastion-ssh"
@@ -63,5 +91,3 @@ resource "google_compute_firewall" "bastion_ssh" {
   }
   log_config { metadata = "INCLUDE_ALL_METADATA" }
 }
-
-locals { bastion_tag = "${var.name_prefix}-bastion" }

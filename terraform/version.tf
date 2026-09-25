@@ -1,3 +1,6 @@
+
+# Versions de Terraform et du fournisseur Google.
+
 terraform {
   required_version = ">= 1.5.0"
 
