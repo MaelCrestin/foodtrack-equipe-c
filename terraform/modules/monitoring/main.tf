@@ -1,15 +1,17 @@
-# FoodTrack - equipe C - supervision de la production
-#
-# Quatre ressources : un canal de notification par courriel, un controle de
-# disponibilite sur le portail qualite de prod, une regle d'alerte qui relie
-# les deux, et une metrique basee sur les journaux qui isole les erreurs
-# applicatives du namespace prod (cette metrique EST la "requete enregistree"
-# demandee : son filtre est ce qui s'affiche dans l'explorateur de journaux
-# des qu'on clique dessus).
+# Module monitoring : supervision du portail qualité de production. Un canal
+# de notification par courriel, un contrôle de disponibilité, une règle
+# d'alerte qui les relie, une métrique de journaux sur les erreurs de prod et
+# un tableau de bord.
 
-# ---------------------------------------------------------------------------
-# Canal de notification : une adresse courriel, pas un secret.
-# ---------------------------------------------------------------------------
+terraform {
+  required_providers {
+    google = {
+      source = "hashicorp/google"
+    }
+  }
+}
+
+# Canal de notification par courriel de l'équipe, destinataire de l'alerte.
 resource "google_monitoring_notification_channel" "email_equipe" {
   project      = var.project_id
   display_name = "FoodTrack equipe ${var.equipe} - courriel"
@@ -19,10 +21,10 @@ resource "google_monitoring_notification_channel" "email_equipe" {
   }
 }
 
-# ---------------------------------------------------------------------------
-# Controle de disponibilite, sur l'IP fixe reservee dans phase3-supervision.tf
-# (racine). Sonde HTTP simple sur /healthz, depuis plusieurs regions.
-# ---------------------------------------------------------------------------
+# Contrôle de disponibilité HTTP sur l'IP fixe réservée dans
+# phase3-monitoring.tf (racine), toutes les 60 s, depuis trois zones
+# géographiques : une panne réseau locale d'une sonde ne suffit pas à
+# conclure à l'indisponibilité.
 resource "google_monitoring_uptime_check_config" "portail_qualite" {
   project      = var.project_id
   display_name = "foodtrack-${var.equipe}-portail-qualite-prod"
@@ -47,34 +49,28 @@ resource "google_monitoring_uptime_check_config" "portail_qualite" {
   selected_regions = ["EUROPE", "USA", "ASIA_PACIFIC"]
 }
 
-# ---------------------------------------------------------------------------
-# Regle d'alerte : notifie par courriel si le controle echoue en continu
-# pendant `alert_duration_secondes`. Duree choisie pour eviter le faux
-# positif d'un simple redemarrage de pod (RollingUpdate, quelques dizaines de
-# secondes) tout en restant assez courte pour un vrai incident de prod -
-# justification complete dans le README, section Supervision.
-#
-# NOTE : ce policy suit le modele standard genere par la Console GCP pour un
-# controle de disponibilite. Apres le premier apply, verifiez dans
-# Monitoring > Alerting que le graphique de la condition affiche des
-# donnees ; si un champ d'agregation a change cote API, ajustez-le ici.
-# ---------------------------------------------------------------------------
+# Alerte : notifie quand plus d'une localisation de sonde est en échec, sans
+# interruption, pendant alert_duration_secondes. La durée écarte le faux
+# positif d'un redémarrage de pod (quelques dizaines de secondes) tout en
+# restant courte pour un vrai incident ; justification dans le README,
+# section Supervision. La fenêtre d'alignement de 120 s couvre deux périodes
+# de sonde, pour tolérer la gigue entre deux résultats.
 resource "google_monitoring_alert_policy" "portail_indisponible" {
   project      = var.project_id
   display_name = "foodtrack-${var.equipe}-portail-indisponible"
   combiner     = "OR"
 
   conditions {
-    display_name = "Echec du controle de disponibilite (agrege sur ${var.alert_duration_secondes}s)"
+    display_name = "Echec du controle de disponibilite pendant ${var.alert_duration_secondes}s"
 
     condition_threshold {
       filter          = "resource.type = \"uptime_url\" AND metric.type = \"monitoring.googleapis.com/uptime_check/check_passed\" AND resource.label.host = \"${var.uptime_host}\""
       comparison      = "COMPARISON_GT"
       threshold_value = 1
-      duration        = "0s"
+      duration        = "${var.alert_duration_secondes}s"
 
       aggregations {
-        alignment_period     = "${var.alert_duration_secondes}s"
+        alignment_period     = "120s"
         per_series_aligner   = "ALIGN_NEXT_OLDER"
         cross_series_reducer = "REDUCE_COUNT_FALSE"
         group_by_fields      = ["resource.label.project_id", "resource.label.host"]
@@ -92,10 +88,10 @@ resource "google_monitoring_alert_policy" "portail_indisponible" {
     content   = <<-EOT
       Le portail qualite de production ne repond plus sur `${var.uptime_path}`.
 
-      Seuil retenu : le controle echoue depuis au moins ${var.alert_duration_secondes} secondes
-      (${var.alert_duration_secondes / 60} minutes), sur plusieurs regions de sonde a la fois.
-      Cette duree evite qu'un simple redemarrage de pod ne declenche une fausse alerte -
-      voir README, section Supervision.
+      Condition : plus d'une localisation de sonde en echec, sans interruption,
+      pendant ${var.alert_duration_secondes} secondes.
+      Cette duree evite qu'un simple redemarrage de pod ne declenche une fausse
+      alerte - voir README, section Supervision.
 
       A verifier en premier :
         kubectl get pods -n foodtrack-prod
@@ -105,11 +101,9 @@ resource "google_monitoring_alert_policy" "portail_indisponible" {
   }
 }
 
-# ---------------------------------------------------------------------------
-# Metrique basee sur les journaux : isole les erreurs applicatives du
-# namespace de production. Le filtre ci-dessous est la "requete enregistree"
-# demandee par le cahier des charges.
-# ---------------------------------------------------------------------------
+# Métrique basée sur les journaux : compte les entrées de sévérité ERROR et
+# plus du namespace foodtrack-prod. Son filtre sert de requête de référence
+# dans l'explorateur de journaux pour isoler les erreurs applicatives de prod.
 resource "google_logging_metric" "erreurs_prod" {
   project     = var.project_id
   name        = "foodtrack-${var.equipe}-erreurs-applicatives-prod"
@@ -128,20 +122,11 @@ resource "google_logging_metric" "erreurs_prod" {
   }
 }
 
-# ---------------------------------------------------------------------------
-# Tableau de bord : processeur, memoire, pods prets, taux d'erreurs HTTP,
-# latence - pour foodtrack-prod au minimum, comme demande.
-#
-# Les deux widgets HTTP (taux d'erreurs, latence) s'appuient sur les
-# metriques de l'equilibreur de charge externe GKE (loadbalancing.googleapis.com),
-# puisque c'est lui qui recoit et compte le trafic entrant sur l'Ingress.
-#
-# NOTE : les noms exacts de metriques Google Cloud evoluent de temps en
-# temps. Si un widget affiche "No data" apres l'apply, cherchez la metrique
-# la plus proche dans l'explorateur de metriques (Metrics Explorer) et
-# corrigez la chaine `metric.type` ci-dessous plutot que de supposer le
-# tableau de bord casse.
-# ---------------------------------------------------------------------------
+# Tableau de bord de production : processeur, mémoire, pods en phase Running,
+# taux d'erreurs HTTP et latence. Le widget des pods lit la métrique
+# kube-state-metrics collectée par Managed Service for Prometheus. Les deux
+# widgets HTTP lisent les métriques de l'équilibreur de charge externe et
+# agrègent tous les équilibreurs du projet, pas seulement celui de prod.
 resource "google_monitoring_dashboard" "foodtrack_prod" {
   project = var.project_id
 
@@ -204,23 +189,22 @@ resource "google_monitoring_dashboard" "foodtrack_prod" {
           height = 4
           yPos   = 4
           widget = {
-            title = "Pods prets - foodtrack-prod"
+            title = "Pods Running - foodtrack-prod"
             xyChart = {
               dataSets = [{
                 timeSeriesQuery = {
                   timeSeriesFilter = {
-                    filter = "resource.type=\"k8s_pod\" AND resource.labels.namespace_name=\"foodtrack-prod\" AND metric.type=\"kubernetes.io/pod/status_ready\""
+                    filter = "resource.type=\"prometheus_target\" AND metric.type=\"prometheus.googleapis.com/kube_pod_status_phase/gauge\" AND metric.labels.namespace=\"foodtrack-prod\" AND metric.labels.phase=\"Running\""
                     aggregation = {
                       alignmentPeriod    = "60s"
-                      perSeriesAligner   = "ALIGN_FRACTION_TRUE"
+                      perSeriesAligner   = "ALIGN_MEAN"
                       crossSeriesReducer = "REDUCE_SUM"
-                      groupByFields      = ["resource.label.pod_name"]
                     }
                   }
                 }
                 plotType = "LINE"
               }]
-              yAxis = { label = "pods prets", scale = "LINEAR" }
+              yAxis = { label = "pods Running", scale = "LINEAR" }
             }
           }
         },
@@ -235,7 +219,7 @@ resource "google_monitoring_dashboard" "foodtrack_prod" {
               dataSets = [{
                 timeSeriesQuery = {
                   timeSeriesFilter = {
-                    filter = "resource.type=\"https_lb_rule\" AND metric.type=\"loadbalancing.googleapis.com/https/request_count\" AND metric.labels.response_code_class=\"500\""
+                    filter = "resource.type=\"https_lb_rule\" AND metric.type=\"loadbalancing.googleapis.com/https/request_count\" AND metric.labels.response_code_class=500"
                     aggregation = {
                       alignmentPeriod    = "60s"
                       perSeriesAligner   = "ALIGN_RATE"
