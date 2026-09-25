@@ -112,6 +112,7 @@ resource "google_logging_metric" "erreurs_prod" {
   filter = <<-EOT
     resource.type="k8s_container"
     resource.labels.namespace_name="foodtrack-prod"
+    resource.labels.container_name!="nginx"
     severity>=ERROR
   EOT
 
