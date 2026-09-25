@@ -68,8 +68,15 @@ jobs:
             | tar xz kubeconform
           sudo mv kubeconform /usr/local/bin/kubeconform
 
+      - name: Preparer un secret d ingestion factice (lint uniquement)
+        run: |
+          for ENV in dev test prod; do
+            echo "INGEST_TOKEN=placeholder-lint-uniquement" > "manifests/overlays/$ENV/secret.env"
+          done
+
       - name: Manifestes Kubernetes - validite contre le schema
         run: |
+          set -o pipefail
           for ENV in dev test prod; do
             echo "--- overlay $ENV"
             kubectl kustomize "manifests/overlays/$ENV" \
