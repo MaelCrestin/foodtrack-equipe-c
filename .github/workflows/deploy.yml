@@ -19,7 +19,7 @@ name: foodtrack
 
 on:
   push:
-    branches: [develop, main]
+    branches: [develop, main, test]
     tags: ["v*"]
   pull_request:
     branches: [develop, main]
@@ -312,7 +312,7 @@ jobs:
   deploy-test:
     name: Deploiement test
     needs: [build, deploy-dev]
-    if: always() && needs.build.result == 'success' && (needs.deploy-dev.result == 'success' || needs.deploy-dev.result == 'skipped')
+    if: always() && needs.build.result == 'success' && (needs.deploy-dev.result == 'success' || needs.deploy-dev.result == 'skipped') && github.ref != 'refs/heads/test'
     runs-on: ubuntu-latest
     environment:
       name: test
