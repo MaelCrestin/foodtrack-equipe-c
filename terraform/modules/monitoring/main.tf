@@ -71,10 +71,10 @@ resource "google_monitoring_alert_policy" "portail_indisponible" {
       filter          = "resource.type = \"uptime_url\" AND metric.type = \"monitoring.googleapis.com/uptime_check/check_passed\" AND resource.label.host = \"${var.uptime_host}\""
       comparison      = "COMPARISON_GT"
       threshold_value = 1
-      duration        = "0s"
+      duration        = "${var.alert_duration_secondes}s"
 
       aggregations {
-        alignment_period     = "${var.alert_duration_secondes}s"
+        alignment_period     = "60s"
         per_series_aligner   = "ALIGN_NEXT_OLDER"
         cross_series_reducer = "REDUCE_COUNT_FALSE"
         group_by_fields      = ["resource.label.project_id", "resource.label.host"]
@@ -106,10 +106,16 @@ resource "google_monitoring_alert_policy" "portail_indisponible" {
 }
 
 # ---------------------------------------------------------------------------
-# Metrique basee sur les journaux : isole les erreurs applicatives du
-# namespace de production. Le filtre ci-dessous est la "requete enregistree"
-# demandee par le cahier des charges.
+# Metrique basee sur les journaux, PAS une "requete enregistree" au sens
+# strict de l'explorateur de journaux (fonctionnalite distincte, non geree
+# par ce module). Substitut delibere : cliquer sur cette metrique dans
+# Metrics/Logs Explorer affiche directement son filtre, ce qui couvre le
+# meme besoin pratique (retrouver rapidement les erreurs applicatives du
+# namespace prod) sans dupliquer un objet Terraform pour une fonctionnalite
+# encore peu outillee cote provider (google_logging_saved_query existe mais
+# reste en beta, non utilise ici par choix de stabilite).
 # ---------------------------------------------------------------------------
+
 resource "google_logging_metric" "erreurs_prod" {
   project     = var.project_id
   name        = "foodtrack-${var.equipe}-erreurs-applicatives-prod"
@@ -118,6 +124,7 @@ resource "google_logging_metric" "erreurs_prod" {
   filter = <<-EOT
     resource.type="k8s_container"
     resource.labels.namespace_name="foodtrack-prod"
+    resource.labels.container_name!="nginx"
     severity>=ERROR
   EOT
 

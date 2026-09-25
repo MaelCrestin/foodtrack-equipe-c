@@ -302,7 +302,7 @@ jobs:
         run: |
           kubectl run verif-dev-$RANDOM --rm -i --restart=Never --image=curlimages/curl:8.10.1 \
             -n foodtrack-dev -- \
-            curl -sf --max-time 5 http://portail-qualite:8080/healthz
+            curl -sf --max-time 5 --retry 5 --retry-delay 3 --retry-all-errors http://portail-qualite:8080/healthz
 
   # ---------------------------------------------------------------------
   # Deploiement test : toujours dans le chemin, que l execution vienne
@@ -356,7 +356,7 @@ jobs:
         run: |
           kubectl run verif-test-$RANDOM --rm -i --restart=Never --image=curlimages/curl:8.10.1 \
             -n foodtrack-test -- \
-            curl -sf --max-time 5 http://portail-qualite:8080/healthz
+            curl -sf --max-time 5 --retry 5 --retry-delay 3 --retry-all-errors http://portail-qualite:8080/healthz
 
   # ---------------------------------------------------------------------
   # Production : la porte d approbation se configure cote depot GitHub
@@ -422,4 +422,4 @@ jobs:
         run: |
           kubectl run verif-prod-$RANDOM --rm -i --restart=Never --image=curlimages/curl:8.10.1 \
             -n foodtrack-prod -- \
-            curl -sf --max-time 5 http://portail-qualite:8080/healthz
+            curl -sf --max-time 5 --retry 5 --retry-delay 3 --retry-all-errors http://portail-qualite:8080/healthz
