@@ -209,12 +209,11 @@ resource "google_monitoring_dashboard" "foodtrack_prod" {
               dataSets = [{
                 timeSeriesQuery = {
                   timeSeriesFilter = {
-                    filter = "resource.type=\"k8s_pod\" AND resource.labels.namespace_name=\"foodtrack-prod\" AND metric.type=\"kubernetes.io/pod/status_ready\""
+                    filter = "resource.type=\"prometheus_target\" AND metric.type=\"prometheus.googleapis.com/kube_pod_status_phase/gauge\" AND metric.labels.namespace=\"foodtrack-prod\" AND metric.labels.phase=\"Running\""
                     aggregation = {
                       alignmentPeriod    = "60s"
-                      perSeriesAligner   = "ALIGN_FRACTION_TRUE"
+                      perSeriesAligner   = "ALIGN_MEAN"
                       crossSeriesReducer = "REDUCE_SUM"
-                      groupByFields      = ["resource.label.pod_name"]
                     }
                   }
                 }
@@ -235,7 +234,7 @@ resource "google_monitoring_dashboard" "foodtrack_prod" {
               dataSets = [{
                 timeSeriesQuery = {
                   timeSeriesFilter = {
-                    filter = "resource.type=\"https_lb_rule\" AND metric.type=\"loadbalancing.googleapis.com/https/request_count\" AND metric.labels.response_code_class=\"500\""
+                    filter = "resource.type=\"https_lb_rule\" AND metric.type=\"loadbalancing.googleapis.com/https/request_count\" AND metric.labels.response_code_class=500"
                     aggregation = {
                       alignmentPeriod    = "60s"
                       perSeriesAligner   = "ALIGN_RATE"
