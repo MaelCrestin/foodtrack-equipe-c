@@ -218,6 +218,22 @@ jobs:
           # HIGH reste affiche dans le rapport mais ne bloque pas - beaucoup
           # de failles HIGH de l image de base nginx ne sont pas corrigeables
           # cote equipe et bloqueraient le pipeline en permanence sans raison.
+          #Ajout code image redis : 8.10.1
+      - name: Scanner l image api-capteurs (image epinglee)
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          scan-type: image
+          image-ref: us-docker.pkg.dev/google-samples/containers/gke/hello-app:2.0
+          exit-code: "0"
+          severity: CRITICAL
+
+      - name: Scanner l image cache-releves (image epinglee)
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          scan-type: image
+          image-ref: redis:8.10.1
+          exit-code: "0"
+          severity: CRITICAL
 
   # ---------------------------------------------------------------------
   # Deploiement dev : uniquement pour un push sur develop. C est le seul
