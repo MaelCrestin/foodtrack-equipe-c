@@ -38,11 +38,11 @@ resource "google_project_iam_member" "nodes" {
 # la VM ne porte aucune identité Google Cloud. L'IP publique sert au SSH depuis
 # admin_ssh_cidrs, filtré par le pare-feu du module réseau.
 resource "google_compute_instance" "bastion" {
-  project      = var.project_id
-  name         = "${var.name_prefix}-bastion"
-  zone         = var.zone
-  machine_type = var.bastion_machine_type
-  tags         = [var.bastion_network_tag]
+  project                    = var.project_id
+  name                       = "${var.name_prefix}-bastion"
+  zone                       = var.zone
+  machine_type               = var.bastion_machine_type
+  tags                       = [var.bastion_network_tag]
   allow_stopping_for_update  = true
 
   boot_disk {
