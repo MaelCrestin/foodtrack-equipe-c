@@ -987,7 +987,7 @@ Classées par impact.
 | 16 | Paramètres métier (`SEUIL_TEMPERATURE_C`, `NIVEAU_JOURNAL`) non exploités par l'image fournie | Différenciation invisible fonctionnellement | Hors périmètre (application fournie) |
 | 17 | `healthcheck.py` non branché dans le pipeline ni en CronJob | Le contrôle de l'API n'est pas automatisé | Étape de pipeline + `CronJob` (bonus) |
 | 18 | Cluster zonal, Redis mono-réplique sans sauvegarde de données | Perte de la zone = arrêt des 3 environnements | Hors périmètre ; snapshots planifiés des PD |
-| 19 | `dev/test/prod.tfvars` identiques | Exigence respectée dans la forme seulement | Un seul fichier commun |
+
 
 **Avec une semaine de plus** : (1) exécuteur auto-hébergé sur le bastion et plan de contrôle privé ; (2) SA et WIF par environnement, RBAC par namespace ; (3) NetworkPolicies, quotas, PriorityClass ; (4) extinction planifiée par Cloud Scheduler ; (5) TLS géré ; (6) tests fonctionnels de l'API + CronJob de santé ; (7) sauvegarde AWS S3 (bonus multicloud).
 
