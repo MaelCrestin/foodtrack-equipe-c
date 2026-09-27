@@ -969,7 +969,7 @@ Classées par impact.
 
 | # | Limite | Impact | Correction envisagée |
 |---|---|---|---|
-| 1 | **Jeton `INGEST_TOKEN` de dev en clair dans l'historique** (commit `7c9b8f1`, dépôt public) | Retrait sur l'axe sécurité | Rotation immédiate du jeton, réécriture de l'historique |
+| 1 | `dev/test/prod.tfvars` identiques | Exigence respectée dans la forme seulement | Un seul fichier commun |
 | 2 | Plan de contrôle ouvert à `0.0.0.0/0` | Surface d'attaque de l'API Kubernetes | Exécuteur auto-hébergé + endpoint privé (§ 4.6) |
 | 3 | Extinction nocturne potentiellement annulée par l'autoscaler, et non planifiée | Économie de ~89 $/mois non garantie | Désactiver l'autoscaling dans le script ; Cloud Scheduler |
 | 4 | SA du pipeline : `viewer` projet, `container.developer` projet (lecture des Secrets des 3 ns), écriture sur l'état Terraform, même SA pour tous les environnements | Impact d'une compromission du pipeline | SA par environnement, condition WIF sur `ref`, RBAC par namespace |
@@ -987,7 +987,7 @@ Classées par impact.
 | 16 | Paramètres métier (`SEUIL_TEMPERATURE_C`, `NIVEAU_JOURNAL`) non exploités par l'image fournie | Différenciation invisible fonctionnellement | Hors périmètre (application fournie) |
 | 17 | `healthcheck.py` non branché dans le pipeline ni en CronJob | Le contrôle de l'API n'est pas automatisé | Étape de pipeline + `CronJob` (bonus) |
 | 18 | Cluster zonal, Redis mono-réplique sans sauvegarde de données | Perte de la zone = arrêt des 3 environnements | Hors périmètre ; snapshots planifiés des PD |
-| 19 | `dev/test/prod.tfvars` identiques | Exigence respectée dans la forme seulement | Un seul fichier commun |
+
 
 **Avec une semaine de plus** : (1) exécuteur auto-hébergé sur le bastion et plan de contrôle privé ; (2) SA et WIF par environnement, RBAC par namespace ; (3) NetworkPolicies, quotas, PriorityClass ; (4) extinction planifiée par Cloud Scheduler ; (5) TLS géré ; (6) tests fonctionnels de l'API + CronJob de santé ; (7) sauvegarde AWS S3 (bonus multicloud).
 
