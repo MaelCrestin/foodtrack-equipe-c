@@ -43,6 +43,7 @@ resource "google_compute_instance" "bastion" {
   zone         = var.zone
   machine_type = var.bastion_machine_type
   tags         = [var.bastion_network_tag]
+  allow_stopping_for_update  = true
 
   boot_disk {
     initialize_params {
